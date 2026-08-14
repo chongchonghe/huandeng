@@ -483,7 +483,8 @@ def frames_tag(deck: Deck, rect: dict, page_w: float, page_h: float, embed: bool
 
     Every frame is stacked in the overlay and exactly one is opaque at a time, stepped by a
     generated `@keyframes` rule — so the animation is pure CSS with no player, no codec and no
-    ffmpeg. The trade is weight: N PNGs embed larger than one mp4.
+    ffmpeg. It starts paused and answers the slide's first `space`, the same as a <video>.
+    The trade is weight: N PNGs embed larger than one mp4.
     """
     name = Path(rect["src"]).stem
     sequence = read_manifest(deck).get("sequences", {}).get(name)
@@ -512,10 +513,16 @@ def frames_tag(deck: Deck, rect: dict, page_w: float, page_h: float, embed: bool
     # One frame's slice of the cycle. The two stops sit a hair apart so the swap reads as a cut
     # rather than a cross-fade.
     hold = 100.0 / count
+    # Longhands, deliberately: the `animation:` shorthand resets animation-play-state to
+    # `running`, and this #id rule outranks the `.flipbook img` class rule that parks the
+    # sequence -- so the shorthand would silently start every flip-book at load.
     css = (
         f"@keyframes flip-{uid}{{0%,{hold * 0.98:.4f}%{{opacity:1}}"
         f"{hold:.4f}%,100%{{opacity:0}}}}"
-        f"#flip-{uid} img{{animation:flip-{uid} {duration:.4f}s linear infinite}}"
+        f"#flip-{uid} img{{animation-name:flip-{uid};"
+        f"animation-duration:{duration:.4f}s;"
+        f"animation-timing-function:linear;"
+        f"animation-iteration-count:infinite}}"
     )
     return (
         f"<style>{css}</style>"
@@ -590,10 +597,13 @@ HTML_TEMPLATE = """<!DOCTYPE html>
      The overlay rectangle already carries the sequence's own aspect ratio, so `fill` is exact
      here and never stretches a frame. */
   .flipbook {{ overflow: hidden; }}
+  /* Paused until the slide's first `space`, the same beat a <video> waits for. Held at cycle
+     time zero the only opaque frame is the first, so a parked flip-book shows its poster. */
   .flipbook img {{
     position: absolute; inset: 0; width: 100%; height: 100%;
-    object-fit: fill; opacity: 0;
+    object-fit: fill; opacity: 0; animation-play-state: paused;
   }}
+  .flipbook.playing img {{ animation-play-state: running; }}
   @media (prefers-reduced-motion: reduce) {{
     .flipbook img {{ animation: none; }}
     .flipbook img:first-child {{ opacity: 1; }}
@@ -630,6 +640,20 @@ HTML_TEMPLATE = """<!DOCTYPE html>
   const played = new Set();
 
   const videosOn = (i) => Array.from(slides[i].querySelectorAll('video'));
+  // --html-frames renders a movie as a CSS flip-book instead of a <video>. It answers to the
+  // same space bar, so everything below treats the two as one kind of thing: "playable".
+  const flipbooksOn = (i) => Array.from(slides[i].querySelectorAll('.flipbook'));
+  const playableCount = (i) => videosOn(i).length + flipbooksOn(i).length;
+
+  function rewindFlipbook(fb) {{
+    fb.classList.remove('playing');
+    // Clearing the animation name and forcing a reflow resets the animation's clock; without
+    // this the sequence would resume mid-cycle instead of from frame one.
+    const imgs = fb.querySelectorAll('img');
+    imgs.forEach((img) => {{ img.style.animationName = 'none'; }});
+    void fb.offsetWidth;
+    imgs.forEach((img) => {{ img.style.animationName = ''; }});
+  }}
 
   function flashHud() {{
     hud.classList.add('show');
@@ -640,30 +664,31 @@ HTML_TEMPLATE = """<!DOCTYPE html>
   // First space on a slide starts every video on it at once; the next space moves on, so the
   // rhythm is the same as any other slide. Returns false when there is nothing left to play.
   function playOnce() {{
-    const videos = videosOn(current);
-    if (!videos.length || played.has(current)) return false;
+    if (!playableCount(current) || played.has(current)) return false;
     played.add(current);
-    videos.forEach((v) => {{
+    videosOn(current).forEach((v) => {{
       v.currentTime = 0;
       v.play();
     }});
+    flipbooksOn(current).forEach((fb) => fb.classList.add('playing'));
     return true;
   }}
 
   function show(i) {{
     const previous = current;
     current = Math.max(0, Math.min(slides.length - 1, i));
-    // Leaving a slide rewinds its videos, so coming back re-arms the first space.
+    // Leaving a slide rewinds whatever it was playing, so coming back re-arms the first space.
     if (previous !== current) {{
       played.delete(previous);
       videosOn(previous).forEach((v) => {{
         v.pause();
         v.currentTime = 0;
       }});
+      flipbooksOn(previous).forEach(rewindFlipbook);
     }}
     slides.forEach((s, n) => s.classList.toggle('active', n === current));
     pos.textContent = current + 1;
-    playhint.hidden = videosOn(current).length === 0;
+    playhint.hidden = playableCount(current) === 0;
     if (location.hash !== '#' + (current + 1)) {{
       history.replaceState(null, '', '#' + (current + 1));
     }}
@@ -884,8 +909,9 @@ def main(argv: list[str] | None = None) -> int:
         "--html-frames",
         action="store_true",
         help="in the HTML, play each movie as a CSS flip-book of its own PNG frames instead of "
-        "a <video>. Needs no ffmpeg and no codec, and loops on its own; the frames embed "
-        "larger than the equivalent mp4. Combines with --link-video.",
+        "a <video>. Needs no ffmpeg and no codec; waits for the slide's first space, like a "
+        "video does. The frames embed larger than the equivalent mp4. Combines with "
+        "--link-video.",
     )
     parser.add_argument(
         "--link-video",
