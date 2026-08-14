@@ -42,7 +42,9 @@
     short-title: [Huandeng demo],
     date: datetime.today(),
     institution: [Your Institute],
-    logo: image("attach/placeholder-logo.png", width: 2.5cm),
+    // 2.5cm reaches far enough left that a two-line title collides with it — the first line of
+    // this deck's own title ran under the mark. Sized to clear the widest line instead.
+    logo: image("attach/placeholder-logo.png", width: 1.7cm),
   ),
   config-common(
     // `=` starts a section, `==` starts a slide.

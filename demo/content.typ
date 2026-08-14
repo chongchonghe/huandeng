@@ -122,7 +122,10 @@ rule.
 
 == Tables
 
-#side-by-side(columns: (1fr, 1fr))[
+// The header table needs the wider column: three prose columns wrap at 1fr, and the wrapped rows
+// then push its rule into the headerless table beside it. A real gutter keeps the pair reading as
+// two tables rather than one six-column block.
+#side-by-side(columns: (1.45fr, 1fr), gutter: 2.2em)[
   *With a header row*
 
   #head-table(
@@ -274,7 +277,8 @@ the PDF, a real `<video>` in the HTML, a playable movie in the PPTX.
 ][
   #align(center, movie(zoom, width: 74%))
 
-  #caption[Gas density around an accreting black hole]
+  // Broken by hand: at this column width the line otherwise orphans "hole" on a line of its own.
+  #caption[Gas density around an \ accreting black hole]
 ]
 
 == Two sequences on one timeline
