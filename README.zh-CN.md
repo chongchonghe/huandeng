@@ -30,11 +30,21 @@ cd talks/2027-my-talk
 typst compile --font-path fonts main.typ out/talk.pdf
 ```
 
-这就是你上台要用的那个格式的全部流程。要 HTML、PPTX 和检查功能，用附带的工具：
+这就是你上台要用的那个格式的全部流程。每份幻灯片都自带一个 Makefile，在幻灯片目录里：
+
+```bash
+make          # 出 PDF，只用 Typst——写稿时的快速循环
+make watch    # 同上，每次保存自动重新编译
+make check    # 编译并检查：有没有幻灯片被悄悄拆成了两页？
+make all      # PDF、HTML、PPTX 一起出
+```
+
+`make` 和 `make watch` 只需要 Typst，所以幻灯片复制到任何地方都还能用。另外两个会调用共享工具，你也可以在仓库根目录直接对任意一份幻灯片运行：
 
 ```bash
 uv run python tools/build-slides.py talks/2027-my-talk          # 三种格式一起出
 uv run python tools/build-slides.py talks/2027-my-talk --check  # 检查有没有内容溢出
+make check                                                      # 或者：一次检查所有幻灯片
 ```
 
 `demo/` 里把所有功能都跑了一遍，细节看 [`demo/README.md`](demo/README.md)。

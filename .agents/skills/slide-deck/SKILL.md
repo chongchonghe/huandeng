@@ -56,8 +56,8 @@ inside a slide body.
 
 ## Workflows
 
-**New talk** — `cp -r template ../my-talks/2027-my-talk`, then edit `content.typ`. The template
-ships with an empty `attach/` and `movie-frames/`, so nothing follows you in but the fonts.
+**New talk** — `cp -r template talks/2027-my-talk`, then edit `content.typ`. The template ships with
+an empty `attach/` and `movie-frames/`, so nothing follows you in but the fonts and a `Makefile`.
 
 **Add a movie or GIF** — `uv run python tools/build-slides.py <deck> --add-movie clip.mp4`. Frames
 land in `movie-frames/<name>/`; then `#movie("<name>")`. GIF uses the identical command.
@@ -71,8 +71,11 @@ dimensions. A sequence is all one format — the encoder globs a single suffix. 
 **Add a folder of frames you already have** — drop it in `movie-frames/<name>/`, then
 `--sync-frames`. The directory name is the movie name.
 
-**Export** — `uv run python tools/build-slides.py <deck>` for all three targets; `--pdf`, `--html`,
-`--pptx` individually.
+**Build and export** — every deck has a `Makefile`: `make` for the PDF (Typst only, no Python),
+`make watch` to recompile on save, `make check`, `make all` for the three formats. From the repo
+root instead: `uv run python tools/build-slides.py <deck>` for all three, `--pdf`/`--html`/`--pptx`
+individually, and `make check` to verify every deck at once. Prefer `make` over a hand-typed `typst
+compile`, which is easy to run without `--font-path fonts` and thus silently repaginate.
 
 ## House style
 

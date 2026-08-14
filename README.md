@@ -30,11 +30,21 @@ cd talks/2027-my-talk
 typst compile --font-path fonts main.typ out/talk.pdf
 ```
 
-That is the whole pipeline for the format you present from. For HTML and PPTX, and for the checker, use the bundled tool:
+That is the whole pipeline for the format you present from. Every deck ships a Makefile, so from inside one:
+
+```bash
+make          # the PDF, Typst only — the fast loop while writing
+make watch    # the same, recompiled on every save
+make check    # build and verify: did a slide silently spill onto a second page?
+make all      # PDF, HTML and PPTX
+```
+
+`make` and `make watch` need nothing but Typst, so they keep working in a deck copied anywhere. The other two call the shared tool, which you can also run directly on any deck from the repo root:
 
 ```bash
 uv run python tools/build-slides.py talks/2027-my-talk          # all three formats
 uv run python tools/build-slides.py talks/2027-my-talk --check  # verify nothing spilled
+make check                                                      # or: verify every deck at once
 ```
 
 Read `demo/` for every feature working at once, and [`demo/README.md`](demo/README.md) for the detail.

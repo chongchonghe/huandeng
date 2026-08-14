@@ -3,6 +3,7 @@
 Plain-text slide decks: Typst + Touying, built by one shared Python tool.
 
 ```
+Makefile                repo-wide: make check verifies every deck
 tools/build-slides.py   the toolchain — shared, never copied into a deck
 template/               the starting point: copy it, never edit it in place
 demo/                   every feature, working, as a reference deck
@@ -10,7 +11,8 @@ talks/                  the user's own decks — gitignored, never commit anythi
 .agents/skills/         the agent skills; .claude/skills symlinks here, as CLAUDE.md does to this file
 ```
 
-A deck is `main.typ` + `globals.typ` + `content.typ` + `attach/`, and contains no build script.
+A deck is `main.typ` + `globals.typ` + `content.typ` + `attach/`, plus a `Makefile` that only
+wraps the two commands below — it holds no build logic of its own.
 Full detail lives in `README.md` and `demo/README.md`. For slide authoring invoke the
 **slide-deck** skill; to convert an existing PowerPoint or Keynote deck invoke **pptx-to-typst**;
 for Touying itself, the vendored docs are in `.agents/skills/touying-author/`.
@@ -22,9 +24,11 @@ These fail without an error, so they cannot be left to a lookup:
 1. **After ANY slide edit, run `--check`.** An overflowing slide does not error — Typst silently
    breaks it across two pages. `--check` counts the pages the source should produce, compares that
    with the built PDF, and names the slide that spilled. Exit 1 means look.
-   `uv run python tools/build-slides.py <deck> --check`
+   `make check` from inside the deck, or `uv run python tools/build-slides.py <deck> --check`
+   from the repo root; `make check` at the root verifies every deck at once.
 2. **`typst compile` needs `--font-path fonts`.** Without it the deck still compiles, falls back to
-   another font, and repaginates.
+   another font, and repaginates. The deck's `make` target passes it for you, which is the reason
+   to prefer it over a hand-typed `typst compile`.
 3. **Edit `content.typ`.** `globals.typ` is shared API and `main.typ` is configuration; changing
    them affects every slide.
 4. **Never edit `template/` to write a talk.** Copy it into `talks/` first.
