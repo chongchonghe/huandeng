@@ -316,23 +316,25 @@ Both are optional, and so is the credit.
 Image 1:
 :::
 ::: {.media-items}
-![](attach/placeholder-image.png){width="150px"} ![](attach/placeholder-image.png){width="150px"} ![](attach/placeholder-image.png){width="150px"}
+![](attach/placeholder-image.png){width="385px"} ![](attach/placeholder-image.png){width="385px"} ![](attach/placeholder-image.png){width="385px"}
 :::
 ::::
 
+<!-- 371 and 810 are 820 and 1788 — the two files' own pixel widths — at one
+     common scale factor, so the pair fills the row and still shows the two
+     figures at their true size relative to each other. -->
 :::: {.media-row}
 ::: {.media-label}
 Image 2:
 :::
 ::: {.media-items}
-![](attach/slide-fld/shadow-labeled.png){width="230px"} ![](attach/slide-m1-quokka/shadow-quokka.png){width="230px"}
+![](attach/slide-fld/shadow-labeled.png){width="371px"} ![](attach/slide-m1-quokka/shadow-quokka.png){width="810px"}
 :::
 ::::
 
 ::: {.caption-line}
-Give each image a width or a height, never both: two dimensions crop the figure
-instead of fitting it, and `make check` fails the deck if the drawn shape and
-the file's own shape disagree by more than 2%.
+A width or a height, never both — `make check` fails any figure drawn more than
+2% off its file's own shape.
 :::
 
 ## Figure beside text
@@ -366,7 +368,7 @@ never collides with it.
 Exact Eddington tensor:
 :::
 ::: {.media-items}
-![](attach/slide-fld/shadow-labeled.png){height="98px"} ![](attach/slide-fld/shadow-labeled.png){height="98px"} ![](attach/slide-fld/shadow-labeled.png){height="98px"}
+![](attach/slide-fld/shadow-labeled.png){width="334px"} ![](attach/slide-fld/shadow-labeled.png){width="334px"} ![](attach/slide-fld/shadow-labeled.png){width="334px"}
 :::
 ::::
 
@@ -375,7 +377,7 @@ Exact Eddington tensor:
 M1 closure:
 :::
 ::: {.media-items}
-![](attach/slide-fld/shadow-labeled.png){height="98px"} ![](attach/slide-fld/shadow-labeled.png){height="98px"} ![](attach/slide-fld/shadow-labeled.png){height="98px"}
+![](attach/slide-fld/shadow-labeled.png){width="334px"} ![](attach/slide-fld/shadow-labeled.png){width="334px"} ![](attach/slide-fld/shadow-labeled.png){width="334px"}
 :::
 ::::
 
@@ -384,17 +386,16 @@ M1 closure:
 FLD:
 :::
 ::: {.media-items}
-![](attach/slide-fld/shadow-labeled.png){height="98px"} ![](attach/slide-fld/shadow-labeled.png){height="98px"} ![](attach/slide-fld/shadow-labeled.png){height="98px"}
+![](attach/slide-fld/shadow-labeled.png){width="334px"} ![](attach/slide-fld/shadow-labeled.png){width="334px"} ![](attach/slide-fld/shadow-labeled.png){width="334px"}
 :::
 ::::
 
 :::::::
 
 ::: {.caption-line}
-Time evolution under three radiation transport methods. A grid here is three
-`.media-row`s, not a table, so every panel keeps its own aspect ratio. Each row
-sizes its own label column, so the wrapper sets `--label-width` once to line
-them up.
+Time evolution under three radiation transport methods. Three `.media-row`s, not
+a table: every panel keeps its own aspect ratio, and the wrapper sets
+`--label-width` once to line the labels up.
 :::
 
 ## Anywhere on the slide
