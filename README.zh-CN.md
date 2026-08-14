@@ -16,36 +16,53 @@ Keynote 和 PowerPoint 用起来很快，直到你想让大模型帮忙的那一
 
 ## 快速开始
 
+两种用法。做出来是同一份幻灯片——都是你能打开、能读、能自己改的文本文件。
+
+### 手动
+
 ```bash
+brew install typst                                  # 其他系统见 typst.app
 git clone https://github.com/chongchonghe/huandeng.git
 cd huandeng
-cp -r template talks/2027-my-talk          # 复制模板，不要直接改 template/
+cp -r template talks/my-talk                        # 你自己的副本，别动 template/
+cd talks/my-talk
+make
 ```
 
-然后编辑 `content.typ`。只装 Typst 就能出 PDF：
+这会生成 `out/my-talk.pdf`。打开看看：一份可以直接上台的幻灯片。接下来编辑 `content.typ`，再跑一次 `make`，它就是你的了。
+
+日常只需要 `make` 这一个命令。另外三个按需使用：
+
+| | |
+| --- | --- |
+| `make` | 出 PDF |
+| `make watch` | 每次保存自动重新编译，可以把 PDF 开在文本旁边 |
+| `make check` | 编译，然后确认没有幻灯片悄悄溢出 |
+| `make all` | 同时生成 HTML 页面和 PowerPoint 文件 |
+
+**`make` 实际执行的**就是一行：
 
 ```bash
-brew install typst                          # 或者：cargo install typst-cli
-cd talks/2027-my-talk
-typst compile --font-path fonts main.typ out/talk.pdf
+typst compile --font-path fonts main.typ out/my-talk.pdf
 ```
 
-这就是你上台要用的那个格式的全部流程。每份幻灯片都自带一个 Makefile，在幻灯片目录里：
+你想自己敲这行也完全可以，没有任何东西被藏起来。用 `make` 的理由只有 `--font-path fonts`：漏掉它，Typst 会悄悄换一套字体、把整份幻灯片重新排版一遍。`make` 不会忘。
 
-```bash
-make          # 出 PDF，只用 Typst——写稿时的快速循环
-make watch    # 同上，每次保存自动重新编译
-make check    # 编译并检查：有没有幻灯片被悄悄拆成了两页？
-make all      # PDF、HTML、PPTX 一起出
-```
+`make` 和 `make watch` 只需要 Typst；`make check` 和 `make all` 还需要 Python，见[需要装什么](#需要装什么)。
 
-`make` 和 `make watch` 只需要 Typst，所以幻灯片复制到任何地方都还能用。另外两个会调用共享工具，你也可以在仓库根目录直接对任意一份幻灯片运行：
+### 用大模型
 
-```bash
-uv run python tools/build-slides.py talks/2027-my-talk          # 三种格式一起出
-uv run python tools/build-slides.py talks/2027-my-talk --check  # 检查有没有内容溢出
-make check                                                      # 或者：一次检查所有幻灯片
-```
+用 [Claude Code](https://claude.com/claude-code) 或 Codex 打开这个文件夹，直接用大白话说你要什么。`.agents/skills/` 里的技能已经告诉它这个仓库怎么用了，你不需要解释。
+
+> 把 `~/Desktop/group-meeting.pptx` 转成 `talks/` 下面的一份新幻灯片。
+
+> 写一份关于开尔文-亥姆霍兹不稳定性的幻灯片，图用 `~/figs/` 里的，内容参考 `notes.md`。
+
+> 第 12 页太挤了，在不缩小字号的前提下改一下。
+
+它会自己跑 `make check`，所以万一它把某一页写溢出了，那是它要修的报错，而不是你上台才发现的意外。
+
+你随时可以接管。它写出来的和你自己会写的是同样的纯文本、同样的文件，任何时候开一个 `make watch` 就能自己接着改。
 
 `demo/` 里把所有功能都跑了一遍，细节看 [`demo/README.md`](demo/README.md)。
 

@@ -16,36 +16,53 @@ That last point is the design goal. **Every part of a deck here is text you can 
 
 ## Quick start
 
+Two ways in. They are the same deck either way — files you can open, read and edit yourself.
+
+### By hand
+
 ```bash
+brew install typst                                  # or see typst.app for your system
 git clone https://github.com/chongchonghe/huandeng.git
 cd huandeng
-cp -r template talks/2027-my-talk          # copy it; never edit template/ in place
+cp -r template talks/my-talk                        # your copy — leave template/ alone
+cd talks/my-talk
+make
 ```
 
-Edit `content.typ`. Build the PDF with nothing but Typst:
+That writes `out/my-talk.pdf`. Open it: a finished deck, ready to present. Now edit `content.typ`, run `make` again, and it is your deck.
+
+`make` is the only command you need day to day. Three others when you want them:
+
+| | |
+| --- | --- |
+| `make` | build the PDF |
+| `make watch` | rebuild every time you save, so you can leave the PDF open beside the text |
+| `make check` | build, then confirm nothing quietly overflowed a slide |
+| `make all` | also write an HTML page and a PowerPoint file |
+
+**What `make` actually runs** is one line:
 
 ```bash
-brew install typst                          # or: cargo install typst-cli
-cd talks/2027-my-talk
-typst compile --font-path fonts main.typ out/talk.pdf
+typst compile --font-path fonts main.typ out/my-talk.pdf
 ```
 
-That is the whole pipeline for the format you present from. Every deck ships a Makefile, so from inside one:
+Type that yourself if you prefer — nothing is hidden. The reason to use `make` is `--font-path fonts`: leave it off and Typst quietly swaps in a different font and re-flows the whole deck. `make` cannot forget it.
 
-```bash
-make          # the PDF, Typst only — the fast loop while writing
-make watch    # the same, recompiled on every save
-make check    # build and verify: did a slide silently spill onto a second page?
-make all      # PDF, HTML and PPTX
-```
+`make` and `make watch` need only Typst. `make check` and `make all` also need Python — see [Requirements](#requirements).
 
-`make` and `make watch` need nothing but Typst, so they keep working in a deck copied anywhere. The other two call the shared tool, which you can also run directly on any deck from the repo root:
+### By LLM
 
-```bash
-uv run python tools/build-slides.py talks/2027-my-talk          # all three formats
-uv run python tools/build-slides.py talks/2027-my-talk --check  # verify nothing spilled
-make check                                                      # or: verify every deck at once
-```
+Open the folder in [Claude Code](https://claude.com/claude-code) or Codex and ask for what you want, in plain words. The skills in `.agents/skills/` already tell it how this repo works, so you do not have to explain any of it.
+
+> Convert my slides in `~/Desktop/group-meeting.pptx` into a new deck under `talks/`.
+
+> Write a deck about the Kelvin–Helmholtz instability, using the figures in `~/figs/` and the notes in `notes.md`.
+
+> Slide 12 is too crowded. Fix it without making the text smaller.
+
+It runs `make check` on its own work, so a slide it accidentally overflowed comes back to it as an error to fix, rather than to you as a surprise on stage.
+
+You are not locked in. Everything it writes is the same plain text you would have written, in the same files, and you can take over with `make watch` at any point.
 
 Read `demo/` for every feature working at once, and [`demo/README.md`](demo/README.md) for the detail.
 
