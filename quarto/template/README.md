@@ -14,6 +14,7 @@ make preview
 | `_quarto.yml` | slide size, theme, and every deck-wide option |
 | `theme.scss` | the look: colours, type, the layout classes |
 | `fonts.html` | ships Fira Sans with the deck; see the note inside |
+| `guides.html` | the **X** key: draws the 1280 × 720 slide boundary while you write |
 | `attach/` | images and video, referenced as `attach/foo.png` |
 | `fonts/` | Fira Sans, so the deck renders the same anywhere |
 | `ref.bib` | citations, if the talk has any |
@@ -53,4 +54,4 @@ Reveal.js brings `.incremental`, `.fragment`, `.absolute`, `.r-stack` and `{back
 
 ## One rule
 
-After any slide edit, run `make check`. A reveal.js slide that holds too much does not error and does not shrink — the surplus hangs off the bottom edge, where your browser window is tall enough to hide it and the projector is not.
+After any slide edit, run `make check`. A reveal.js slide that holds too much does not error and does not shrink — the surplus hangs into the margin and is then cut off by the window edge, and a 16:10 laptop shows about 57 slide-px of it where a 16:9 projector shows 15. So a slide can look merely tight while you write it and be cut on stage. Press **X** to see the boundary while you work.

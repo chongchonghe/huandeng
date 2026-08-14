@@ -36,10 +36,13 @@ These fail without an error, so they cannot be left to a lookup:
    - *Typst*: an overflowing slide is quietly broken across two pages. `--check` counts the pages
      the source should produce, compares with the built PDF, and names the slide that spilled.
      From the root: `uv run python tools/build-slides.py <deck> --check`.
-   - *Quarto*: an over-full reveal.js slide neither errors nor shrinks — the surplus hangs off the
-     bottom edge, which a tall browser window hides and a projector does not, and a `.media-items`
-     row runs off the right with no visual cue at all. `--check` walks the built deck in a headless
-     browser and reports content past any edge. From the root:
+   - *Quarto*: an over-full reveal.js slide neither errors nor shrinks — the surplus hangs into the
+     margin around the 1280x720 slide box and is then cut by the window edge, and a 16:10 laptop
+     shows about 57 slide-px of that where a 16:9 projector shows 15, so it can look merely tight
+     while you write it and be cut on stage. Printed, it splits across two PDF pages. A
+     `.media-items` row runs off the right with no visual cue at all. `--check` walks the built deck
+     in a headless browser and reports content past any edge; press **X** in the deck to see the
+     boundary. From the root:
      `uv run --extra quarto python quarto/tools/build-slides.py <deck> --check`.
 2. **Each flavour has a font trap, and both are silent.**
    - *Typst*: `typst compile` needs `--font-path fonts`. Without it the deck still compiles, falls

@@ -53,7 +53,8 @@ If you are writing a conference talk with three simulation movies in it, this fl
 | --- | --- |
 | **One source, four outputs** | HTML, a single self-contained HTML, PDF and PPTX — from the same `talk.qmd` |
 | **Video that needs no pipeline** | an `.mp4` in `attach/` and one `<video>` tag; reveal starts it on the slide and rewinds it on the way out |
-| **A checker for silent failures** | a reveal.js slide that holds too much does not error and does not shrink — it hangs off the edge. `make check` catches that, catches figures drawn at the wrong aspect ratio, and catches images that never loaded |
+| **A checker for silent failures** | a reveal.js slide that holds too much does not error and does not shrink — it hangs off the edge, and how much of that the room sees depends on the screen's aspect ratio. `make check` catches it, catches figures drawn at the wrong aspect ratio, and catches images that never loaded |
+| **A visible slide boundary** | every slide is laid out in exactly 1280 &times; 720 and scaled to the screen; press **X** to draw that box while you write. See [Slide geometry](demo/README.md#slide-geometry) |
 | **Figures with academic credits** | `::: {.fig}` puts the credit against the figure's own edge, not the slide's |
 | **Agent skills** | `quarto-deck` for authoring; `slide-deck` and `pptx-to-typst` remain for the Typst flavour |
 | **Decks that do not rot** | every deck owns its copies of the theme, the fonts and the assets, so it still renders years later, moved anywhere |

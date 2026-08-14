@@ -30,8 +30,11 @@ title-slide-attributes:
 format:
   revealjs:
     theme: [default, theme.scss]
-    # The deck's own copy of Fira Sans. See the comment inside the file.
-    include-in-header: fonts.html
+    include-in-header:
+      # The deck's own copy of Fira Sans, and the layout guides on X.
+      # See the comment at the top of each file.
+      - fonts.html
+      - guides.html
     width: 1280
     height: 720
     margin: 0.04

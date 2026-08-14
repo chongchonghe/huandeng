@@ -26,6 +26,7 @@ A deck is five things and contains no build logic:
 | `_quarto.yml` | slide size, slide level, theme, title-slide background |
 | `theme.scss` | the look, and every class below |
 | `fonts.html` | seven `@font-face` rules, injected into `<head>` |
+| `guides.html` | the **X** key: draws the 1280x720 slide boundary while you write |
 | `attach/` | images and video, referenced as `attach/foo.png` |
 
 Plus `fonts/`, `ref.bib` and a `Makefile`. **Each deck owns its own copies** — a deck copied from an
@@ -137,11 +138,16 @@ rescue: what does not fit hangs off the edge.
 
 ## Traps
 
-- **Overflow is silent and invisible where you are looking.** A slide that holds too much does not
-  error and does not shrink — the surplus hangs below the bottom edge, which a tall browser window
-  hides and a projector does not. Sideways is worse: `.media-items` is `flex-wrap: nowrap`, so one
-  image too many slides off the right with no visual cue at all. `make check` walks the built deck
-  slide by slide in a headless browser and reports both. Run it after any slide edit.
+- **Overflow is silent, and what you see is not what the room sees.** A slide that holds too much
+  does not error and does not shrink. Every slide is laid out in a box of exactly 1280x720, scaled
+  uniformly to the screen; content past that box hangs into the small margin reveal keeps around it
+  and is then cut by the window edge. A 16:10 laptop window leaves about 57 slide-px of that margin
+  showing, a 16:9 projector only 15 — so a slide can look merely tight while you write it and be cut
+  on stage. Printed, it splits across two PDF pages instead, title on one and body on the next.
+  Sideways is worse: `.media-items` is `flex-wrap: nowrap`, so one image too many slides off the
+  right with no visual cue at all. `make check` walks the built deck in a headless browser and
+  reports all of it; press **X** to see the boundary while you write. Run `make check` after any
+  slide edit.
 - **A stretched figure is a wrong figure, and nothing errors.** Give an image a width *or* a height,
   never both. `make check` compares every drawn image and video against its own pixel dimensions and
   fails past 2%.

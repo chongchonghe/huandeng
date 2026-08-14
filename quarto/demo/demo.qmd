@@ -622,7 +622,8 @@ slide in the deck.
 **Presenting**
 
 - **S** speaker view · **F** fullscreen · **O** overview
-- **B** blank the screen · **M** menu · `?` all keys
+- **B** blank · **G** jump to slide · **M** menu · `?` keys
+- **X** the 1280 &times; 720 boundary, while you write
 - `#/7` in the URL jumps to slide 7
 :::
 

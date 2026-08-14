@@ -125,11 +125,54 @@ uv run --extra quarto python quarto/tools/build-slides.py quarto/demo --check
 
 `--pdf`, `--png` and `--check` drive a headless Chromium through Playwright, because a browser has to lay the slides out before there is anything to measure or print. The rest is `quarto render` with different flags, and you can type those yourself.
 
+## Slide geometry
+
+**There is a frame, and it is exactly 1280 × 720.** `width` and `height` in `_quarto.yml` define a fixed coordinate space; reveal lays every slide out in that box and then scales the whole box uniformly to fit the window. That is the determinism guarantee: `{width="385px"}` is 385/1280 of the screen on any display, at any resolution, and nothing re-flows when the window changes size. Press **X** in the deck (or load it with `?guides`) to draw the boundary and a 24 px keep-clear inset.
+
+`margin: 0.04` removes 4% of the window *in total*, 2% a side, before the scale is computed:
+
+```
+scale = min(windowWidth, windowHeight × 16/9) × (1 − margin) / 1280
+```
+
+Measured, on the deck as configured:
+
+| window | scale | slide box | margin below the box |
+| --- | --- | --- | --- |
+| 1920 × 1080 (16:9) | 1.44 | 1843 × 1037 | **15 slide-px** |
+| 2560 × 1440 (16:9) | 1.92 | 2458 × 1382 | **15 slide-px** |
+| 1600 × 1000 (16:10) | 1.20 | 1536 × 864 | **57 slide-px** |
+| 1440 × 900 (16:10) | 1.08 | 1382 × 778 | **57 slide-px** |
+
+The last column is the trap. Reveal does not clip content to the slide box and does not shrink it — the surplus is drawn into that margin and cut off by the window edge. On a 16:9 screen only 15 slide-px of it survive; on the 16:10 laptop you are probably writing on, 57 do. **A slide that looks merely tight while you write it is cut on the projector.** Note also that the numbers depend only on aspect ratio, not resolution: a 4K projector is not more forgiving than a 1080p one.
+
+The footer and the slide number live in that same margin band, below the box, so they never collide with slide content — but on a 16:9 screen they sit within about 15 slide-px of it.
+
+### In the PDF, overflow paginates instead of cutting
+
+Reveal's `?print-pdf` mode wraps each slide in a `.pdf-page` whose height is a whole number of printed pages. A slide that holds too much comes out **two pages tall — the title alone on one page, the body on the next** — which is exactly the silent split the Typst decks get. `--pdf` measures those boxes before printing and names any slide that spills:
+
+```
+wrote out/talk.pdf
+  3 pages for 2 slides:
+    slide 2 (A slide that spills) spills onto 2 pages
+```
+
+The PDF page is 997.92 × 561.12 pt — 16:9 to within a rounding error, one page per slide, so it projects with no letterboxing.
+
+### Guaranteeing what the room sees
+
+- **Run `make check`.** It is the only one of these that does not depend on you noticing.
+- **Write with the guides on** (`X`). The boundary is the thing you cannot otherwise see.
+- **Fonts ship with the deck**, so the metrics that decide where every line breaks cannot change on another machine. That is what `fonts.html` and `fonts/` are for.
+- **Present fullscreen (`F`) on a 16:9 display** and the box maps to the screen exactly. On a 16:10 or 4:3 display reveal letterboxes rather than re-flowing — the slide is smaller, never different.
+- **If you want no browser in the loop at all, present `out/<deck>.pdf`.** It is one page per slide at 16:9, and `--pdf` has already confirmed no slide split.
+
 ## What `make check` looks for
 
 Run it after any slide edit. It walks the built deck one slide at a time and reports:
 
-- **Content past any edge of the slide.** The failure this exists for: a reveal.js slide that holds too much does not error and does not shrink. The surplus simply hangs below the bottom edge, invisible in a tall browser window and plainly visible on a projector. Sideways is worse — a `.media-items` row is `flex-wrap: nowrap`, so one image too many silently slides off the right.
+- **Content past any edge of the slide.** The failure this exists for: a reveal.js slide that holds too much does not error and does not shrink. The surplus hangs into the margin and is then cut by the window edge, and how much survives depends on the window's aspect ratio — see [Slide geometry](#slide-geometry). Sideways is worse: a `.media-items` row is `flex-wrap: nowrap`, so one image too many silently slides off the right.
 - **Figures drawn at the wrong aspect ratio**, past 2%. Give an image a width *or* a height, never both.
 - **Images that did not load** — a typo in a path is otherwise a blank rectangle you may not notice until the room does.
 - **The slide count**, against `--expect N` if you pin one.

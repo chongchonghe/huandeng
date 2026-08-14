@@ -667,6 +667,38 @@ mjx-container:not([display]) {
   text-align: center;
 }
 
+/* --------------------------------------------------------------- guides -- */
+
+/* Press X, or load the deck with ?guides in the URL. See guides.html.
+
+   The solid line is the hard boundary: the box every slide is laid out in, and
+   the edge past which content is cut by the window rather than shrunk. The
+   dashed line is a keep-clear inset — content that kisses the edge reads as a
+   mistake even when it technically fits. */
+[data-guides] .reveal .slides {
+  outline: 2px solid #ff2fd0;
+}
+
+[data-guides] .reveal .slides::after {
+  border: 1px dashed rgba(255, 47, 208, 0.5);
+  content: "";
+  inset: 24px;
+  pointer-events: none;
+  position: absolute;
+}
+
+[data-guides] .reveal .slides::before {
+  color: #ff2fd0;
+  content: var(--guide-label, "guides");
+  font-size: 12px;
+  font-weight: 600;
+  left: 0;
+  letter-spacing: 0.04em;
+  pointer-events: none;
+  position: absolute;
+  top: -16px;
+}
+
 /* ----------------------------------------------------------- references -- */
 
 #refs {

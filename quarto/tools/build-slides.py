@@ -15,11 +15,15 @@ Chromium through Playwright, because they need a browser to have laid the slides
 out before there is anything to measure or print.
 
 `--check` is the reason this file exists. A reveal.js slide that holds too much
-does not error and does not shrink: the surplus simply hangs off the bottom
-edge, where it is invisible in the browser you wrote it in and plainly visible
-on the projector. The same goes for a figure given both a width and a height,
-which silently changes the aspect ratio of a scientific plot. Both are caught
-here by asking the browser where things actually landed.
+does not error and does not shrink: the surplus hangs into the thin margin
+reveal keeps around the slide box and is then cut off by the window edge. How
+much survives depends on the window's aspect ratio — a 16:10 laptop shows about
+57 slide-px of it, a 16:9 projector only 15 — so a slide can look merely tight
+while you write it and be cut on stage. Printed, the same slide splits across
+two PDF pages instead, title on one and body on the next. The same goes for a
+figure given both a width and a height, which silently changes the aspect ratio
+of a scientific plot. All of it is caught here by asking the browser where
+things actually landed.
 """
 
 from __future__ import annotations
@@ -329,6 +333,28 @@ def check(deck: Deck, expect: int | None) -> int:
 # ------------------------------------------------------------ pdf and png --
 
 
+# Reveal's print layout wraps each slide in a `.pdf-page` whose height is a
+# whole number of printed pages. A slide that holds too much comes out two pages
+# tall — the title alone on one page and the body on the next — which is the
+# same silent split the Typst decks get, and the same thing a page count catches.
+PAGINATION_JS = r"""
+() => {
+  const pages = Array.from(document.querySelectorAll('.pdf-page'));
+  const unit = Math.min(...pages.map(p => p.getBoundingClientRect().height));
+  return {
+    total: pages.length,
+    split: pages.map((p, i) => {
+      const n = Math.round(p.getBoundingClientRect().height / unit);
+      const h = p.querySelector('h1, h2, h3');
+      return n > 1
+        ? { i: i + 1, pages: n, title: h ? h.textContent.trim() : '(no heading)' }
+        : null;
+    }).filter(Boolean),
+  };
+}
+"""
+
+
 def build_pdf(deck: Deck) -> Path:
     """Print through reveal's own `?print-pdf` layout.
 
@@ -346,10 +372,20 @@ def build_pdf(deck: Deck) -> Path:
             content="video::-webkit-media-controls { display: none !important }"
         )
         page.wait_for_timeout(1200)
+        layout = page.evaluate(PAGINATION_JS)
         page.emulate_media(media="print")
         page.pdf(path=str(deck.pdf), prefer_css_page_size=True, print_background=True)
         browser.close()
+
     print(f"wrote {deck.pdf}")
+    if layout["split"]:
+        extra = sum(s["pages"] - 1 for s in layout["split"])
+        print(f"  {layout['total'] + extra} pages for {layout['total']} slides:")
+        for s in layout["split"]:
+            print(f"    slide {s['i']} ({s['title']}) spills onto {s['pages']} pages")
+        print("  run --check to see how far past the edge each one goes")
+    else:
+        print(f"  {layout['total']} pages, one per slide")
     return deck.pdf
 
 
