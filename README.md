@@ -1,10 +1,12 @@
 # 幻灯 Huandeng
 
-**Academic slide decks in plain text — built on [Touying](https://github.com/touying-typ/touying) and [Typst](https://typst.app), with agent skills so an LLM can help without taking the wheel.**
+**Academic slide decks in plain text — built on [Touying](https://github.com/touying-typ/touying) and [Typst](https://typst.app), or on [Quarto](https://quarto.org/) and [reveal.js](https://revealjs.com/), with agent skills so an LLM can help without taking the wheel.**
 
 [中文说明](README.zh-CN.md)
 
 One source file becomes a PDF you present from, an HTML page you can send to anyone, and a PPTX for the conference that insists on it. Videos play in all three. A checker catches the mistakes that would otherwise reach the room.
+
+Two flavours, side by side and equally supported. Everything below is the **Typst** one; the **Quarto + reveal.js** one lives in [`quarto/`](quarto/) and has [its own README](quarto/README.md). They are siblings, not versions — you pick per talk, and [a table](quarto/README.md#which-flavour-should-i-use) says which is easier for what.
 
 幻灯 (huàndēng) is the Chinese word for a slide, from 幻灯片 — literally "magic lantern". Touying (投影) is the projection; huandeng is what gets projected.
 
@@ -82,6 +84,7 @@ Read `demo/` for every feature working at once, and [`demo/README.md`](demo/READ
 Three skills live in `.agents/skills/`, with `.claude/skills` symlinked to it — and `AGENTS.md` is the real instruction file, with `CLAUDE.md` symlinked to that. The agent-neutral name is the canonical one in both cases, so Claude Code and Codex read the same files and any other agent needs at most one more symlink. (On Windows, clone with `git config --global core.symlinks true` set, or those two links arrive as ordinary text files.)
 
 - **`slide-deck`** — how to write slides here: the local helpers that are not part of stock Touying, the house style, and the traps that fail without an error message.
+- **`quarto-deck`** — the same for the Quarto flavour: the local theme classes, and the reveal.js and Quarto traps that fail without an error message.
 - **`pptx-to-typst`** — convert a PowerPoint or Keynote deck you already have. Not a screenshot import: it extracts the media, reads PowerPoint's own crop rectangles so figures come out cropped the way you cropped them, corrects the pixel aspect ratio of videos, and re-typesets the text as real Typst so you can edit it afterwards.
 - **`touying-author`** — the upstream Touying documentation, vendored, so the model does not have to guess at the API.
 
@@ -96,14 +99,17 @@ The reason this combination works is the checker. An assistant editing slides wi
 ## Layout
 
 ```
-tools/build-slides.py   the toolchain — shared by every deck, copied into none
-template/               the starting point. Copy it; never edit it in place.
-demo/                   every feature, working, as a reference deck
-talks/                  yours — gitignored, so your decks stay out of this repo
+tools/build-slides.py   the Typst toolchain — shared by every deck, copied into none
+template/               the Typst starting point. Copy it; never edit it in place.
+demo/                   every Typst feature, working, as a reference deck
+quarto/                 the Quarto + reveal.js flavour: its own tools/, template/, demo/, README
+talks/                  yours, either flavour — gitignored, so your decks stay out of this repo
 .agents/skills/         the agent skills (.claude/skills is a symlink to it)
 ```
 
-A deck is `main.typ` + `globals.typ` + `content.typ` + `attach/`, and contains no build script of its own.
+A Typst deck is `main.typ` + `globals.typ` + `content.typ` + `attach/`, and contains no build script of its own. A Quarto deck is `talk.qmd` + `_quarto.yml` + `theme.scss` + `attach/`, on the same principle.
+
+`make check` at the root verifies every deck of both flavours.
 
 ## A design decision worth knowing about
 
@@ -113,6 +119,6 @@ The cost is real: improving `template/` does not reach a talk you already copied
 
 ## Credits
 
-Built on [Touying](https://github.com/touying-typ/touying) by the touying-typ authors, and [Typst](https://typst.app). Fonts are [Fira Sans](https://github.com/mozilla/Fira) and [Fira Math](https://github.com/firamath/firamath), SIL OFL.
+Built on [Touying](https://github.com/touying-typ/touying) by the touying-typ authors, and [Typst](https://typst.app); the other flavour on [Quarto](https://quarto.org/) and [reveal.js](https://revealjs.com/). Fonts are [Fira Sans](https://github.com/mozilla/Fira) and [Fira Math](https://github.com/firamath/firamath), SIL OFL.
 
 MIT licensed. See [LICENSE](LICENSE).

@@ -1,0 +1,182 @@
+---
+name: quarto-deck
+description: Write or edit slides in this repo's Quarto + reveal.js decks (the quarto/ flavour). Use when adding or changing slides in a .qmd, starting a new Quarto talk, inserting a figure with a source credit, adding video or a GIF, exporting to HTML/PDF/PPTX, or debugging a slide whose content runs off the edge. Covers the repo's own theme classes (fig, credit, media-row, columns-N-M) which are NOT part of stock Quarto.
+---
+
+# Quarto deck
+
+This repo has two flavours. **Typst + Touying** at the root (`template/`, `demo/`) and **Quarto +
+reveal.js** under `quarto/`. They are siblings, not versions: pick per talk, never convert one into
+the other. For the Typst flavour use the **slide-deck** skill instead — nothing below applies to it.
+
+A deck here is Quarto Markdown plus a layer of local CSS classes. Stock Quarto knowledge is
+[online](https://quarto.org/docs/presentations/revealjs/); **this skill covers what is local and
+therefore unguessable.**
+
+Authoritative source is always the code: `quarto/template/theme.scss` defines every class below.
+Read it rather than trusting this summary if the two disagree.
+
+## Structure
+
+A deck is five things and contains no build logic:
+
+| | |
+| --- | --- |
+| `talk.qmd` | the slides — normally the only file you touch |
+| `_quarto.yml` | slide size, slide level, theme, title-slide background |
+| `theme.scss` | the look, and every class below |
+| `fonts.html` | seven `@font-face` rules, injected into `<head>` |
+| `attach/` | images and video, referenced as `attach/foo.png` |
+
+Plus `fonts/`, `ref.bib` and a `Makefile`. **Each deck owns its own copies** — a deck copied from an
+older template may not have a class you expect. Check that deck's `theme.scss` before using
+anything.
+
+## Local classes
+
+```markdown
+<!-- Figure with an academic source credit. `.fig` shrink-wraps the image, so the
+     credit lines up with the FIGURE's right edge, not the slide's.
+     `.caption` goes ABOVE — house default. `.below` is the exception. -->
+::: {.fig}
+[What it shows]{.caption}
+
+![](attach/x.png){width="420px"}
+
+[He et al. 2025]{.credit}
+
+[After 10 Myr]{.below}
+:::
+
+<!-- Columns. Also -1-1, -2-1, -1-2, -2-3, -1-1-1. -->
+:::: {.columns-3-2}
+::: {.column}
+left
+:::
+::: {.column}
+right
+:::
+::::
+
+<!-- A labelled strip of images on one line. -->
+:::: {.media-row}
+::: {.media-label}
+FLD:
+:::
+::: {.media-items}
+![](attach/a.png){height="98px"} ![](attach/b.png){height="98px"}
+:::
+::::
+
+::: {.highlight}     <!-- the one sentence the slide is about -->
+::: {.caption-line}  <!-- a caption for something .fig does not wrap -->
+::: {.video-pair}    <!-- two clips, style="flex: <pixel width>" on each -->
+[..]{.alert} [..]{.small} [..]{.tiny} [..]{.muted}
+## Thanks! {.focus .center background-color="#0a6ebd"}
+```
+
+**Size images inside `.fig` in `px` or `pt`, never `%`** — `.fig` is `width: fit-content`, so a
+percentage inside it has nothing to resolve against.
+
+Reveal's own `.incremental`, `.fragment`, `.absolute`, `.r-stack`, `.r-stretch`, `. . .`,
+`{background-color=".."}` and `{auto-animate="true"}` all work on top of these.
+
+## Workflows
+
+**New talk** — `cp -r quarto/template talks/2027-my-talk`, then edit `talk.qmd`. Fill in the YAML
+block first: title, author, institute, and `footer`, which is the only place the short forms appear.
+
+**Write and look** — `make preview` from the deck. Quarto serves it and reloads on every save.
+
+**Add video** — drop the `.mp4` in `attach/` and write the tag. There is no pipeline and no frame
+extraction; that machinery belongs to the Typst flavour, which needs it because PDF has no video.
+
+```html
+<video class="r-stretch video-center" src="attach/clip.mp4"
+       controls data-autoplay muted loop></video>
+```
+
+`r-stretch` must be the **last element on the slide** and must not be wrapped in a div — wrapping
+breaks its sizing. For a video beside text, drop `r-stretch` and give it an explicit height.
+
+**Build and export** — every deck has a `Makefile`: `make` for the HTML (Quarto only, no Python),
+`make preview`, `make check`, `make png`, `make all` for HTML + PDF + PPTX, `make standalone` for
+one self-contained file. From the repo root instead:
+`uv run --extra quarto python quarto/tools/build-slides.py <deck> [--check|--pdf|--png|--pptx|--standalone]`,
+and `make check` at the root verifies both flavours at once.
+
+**Convert a PowerPoint or Keynote deck** — there is no Quarto-specific importer. Use
+**pptx-to-typst** to extract the media correctly (it reads PowerPoint's own crop rectangles and
+corrects video pixel aspect ratio), then re-typeset the text as Markdown rather than Typst.
+
+## House style
+
+The **quarto-revealjs-styles** skill, if installed, carries the author's slide-writing style —
+terse bullets, narrative in `::: notes`, readable equations. It applies here unchanged. The
+figure-specific rules from the Typst flavour also carry over, because they are about slides, not
+about Typst:
+
+- **Figures are drawn too small by default.** A figure is the content of a slide, not an
+  illustration beside it. Start near the width the slide allows and come down only if something
+  collides.
+- **Captions go above the figure**; provenance goes in `.credit`; a statement about the whole slide
+  goes in the slide body, not in a caption.
+- **Align figures on their tops**, not their centres — `.media-row` and `.columns-*` already do.
+- **Left-align prose and panel labels.** Centre titles and figures, not sentences.
+- **Shrinking text is the last lever, not the first.** Fix the layout — two columns instead of two
+  rows, a shorter sentence, one less bullet — before reaching for `.small`.
+
+## Fixing what does not fit
+
+Change the slide before the theme. A `.small` on that one block, a narrower figure, less text — all
+in the `.qmd`. Touch `theme.scss` or `_quarto.yml` only if the default is wrong for *any* deck, or
+if you would otherwise repeat the same fix on slide after slide.
+
+Reveal.js does **not** shrink an over-full slide, and `auto-stretch` is off. There is no automatic
+rescue: what does not fit hangs off the edge.
+
+## Traps
+
+- **Overflow is silent and invisible where you are looking.** A slide that holds too much does not
+  error and does not shrink — the surplus hangs below the bottom edge, which a tall browser window
+  hides and a projector does not. Sideways is worse: `.media-items` is `flex-wrap: nowrap`, so one
+  image too many slides off the right with no visual cue at all. `make check` walks the built deck
+  slide by slide in a headless browser and reports both. Run it after any slide edit.
+- **A stretched figure is a wrong figure, and nothing errors.** Give an image a width *or* a height,
+  never both. `make check` compares every drawn image and video against its own pixel dimensions and
+  fails past 2%.
+- **reveal caps every image at 95% of its container.** Inside a shrink-to-fit container — an
+  `.r-stack` grid cell, a flex item, a `.fig` — the container is already the image's own width, so
+  the cap squeezes the width by 5% while an explicit `height` holds firm, and the figure comes out
+  stretched. `theme.scss` raises the cap to 100%; a deck copied from an older template may not have
+  that fix.
+- **Slide backgrounds must be attributes, not CSS.** reveal paints them on a layer of its own,
+  behind and outside the 4% margin, so `background:` in `theme.scss` stops at the margin and leaves
+  a white frame. Use `{background-color="#0a6ebd"}` on the heading, or `title-slide-attributes:` in
+  `_quarto.yml` for the title slide.
+- **`quarto render` renders nothing** in a project unless `project.render` lists the inputs.
+  `render: ["*.qmd"]` is what makes `output-dir: out` take effect; rendering a single file by name
+  ignores `output-dir` and writes beside the source.
+- **A relative font URL in `theme.scss` cannot work.** Quarto compiles the theme into
+  `<deck>_files/libs/revealjs/dist/theme/`, five levels deep, and `url()` resolves against the
+  stylesheet, not the document. Hence `fonts.html` and `include-in-header`. Move those rules into
+  the SCSS and the deck silently falls back to another typeface and re-flows every line.
+- **`\color{red}{..}`, never `\textcolor`.** The web maths renderer does not define the latter and
+  prints it as literal red error text.
+- **`\class{fragment}{..}`** builds an equation up one term per keypress. Unlike Typst's `#pause` it
+  costs no page — the whole equation stays one slide.
+- **Maths comes from a CDN** in a normal render. `make standalone` inlines it with everything else;
+  that is the build to hand to someone who may be offline.
+- **PPTX is Pandoc's re-flow of the Markdown**, not the deck. Columns, fragments and the theme do
+  not survive. It is a delivery format, not a source format.
+- **`.qmd` YAML and `_quarto.yml` merge**, with the `.qmd` winning. Deck-wide options belong in
+  `_quarto.yml`; only this talk's identity — title, author, date, footer — belongs in the `.qmd`.
+- **`---` in a `.qmd` starts a new slide**, exactly as in the Typst flavour a bare `---` starts a
+  new page. Do not write an em dash as `---` in prose.
+- **`make check` needs Chromium**: `uv sync --extra quarto && uv run --extra quarto playwright
+  install chromium`. `make` and `make preview` need only Quarto.
+
+## Verifying
+
+`make png` writes one PNG per slide to `out/png/`, and **look at them**. A clean render says nothing
+about whether a slide is legible or whether content spilled off the edge.

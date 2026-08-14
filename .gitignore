@@ -15,6 +15,16 @@ out/
 /template/*.pdf
 /demo/*.pdf
 
+# Quarto's own cache, and a stray in-place render: `quarto render <file>` writes
+# beside the source and ignores output-dir, where a bare `quarto render` does not.
+# fonts.html is source, not output — it is the deck's @font-face rules.
+.quarto/
+/quarto/*/*.html
+!/quarto/*/fonts.html
+/quarto/*/*.pdf
+/quarto/*/*.pptx
+/quarto/*/*_files/
+
 # Your own decks. The folder is tracked so it is there after a clone; everything
 # you put in it is not, so your talks never become part of this repository and
 # `git pull` never conflicts with your work.

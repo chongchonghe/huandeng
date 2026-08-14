@@ -1,0 +1,62 @@
+---
+title: "Your talk title"
+subtitle: "A subtitle, if the title needs one"
+author: "Your Name"
+institute: "Your Institute"
+date: last-modified
+date-format: "D MMM YYYY"
+bibliography: ref.bib
+format:
+  revealjs:
+    footer: "Your Name (Your Institute) &nbsp;·&nbsp; Short talk title"
+---
+
+# Getting started
+
+## The rules of the file
+
+- **New section** — a `#` heading, which becomes a divider slide
+- **New slide** — a `##` heading
+- **Another slide, same title** — a bare `---`
+- **Reveal step by step** — `. . .`, or a `::: {.fragment}` block
+- **Deck-wide options** — `_quarto.yml`; this talk's title and footer, the block above
+
+::: {.highlight}
+Edit this file, run `make`, and it is your deck.
+:::
+
+::: notes
+Speaker notes live in a `::: notes` block. Press **S** during the talk to open
+the presenter window, which shows them beside a timer and the next slide.
+:::
+
+## A slide with two columns
+
+:::: {.columns-3-2}
+
+::: {.column}
+Text on the left.
+
+- A point
+- Another point
+
+$$ E = m c^2 $$
+:::
+
+::: {.column}
+::: {.fig}
+![](attach/placeholder.png){width="380px"}
+
+[Your Name 2026]{.credit}
+:::
+:::
+
+::::
+
+# Wrapping up
+
+## Thanks! {.focus .center background-color="#0a6ebd"}
+
+Questions? Comments?
+
+your.email\@university.edu

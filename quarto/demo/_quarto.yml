@@ -1,0 +1,56 @@
+# Deck configuration. This is the analogue of `main.typ` in the Typst decks:
+# every option that shapes the whole deck lives here, and the slides live in the
+# .qmd next to it. A talk's own title, author, date and footer stay in the .qmd,
+# because that is where Quarto expects a document's identity to live.
+#
+# Everything this deck needs is inside this folder — theme, fonts, assets — so
+# the folder can be copied anywhere and still render the same way.
+
+project:
+  type: default
+  output-dir: out
+  # Quarto only auto-discovers inputs when it is told which ones to look at.
+  render:
+    - "*.qmd"
+  # Copied next to the rendered HTML whether or not a slide happens to reference
+  # them. `fonts/` is only ever reached from theme.scss, which Quarto does not
+  # scan, so it would otherwise be left behind and the deck would fall back to a
+  # different typeface on any machine without Fira Sans installed.
+  resources:
+    - fonts/
+    - attach/
+
+# The title slide's background. It has to be set here rather than in theme.scss:
+# reveal paints slide backgrounds on a layer of its own, behind and outside the
+# 4% margin, and CSS on the <section> only ever reaches inside that margin. Any
+# slide can do the same with `## Title {background-color="#0a6ebd"}`.
+title-slide-attributes:
+  data-background-gradient: "linear-gradient(135deg, #072f4f 0%, #0a6ebd 65%, #2e97db 100%)"
+
+format:
+  revealjs:
+    theme: [default, theme.scss]
+    # The deck's own copy of Fira Sans. See the comment inside the file.
+    include-in-header: fonts.html
+    width: 1280
+    height: 720
+    margin: 0.04
+    # `=` in Typst, `#` here: a level-1 heading starts a section, a level-2
+    # heading starts a slide.
+    slide-level: 2
+    center: false
+    auto-stretch: false
+    slide-number: c/t
+    progress: true
+    history: true
+    hash-type: number
+    transition: none
+    highlight-style: github
+    # Line numbers only on the blocks that ask for them with
+    # `{.python code-line-numbers="1-2|4"}`, not on every listing.
+    code-line-numbers: false
+    fig-align: center
+    # How many slides ahead reveal builds; 3 is enough for the presenter view's
+    # next-slide pane without loading every video at once.
+    view-distance: 3
+    lang: en

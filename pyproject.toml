@@ -7,3 +7,14 @@ dependencies = [
     "python-pptx>=1.0.2",
     "typst>=0.15.0",
 ]
+
+# Only the Quarto decks need a browser, and only for `--check`, `--pdf` and
+# `--png`. Keeping it out of the base dependencies means a Typst-only checkout
+# never downloads Chromium.
+#
+#   uv sync --extra quarto
+#   uv run --extra quarto playwright install chromium
+[project.optional-dependencies]
+quarto = [
+    "playwright>=1.49.0",
+]

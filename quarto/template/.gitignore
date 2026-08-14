@@ -1,0 +1,5 @@
+# Travels with the deck, so a folder copied out of huandeng and given its own
+# repository still ignores the right things.
+/.quarto/
+/out/
+**/*.quarto_ipynb
