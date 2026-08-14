@@ -417,17 +417,12 @@ def build_html(deck: Deck, embed_video: bool = True, frames: bool = False) -> Pa
     # tracks the SVG however the browser scales it.
     page_w, page_h = svg_page_size(pages[0])
 
-    uid = 0
     slides = []
     for i, svg in enumerate(pages):
-        parts = []
-        for rect in rects.get(i + 1, []):
-            if frames:
-                uid += 1
-                parts.append(frames_tag(deck, rect, page_w, page_h, embed_video, uid))
-            else:
-                parts.append(video_tag(deck, rect, page_w, page_h, embed_video))
-        overlays = "".join(parts)
+        render = frames_tag if frames else video_tag
+        overlays = "".join(
+            render(deck, rect, page_w, page_h, embed_video) for rect in rects.get(i + 1, [])
+        )
         slides.append(
             f'<section class="slide" id="slide-{i + 1}"><div class="stage">'
             + namespace_svg_ids(svg, i + 1).decode("utf-8")
@@ -478,21 +473,24 @@ def parse_fps(value) -> float:
         return 12.0
 
 
-def frames_tag(deck: Deck, rect: dict, page_w: float, page_h: float, embed: bool, uid: int) -> str:
+def frames_tag(deck: Deck, rect: dict, page_w: float, page_h: float, embed: bool) -> str:
     """The same sequence as a flip-book of `<img>`s instead of a `<video>`.
 
-    Every frame is stacked in the overlay and exactly one is opaque at a time, stepped by a
-    generated `@keyframes` rule — so the animation is pure CSS with no player, no codec and no
-    ffmpeg. It starts paused and answers the slide's first `space`, the same as a <video>.
-    The trade is weight: N PNGs embed larger than one mp4.
+    Every frame is stacked in the overlay, and each one latches to opaque at its own moment and
+    stays there. Because they are stacked in order, the frame you see is simply the last one to
+    have latched — so the sequence runs forward as time passes and then *holds* on the final
+    frame, with no loop to stop. Pure CSS: no player, no codec, no ffmpeg. It starts paused and
+    answers the slide's first `space`, the same as a <video>.
+
+    Only the per-frame delay varies, so there is no generated stylesheet — the shared rules in
+    HTML_TEMPLATE do the rest. The trade is weight: N PNGs embed larger than one mp4.
     """
     name = Path(rect["src"]).stem
     sequence = read_manifest(deck).get("sequences", {}).get(name)
     if not sequence:
         raise SystemExit(f"--html-frames: no sequence {name!r} in {deck.manifest}")
     files = sequence["frames"]
-    count = len(files)
-    duration = count / parse_fps(sequence.get("fps"))
+    slot = 1.0 / parse_fps(sequence.get("fps"))  # seconds one frame is on screen
 
     imgs = []
     for i, frame in enumerate(files):
@@ -503,31 +501,14 @@ def frames_tag(deck: Deck, rect: dict, page_w: float, page_h: float, embed: bool
         else:
             # The HTML sits in out/, so the sequence is one level up beside it.
             src = html.escape(f"../{deck.frames.name}/{name}/{frame}")
-        # A negative delay starts each frame that far into the cycle, which is what staggers them.
-        imgs.append(f'<img src="{src}" style="animation-delay:{-i * duration / count:.4f}s">')
+        # Frame i latches i slots in. Frame 0's delay is 0, so a parked flip-book shows it.
+        imgs.append(f'<img src="{src}" style="animation-delay:{i * slot:.4f}s">')
 
     style = (
         f"left:{rect['x'] / page_w:.4%};top:{rect['y'] / page_h:.4%};"
         f"width:{rect['w'] / page_w:.4%};height:{rect['h'] / page_h:.4%}"
     )
-    # One frame's slice of the cycle. The two stops sit a hair apart so the swap reads as a cut
-    # rather than a cross-fade.
-    hold = 100.0 / count
-    # Longhands, deliberately: the `animation:` shorthand resets animation-play-state to
-    # `running`, and this #id rule outranks the `.flipbook img` class rule that parks the
-    # sequence -- so the shorthand would silently start every flip-book at load.
-    css = (
-        f"@keyframes flip-{uid}{{0%,{hold * 0.98:.4f}%{{opacity:1}}"
-        f"{hold:.4f}%,100%{{opacity:0}}}}"
-        f"#flip-{uid} img{{animation-name:flip-{uid};"
-        f"animation-duration:{duration:.4f}s;"
-        f"animation-timing-function:linear;"
-        f"animation-iteration-count:infinite}}"
-    )
-    return (
-        f"<style>{css}</style>"
-        f'<div class="overlay flipbook" id="flip-{uid}" style="{style}">{"".join(imgs)}</div>'
-    )
+    return f'<div class="overlay flipbook" style="{style}">{"".join(imgs)}</div>'
 
 
 def build_pptx(deck: Deck, dpi: int) -> Path:
@@ -597,13 +578,21 @@ HTML_TEMPLATE = """<!DOCTYPE html>
      The overlay rectangle already carries the sequence's own aspect ratio, so `fill` is exact
      here and never stretches a frame. */
   .flipbook {{ overflow: hidden; }}
-  /* Paused until the slide's first `space`, the same beat a <video> waits for. Held at cycle
-     time zero the only opaque frame is the first, so a parked flip-book shows its poster. */
+  /* Each frame latches to opaque at its own delay and stays. The frames are stacked in order,
+     so what you see is the last one to have latched: the sequence runs forward, then simply
+     holds on the final frame — there is no loop to end. Paused until the slide's first
+     `space`, which freezes the delays too, so a parked flip-book shows frame one. */
   .flipbook img {{
     position: absolute; inset: 0; width: 100%; height: 100%;
-    object-fit: fill; opacity: 0; animation-play-state: paused;
+    object-fit: fill; opacity: 0;
+    animation-name: flip-on;
+    animation-duration: 1ms;
+    animation-fill-mode: forwards;
+    animation-timing-function: linear;
+    animation-play-state: paused;
   }}
   .flipbook.playing img {{ animation-play-state: running; }}
+  @keyframes flip-on {{ from {{ opacity: 1; }} to {{ opacity: 1; }} }}
   @media (prefers-reduced-motion: reduce) {{
     .flipbook img {{ animation: none; }}
     .flipbook img:first-child {{ opacity: 1; }}
@@ -910,8 +899,8 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="in the HTML, play each movie as a CSS flip-book of its own PNG frames instead of "
         "a <video>. Needs no ffmpeg and no codec; waits for the slide's first space, like a "
-        "video does. The frames embed larger than the equivalent mp4. Combines with "
-        "--link-video.",
+        "video does, then plays through once and holds the last frame. The frames embed "
+        "larger than the equivalent mp4. Combines with --link-video.",
     )
     parser.add_argument(
         "--link-video",
