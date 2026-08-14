@@ -403,8 +403,11 @@ def build_pdf(deck: Deck) -> Path:
     return out
 
 
-def build_html(deck: Deck, embed_video: bool = True) -> Path:
-    encode_movies(deck)
+def build_html(deck: Deck, embed_video: bool = True, frames: bool = False) -> Path:
+    # A flip-book is built from the PNGs themselves, so in that mode there is no mp4 to encode
+    # and ffmpeg is not needed at all.
+    if not frames:
+        encode_movies(deck)
     pages = typst.compile(deck.source, format="svg", **deck.compile_args("html"))
     if isinstance(pages, bytes):  # single-page deck
         pages = [pages]
@@ -414,11 +417,17 @@ def build_html(deck: Deck, embed_video: bool = True) -> Path:
     # tracks the SVG however the browser scales it.
     page_w, page_h = svg_page_size(pages[0])
 
+    uid = 0
     slides = []
     for i, svg in enumerate(pages):
-        overlays = "".join(
-            video_tag(deck, rect, page_w, page_h, embed_video) for rect in rects.get(i + 1, [])
-        )
+        parts = []
+        for rect in rects.get(i + 1, []):
+            if frames:
+                uid += 1
+                parts.append(frames_tag(deck, rect, page_w, page_h, embed_video, uid))
+            else:
+                parts.append(video_tag(deck, rect, page_w, page_h, embed_video))
+        overlays = "".join(parts)
         slides.append(
             f'<section class="slide" id="slide-{i + 1}"><div class="stage">'
             + namespace_svg_ids(svg, i + 1).decode("utf-8")
@@ -456,6 +465,62 @@ def video_tag(deck: Deck, rect: dict, page_w: float, page_h: float, embed: bool)
         f"width:{rect['w'] / page_w:.4%};height:{rect['h'] / page_h:.4%}"
     )
     return f'<video class="overlay" style="{style}" src="{src}" controls loop muted playsinline></video>'
+
+
+def parse_fps(value) -> float:
+    """`fps` is stored the way ffprobe reports it, which may be a fraction like "25/4"."""
+    if isinstance(value, (int, float)):
+        return float(value) or 12.0
+    num, _, den = str(value).partition("/")
+    try:
+        return (float(num) / float(den or 1)) or 12.0
+    except (ValueError, ZeroDivisionError):
+        return 12.0
+
+
+def frames_tag(deck: Deck, rect: dict, page_w: float, page_h: float, embed: bool, uid: int) -> str:
+    """The same sequence as a flip-book of `<img>`s instead of a `<video>`.
+
+    Every frame is stacked in the overlay and exactly one is opaque at a time, stepped by a
+    generated `@keyframes` rule — so the animation is pure CSS with no player, no codec and no
+    ffmpeg. The trade is weight: N PNGs embed larger than one mp4.
+    """
+    name = Path(rect["src"]).stem
+    sequence = read_manifest(deck).get("sequences", {}).get(name)
+    if not sequence:
+        raise SystemExit(f"--html-frames: no sequence {name!r} in {deck.manifest}")
+    files = sequence["frames"]
+    count = len(files)
+    duration = count / parse_fps(sequence.get("fps"))
+
+    imgs = []
+    for i, frame in enumerate(files):
+        if embed:
+            mime = mimetypes.guess_type(frame)[0] or "image/png"
+            data = base64.b64encode((deck.frames / name / frame).read_bytes()).decode()
+            src = f"data:{mime};base64,{data}"
+        else:
+            # The HTML sits in out/, so the sequence is one level up beside it.
+            src = html.escape(f"../{deck.frames.name}/{name}/{frame}")
+        # A negative delay starts each frame that far into the cycle, which is what staggers them.
+        imgs.append(f'<img src="{src}" style="animation-delay:{-i * duration / count:.4f}s">')
+
+    style = (
+        f"left:{rect['x'] / page_w:.4%};top:{rect['y'] / page_h:.4%};"
+        f"width:{rect['w'] / page_w:.4%};height:{rect['h'] / page_h:.4%}"
+    )
+    # One frame's slice of the cycle. The two stops sit a hair apart so the swap reads as a cut
+    # rather than a cross-fade.
+    hold = 100.0 / count
+    css = (
+        f"@keyframes flip-{uid}{{0%,{hold * 0.98:.4f}%{{opacity:1}}"
+        f"{hold:.4f}%,100%{{opacity:0}}}}"
+        f"#flip-{uid} img{{animation:flip-{uid} {duration:.4f}s linear infinite}}"
+    )
+    return (
+        f"<style>{css}</style>"
+        f'<div class="overlay flipbook" id="flip-{uid}" style="{style}">{"".join(imgs)}</div>'
+    )
 
 
 def build_pptx(deck: Deck, dpi: int) -> Path:
@@ -521,6 +586,18 @@ HTML_TEMPLATE = """<!DOCTYPE html>
   }}
   .slide svg {{ display: block; width: 100%; height: 100%; }}
   .overlay {{ position: absolute; object-fit: fill; }}
+  /* --html-frames: the frames are stacked and the generated @keyframes reveals one at a time.
+     The overlay rectangle already carries the sequence's own aspect ratio, so `fill` is exact
+     here and never stretches a frame. */
+  .flipbook {{ overflow: hidden; }}
+  .flipbook img {{
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    object-fit: fill; opacity: 0;
+  }}
+  @media (prefers-reduced-motion: reduce) {{
+    .flipbook img {{ animation: none; }}
+    .flipbook img:first-child {{ opacity: 1; }}
+  }}
   /* The slide is full-bleed, so the HUD sits on top of it: keep it out of the way until asked. */
   #hud {{
     position: fixed; right: 14px; bottom: 12px; color: #ddd;
@@ -804,6 +881,13 @@ def main(argv: list[str] | None = None) -> int:
         "--dry-run", action="store_true", help="with --sync-frames: exit 1 if it would change"
     )
     parser.add_argument(
+        "--html-frames",
+        action="store_true",
+        help="in the HTML, play each movie as a CSS flip-book of its own PNG frames instead of "
+        "a <video>. Needs no ffmpeg and no codec, and loops on its own; the frames embed "
+        "larger than the equivalent mp4. Combines with --link-video.",
+    )
+    parser.add_argument(
         "--link-video",
         action="store_true",
         help="reference the mp4s from out/media/ instead of inlining them, "
@@ -841,7 +925,9 @@ def main(argv: list[str] | None = None) -> int:
 
     builders = {
         "pdf": lambda: build_pdf(deck),
-        "html": lambda: build_html(deck, embed_video=not args.link_video),
+        "html": lambda: build_html(
+            deck, embed_video=not args.link_video, frames=args.html_frames
+        ),
         "pptx": lambda: build_pptx(deck, args.dpi),
     }
 

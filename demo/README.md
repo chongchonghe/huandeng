@@ -137,6 +137,7 @@ without Python. `--sync-frames --check` exits non-zero if it is stale — the CI
 
 - **A slide that overflows does not error** — Typst just breaks it across two pages. Sometimes the extra page repeats the slide counter (a movie reporting 24 pages but occupying 47), sometimes it advances it, so the safest check is the deck's total page count against what you expect. Either way the fix is the same: shrink the image or the surrounding text.
 - **`--link-video`** references `out/media/*.mp4` from the HTML instead of inlining them. Much smaller file, but no longer self-contained.
+- **`--html-frames`** picks the other way to put a movie in the HTML. The default embeds one real `<video>` per sequence; this flag instead stacks the sequence's own PNG frames and reveals one at a time with a generated `@keyframes` rule. It is pure CSS — no player, no codec, no `ffmpeg` at all, and it loops on its own rather than waiting for `space`. The cost is weight: the frames embed roughly twice the mp4 (the demo goes from 5.8 MB to 11.9 MB), so reach for it when a browser will not play your codec, when `ffmpeg` is unavailable, or when you want the movie running the moment the slide appears. Combines with `--link-video`, which then points at `../movie-frames/` instead of inlining. The PDF and PPTX are unaffected.
 
 ## Live preview
 
@@ -155,6 +156,7 @@ uv run python tools/build-slides.py demo --pdf
 uv run python tools/build-slides.py demo --html
 uv run python tools/build-slides.py demo --pptx --dpi 300
 uv run python tools/build-slides.py demo --html --link-video
+uv run python tools/build-slides.py demo --html --html-frames
 ```
 
 Python dependencies (`typst`, `pymupdf`, `python-pptx`) are declared in the `pyproject.toml` at the repository root; `uv run` installs them on first use, so no separate Typst install is needed.
