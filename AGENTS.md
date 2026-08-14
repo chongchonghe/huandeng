@@ -6,6 +6,7 @@ Plain-text slide decks: Typst + Touying, built by one shared Python tool.
 tools/build-slides.py   the toolchain — shared, never copied into a deck
 template/               the starting point: copy it, never edit it in place
 demo/                   every feature, working, as a reference deck
+talks/                  the user's own decks — gitignored, never commit anything here
 .agents/skills/         the agent skills; .claude/skills symlinks here, as CLAUDE.md does to this file
 ```
 
@@ -26,7 +27,7 @@ These fail without an error, so they cannot be left to a lookup:
    another font, and repaginates.
 3. **Edit `content.typ`.** `globals.typ` is shared API and `main.typ` is configuration; changing
    them affects every slide.
-4. **Never edit `template/` to write a talk.** Copy it out first.
+4. **Never edit `template/` to write a talk.** Copy it into `talks/` first.
 5. **`out/` is not committed** and never needs to be. It is byte-reproducible.
 6. **Never change the aspect ratio of an image or a video.** These are scientific figures: the
    aspect ratio carries meaning. Stretch one and equal axes stop being square, a circle becomes an

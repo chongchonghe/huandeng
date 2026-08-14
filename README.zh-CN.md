@@ -19,22 +19,22 @@ Keynote 和 PowerPoint 用起来很快，直到你想让大模型帮忙的那一
 ```bash
 git clone https://github.com/chongchonghe/huandeng.git
 cd huandeng
-cp -r template ~/talks/2027-my-talk        # 复制模板，不要直接改 template/
+cp -r template talks/2027-my-talk          # 复制模板，不要直接改 template/
 ```
 
 然后编辑 `content.typ`。只装 Typst 就能出 PDF：
 
 ```bash
 brew install typst                          # 或者：cargo install typst-cli
-cd ~/talks/2027-my-talk
+cd talks/2027-my-talk
 typst compile --font-path fonts main.typ out/talk.pdf
 ```
 
 这就是你上台要用的那个格式的全部流程。要 HTML、PPTX 和检查功能，用附带的工具：
 
 ```bash
-uv run python tools/build-slides.py ~/talks/2027-my-talk          # 三种格式一起出
-uv run python tools/build-slides.py ~/talks/2027-my-talk --check  # 检查有没有内容溢出
+uv run python tools/build-slides.py talks/2027-my-talk          # 三种格式一起出
+uv run python tools/build-slides.py talks/2027-my-talk --check  # 检查有没有内容溢出
 ```
 
 `demo/` 里把所有功能都跑了一遍，细节看 [`demo/README.md`](demo/README.md)。
@@ -72,6 +72,7 @@ uv run python tools/build-slides.py ~/talks/2027-my-talk --check  # 检查有没
 tools/build-slides.py   工具链——所有幻灯片共用，但不会被复制进任何一份
 template/               起点。复制它，不要直接改。
 demo/                   所有功能的可运行参考
+talks/                  你自己的——已 gitignore，你的幻灯片不会进这个仓库
 .agents/skills/         AI 技能（.claude/skills 是指向它的软链接）
 ```
 

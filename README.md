@@ -19,22 +19,22 @@ That last point is the design goal. **Every part of a deck here is text you can 
 ```bash
 git clone https://github.com/chongchonghe/huandeng.git
 cd huandeng
-cp -r template ~/talks/2027-my-talk        # copy it; never edit template/ in place
+cp -r template talks/2027-my-talk          # copy it; never edit template/ in place
 ```
 
 Edit `content.typ`. Build the PDF with nothing but Typst:
 
 ```bash
 brew install typst                          # or: cargo install typst-cli
-cd ~/talks/2027-my-talk
+cd talks/2027-my-talk
 typst compile --font-path fonts main.typ out/talk.pdf
 ```
 
 That is the whole pipeline for the format you present from. For HTML and PPTX, and for the checker, use the bundled tool:
 
 ```bash
-uv run python tools/build-slides.py ~/talks/2027-my-talk          # all three formats
-uv run python tools/build-slides.py ~/talks/2027-my-talk --check  # verify nothing spilled
+uv run python tools/build-slides.py talks/2027-my-talk          # all three formats
+uv run python tools/build-slides.py talks/2027-my-talk --check  # verify nothing spilled
 ```
 
 Read `demo/` for every feature working at once, and [`demo/README.md`](demo/README.md) for the detail.
@@ -72,6 +72,7 @@ The reason this combination works is the checker. An assistant editing slides wi
 tools/build-slides.py   the toolchain — shared by every deck, copied into none
 template/               the starting point. Copy it; never edit it in place.
 demo/                   every feature, working, as a reference deck
+talks/                  yours — gitignored, so your decks stay out of this repo
 .agents/skills/         the agent skills (.claude/skills is a symlink to it)
 ```
 

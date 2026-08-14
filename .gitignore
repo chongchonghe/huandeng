@@ -14,3 +14,9 @@ out/
 # Stray compiles at a deck root; exports belong in out/.
 /template/*.pdf
 /demo/*.pdf
+
+# Your own decks. The folder is tracked so it is there after a clone; everything
+# you put in it is not, so your talks never become part of this repository and
+# `git pull` never conflicts with your work.
+/talks/*
+!/talks/README.md
