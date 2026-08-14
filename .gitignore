@@ -1,0 +1,16 @@
+.venv/
+__pycache__/
+.DS_Store
+
+# editor scratch
+*.swp
+*.swo
+*~
+
+# Build outputs. Byte-reproducible, so there is nothing to preserve:
+#   uv run python tools/build-slides.py <deck>
+out/
+
+# Stray compiles at a deck root; exports belong in out/.
+/template/*.pdf
+/demo/*.pdf
