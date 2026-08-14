@@ -13,6 +13,13 @@
 
 DECK  := $(notdir $(CURDIR))
 FONTS := $(if $(wildcard fonts),--font-path fonts,)
+
+# Set EXPECT only if this deck deliberately produces a page count the source does
+# not imply — a slide split on purpose, a multi-page bibliography. Pinning the
+# real number keeps `make check` meaningful: it still fails the day a slide
+# starts overflowing, because the count moves off the pinned one.
+EXPECT ?=
+CHECK  := --check $(if $(EXPECT),--expect $(EXPECT),)
 ROOT  := $(shell d="$(CURDIR)"; while [ "$$d" != "/" ]; do \
              if [ -f "$$d/tools/build-slides.py" ]; then echo "$$d"; break; fi; \
              d=$$(dirname "$$d"); \
@@ -41,7 +48,7 @@ watch:
 	typst watch $(FONTS) main.typ out/$(DECK).pdf
 
 check:
-	$(call run-tool,--check)
+	$(call run-tool,$(CHECK))
 
 all:
 	$(call run-tool,)

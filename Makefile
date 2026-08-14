@@ -21,11 +21,17 @@ help:
 	@echo
 	@echo "For one deck: cd into it, then make / make watch / make check / make all"
 
-# Keep going after a failure so one bad deck does not hide the others, then fail.
+# Delegate to each deck's own Makefile, so a deck that pins a deliberate page
+# count with EXPECT is checked against it. Keep going after a failure so one bad
+# deck does not hide the others, then fail.
 check:
 	@fail=0; for deck in $(DECKS); do \
 	    echo "=== $$deck"; \
-	    uv run python tools/build-slides.py "$$deck" --check || fail=1; \
+	    if [ -f "$$deck/Makefile" ]; then \
+	        $(MAKE) --no-print-directory -C "$$deck" check || fail=1; \
+	    else \
+	        uv run python tools/build-slides.py "$$deck" --check || fail=1; \
+	    fi; \
 	done; exit $$fail
 
 demo:
