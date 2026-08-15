@@ -37,7 +37,15 @@ format:
       - guides.html
     width: 1280
     height: 720
+    # The fraction of the window left empty around the slide, in total — half
+    # on each side. 0.04 is 2% a side: at 1920x1080 that is a 38px border left
+    # and right, 22px top and bottom.
     margin: 0.04
+    # Reveal refuses to scale a slide past 2x by default, so on a window wider
+    # than 2560 CSS px the deck stops growing and sits in a broad empty border
+    # that no `margin` setting will close. Nothing here is a bitmap, so there is
+    # no reason to cap it that low.
+    max-scale: 5
     # `=` in Typst, `#` here: a level-1 heading starts a section, a level-2
     # heading starts a slide.
     slide-level: 2

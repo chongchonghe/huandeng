@@ -129,24 +129,37 @@ uv run --extra quarto python quarto/tools/build-slides.py quarto/demo --check
 
 **There is a frame, and it is exactly 1280 × 720.** `width` and `height` in `_quarto.yml` define a fixed coordinate space; reveal lays every slide out in that box and then scales the whole box uniformly to fit the window. That is the determinism guarantee: `{width="385px"}` is 385/1280 of the screen on any display, at any resolution, and nothing re-flows when the window changes size. Press **X** in the deck (or load it with `?guides`) to draw the boundary and a 24 px keep-clear inset.
 
-`margin: 0.04` removes 4% of the window *in total*, 2% a side, before the scale is computed:
+`margin: 0.04` removes 4% of the window *in total* — half on each side — before the scale is computed:
 
 ```
-scale = min(windowWidth, windowHeight × 16/9) × (1 − margin) / 1280
+scale = min(windowWidth / 1280, windowHeight / 720) × (1 − margin)
 ```
 
 Measured, on the deck as configured:
 
-| window | scale | slide box | margin below the box |
+| window | scale | slide box | empty border, each side |
 | --- | --- | --- | --- |
-| 1920 × 1080 (16:9) | 1.44 | 1843 × 1037 | **15 slide-px** |
-| 2560 × 1440 (16:9) | 1.92 | 2458 × 1382 | **15 slide-px** |
-| 1600 × 1000 (16:10) | 1.20 | 1536 × 864 | **57 slide-px** |
-| 1440 × 900 (16:10) | 1.08 | 1382 × 778 | **57 slide-px** |
+| 1920 × 1080 (16:9) | 1.44 | 1843 × 1037 | 38 px  ·  22 px (= **15 slide-px**) |
+| 2560 × 1440 (16:9) | 1.92 | 2458 × 1382 | 51 px  ·  29 px (= **15 slide-px**) |
+| 1600 × 1000 (16:10) | 1.20 | 1536 × 864 | 32 px  ·  68 px (= **57 slide-px**) |
+| 1440 × 900 (16:10) | 1.08 | 1382 × 778 | 29 px  ·  61 px (= **57 slide-px**) |
+| 1512 × 982 (MacBook, 3:2) | 1.13 | 1452 × 816 | 30 px  ·  83 px (= **73 slide-px**) |
 
-The last column is the trap. Reveal does not clip content to the slide box and does not shrink it — the surplus is drawn into that margin and cut off by the window edge. On a 16:9 screen only 15 slide-px of it survive; on the 16:10 laptop you are probably writing on, 57 do. **A slide that looks merely tight while you write it is cut on the projector.** Note also that the numbers depend only on aspect ratio, not resolution: a 4K projector is not more forgiving than a 1080p one.
+The vertical figure is the trap. Reveal does not clip content to the slide box and does not shrink it — the surplus is drawn into that border and cut off by the window edge. On a 16:9 screen only 15 slide-px of it survive; on the 16:10 or 3:2 laptop you are probably writing on, 57 to 73 do. **A slide that looks merely tight while you write it is cut on the projector.** The numbers depend only on aspect ratio, not resolution: a 4K projector is no more forgiving than a 1080p one.
 
-The footer and the slide number live in that same margin band, below the box, so they never collide with slide content — but on a 16:9 screen they sit within about 15 slide-px of it.
+The footer and the slide number live in that same border, below the box, so they never collide with slide content — but on a 16:9 screen they sit within about 15 slide-px of it.
+
+### When the deck does not fill the screen
+
+Three different things look identical — a small deck in a wide empty border — and only one of them is `margin`. Press **X**: the label along the bottom of the box reports all three at once.
+
+```
+1280 × 720 · window 1512 × 982 · ar 1.54 · scale 1.13 · fill 41%
+```
+
+1. **`fill` is low.** The slide box fills the screen; the *slide* is half empty. This is by far the commonest case — across this demo the median slide uses 61% of the box height, and the emptiest uses 22%. No reveal setting touches it: put more on the slide, make the figures bigger, or raise `$presentation-font-size-root` in `theme.scss` (30 px here, against a 720 px box).
+2. **`ar` is not 1.78.** A 16:9 deck on a 16:10 or 3:2 laptop letterboxes — the box is as large as it can be and the leftover is unavoidable. It is not visible on a white slide, because the page behind is white too; it *is* visible while presenting on a display that is not 16:9. Nothing to fix: the deck is built for the projector, not the laptop.
+3. **`CAPPED by max-scale` appears.** Reveal refuses to scale past 2× by default, so past about 2560 CSS px wide the deck stops growing and sits in a border that no `margin` will close — at 3200 × 1800 that is a 320 px border left and right. `max-scale: 5` in `_quarto.yml` removes the ceiling; nothing in the deck is a bitmap, so there is no reason to keep it.
 
 ### In the PDF, overflow paginates instead of cutting
 

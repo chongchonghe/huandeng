@@ -181,6 +181,12 @@ rescue: what does not fit hangs off the edge.
   new page. Do not write an em dash as `---` in prose.
 - **`make check` needs Chromium**: `uv sync --extra quarto && uv run --extra quarto playwright
   install chromium`. `make` and `make preview` need only Quarto.
+- **"The deck does not fill the screen" is usually not `margin`.** `margin` removes that fraction of
+  the *window* in total, half a side — 0.04 is a 38px border at 1920 wide, nothing like a "huge"
+  one. Press **X** and read the label: low `fill %` means the slide itself is half empty (the
+  common case, and no setting fixes it); `ar` far from 1.78 means the screen is not 16:9 and the
+  letterboxing is unavoidable; `CAPPED by max-scale` means reveal's 2x scale ceiling is holding the
+  deck small on a large display, which `max-scale: 5` in `_quarto.yml` removes.
 
 ## Verifying
 
