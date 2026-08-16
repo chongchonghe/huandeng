@@ -49,7 +49,10 @@ anything.
 [After 10 Myr]{.below}
 :::
 
-<!-- Columns. Also -1-1, -2-1, -1-2, -2-3, -1-1-1. -->
+<!-- Columns. `.columns` is a 50/50 split and the one to prefer for it: Pandoc
+     recognises that class, so the PPTX export gets a real two-column slide
+     instead of one flattened text box. Also -1-1 (same as .columns), -2-1,
+     -1-2, -2-3, -1-1-1. -->
 :::: {.columns-3-2}
 ::: {.column}
 left

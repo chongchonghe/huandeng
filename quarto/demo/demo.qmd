@@ -13,7 +13,7 @@ format:
 
 ## Reference
 
-:::: {.columns-1-1}
+:::: {.columns}
 
 ::: {.column}
 **Structure**
@@ -24,7 +24,7 @@ format:
 
 **Layout classes**
 
-- `.columns-1-1`, `.columns-2-1`, `.columns-3-2`, `.columns-1-1-1`
+- `.columns` (50/50), `.columns-2-1`, `.columns-3-2`, `.columns-1-1-1`
 - `.fig` + `.caption` / `.credit` / `.below`
 - `.media-row` + `.media-label` / `.media-items`
 - `.highlight`, `.alert`, `.small`, `.tiny`, `.center`, `.muted`
@@ -72,7 +72,7 @@ anywhere, years from now.
 
 ## Exporting
 
-:::: {.columns-1-1}
+:::: {.columns}
 
 ::: {.column}
 **What you get**
@@ -138,7 +138,7 @@ slide.
 
 ## Reveals, one step at a time
 
-:::: {.columns-1-1}
+:::: {.columns}
 
 ::: {.column}
 **A list, item by item**
@@ -175,7 +175,7 @@ slide and only the PDF spends paper on them.
 
 ## Lists and formatting
 
-:::: {.columns-1-1}
+:::: {.columns}
 
 ::: {.column}
 - Ordinary Markdown
@@ -247,7 +247,7 @@ def compute(x, y):
 
 ## Tables
 
-:::: {.columns-1-1}
+:::: {.columns}
 
 ::: {.column}
 **With a header row**
@@ -284,7 +284,7 @@ Every figure in a talk needs to say where it came from. `.fig` shrink-wraps the
 image, so the credit sits tight against the image's own bottom-right corner
 rather than the slide's.
 
-:::: {.columns-1-1}
+:::: {.columns}
 
 ::: {.column}
 ````markdown
@@ -616,7 +616,7 @@ is still one slide.
 Typst draws diagrams with `fletcher`. Quarto has
 [Mermaid](https://mermaid.js.org/) built in: write the graph, get an SVG.
 
-:::: {.columns-1-1}
+:::: {.columns}
 
 ::: {.column}
 ````markdown

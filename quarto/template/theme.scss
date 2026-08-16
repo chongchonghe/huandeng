@@ -297,46 +297,55 @@ mjx-container:not([display]) {
 
 /* --------------------------------------------------------------- columns -- */
 
-.columns,
-.columns-1-1,
-.columns-2-1,
-.columns-1-2,
-.columns-3-2,
-.columns-2-3,
-.columns-1-1-1 {
+/* Prefer `.columns` for a 50/50 split: it is the one Pandoc recognises, so it
+   also becomes a real two-column "Two Content" slide in the PPTX export, where
+   `.columns-1-1` flattens into a single text box. They are identical here.
+
+   The `.reveal` prefix is load-bearing on `.columns` and only there. Quarto
+   ships `div.columns { display: initial }` for revealjs — it is neutralising
+   the `display: flex` its HTML formats use — and a bare `.columns` loses to it
+   on specificity, which lays both columns on top of each other at full width.
+   Two classes beat one class plus an element, so this wins. */
+.reveal .columns,
+.reveal .columns-1-1,
+.reveal .columns-2-1,
+.reveal .columns-1-2,
+.reveal .columns-3-2,
+.reveal .columns-2-3,
+.reveal .columns-1-1-1 {
   align-items: start;
   display: grid;
   gap: 1.1rem;
   width: 100%;
 }
 
-.columns,
-.columns-1-1 {
+.reveal .columns,
+.reveal .columns-1-1 {
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
 }
-.columns-2-1 {
+.reveal .columns-2-1 {
   grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
 }
-.columns-1-2 {
+.reveal .columns-1-2 {
   grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
 }
-.columns-3-2 {
+.reveal .columns-3-2 {
   grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
 }
-.columns-2-3 {
+.reveal .columns-2-3 {
   grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
 }
-.columns-1-1-1 {
+.reveal .columns-1-1-1 {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
-.columns > .column,
-.columns-1-1 > .column,
-.columns-2-1 > .column,
-.columns-1-2 > .column,
-.columns-3-2 > .column,
-.columns-2-3 > .column,
-.columns-1-1-1 > .column {
+.reveal .columns > .column,
+.reveal .columns-1-1 > .column,
+.reveal .columns-2-1 > .column,
+.reveal .columns-1-2 > .column,
+.reveal .columns-3-2 > .column,
+.reveal .columns-2-3 > .column,
+.reveal .columns-1-1-1 > .column {
   display: block;
   min-width: 0;
   overflow-wrap: anywhere;
@@ -718,13 +727,13 @@ mjx-container:not([display]) {
 /* ------------------------------------------------------------ small screen -- */
 
 @media (max-width: 760px) {
-  .columns,
-  .columns-1-1,
-  .columns-2-1,
-  .columns-1-2,
-  .columns-3-2,
-  .columns-2-3,
-  .columns-1-1-1 {
+  .reveal .columns,
+  .reveal .columns-1-1,
+  .reveal .columns-2-1,
+  .reveal .columns-1-2,
+  .reveal .columns-3-2,
+  .reveal .columns-2-3,
+  .reveal .columns-1-1-1 {
     grid-template-columns: 1fr;
   }
 

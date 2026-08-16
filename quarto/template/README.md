@@ -48,7 +48,8 @@ next keypress. Layout comes from classes in `theme.scss`:
 | | |
 | --- | --- |
 | `::: {.fig}` + `[..]{.credit}` | figure with a source credit; `.caption` above it, `.below` under it |
-| `::: {.columns-3-2}` | split a slide into columns; also `-1-1`, `-2-1`, `-1-2`, `-2-3`, `-1-1-1` |
+| `::: {.columns}` | a 50/50 split — prefer this one, it is the class Pandoc understands, so PPTX gets real columns |
+| `::: {.columns-3-2}` | other ratios; also `-2-1`, `-1-2`, `-2-3`, `-1-1-1` |
 | `::: {.media-row}` | a labelled strip of images, on one line |
 | `::: {.highlight}` | the callout for the one sentence a slide is about |
 | `[..]{.alert}`, `.small`, `.tiny`, `.center`, `.muted` | inline emphasis and sizing |
