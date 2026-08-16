@@ -15,6 +15,24 @@
 
 DECK := $(notdir $(CURDIR))
 
+# Quarto and uv both install into ~/.local/bin, and a shell that is not a login
+# shell — an editor's terminal, a hook, an agent — does not always inherit it.
+# Then `make` dies with "quarto: No such file or directory" on a machine where
+# quarto is plainly installed.
+#
+# Two fixes, because they cover different recipes. `export PATH` reaches the
+# targets below that make runs through a shell, which is how `uv` gets found.
+# It does *not* reach `quarto render`: a recipe that is one bare command with no
+# shell metacharacters is exec'd by make directly, and that lookup ignores a
+# PATH set in the makefile. So resolve quarto here instead and call $(QUARTO).
+#
+# Both append rather than prepend, so a quarto already on PATH still wins, and
+# both go through $(HOME), so no one's home directory is written into a file
+# that other people copy. Override either from the command line if your install
+# is somewhere else: `make QUARTO=/opt/quarto/bin/quarto`.
+export PATH := $(PATH):$(HOME)/.local/bin
+QUARTO ?= $(shell command -v quarto 2>/dev/null || echo $(HOME)/.local/bin/quarto)
+
 # Set EXPECT only if you want the slide count pinned. `make check` then fails
 # the day a slide appears or disappears without you meaning it to.
 EXPECT ?=
@@ -40,10 +58,10 @@ endef
 .PHONY: html preview check png pdf pptx standalone all clean
 
 html:
-	quarto render
+	$(QUARTO) render
 
 preview:
-	quarto preview
+	$(QUARTO) preview
 
 check:
 	$(call run-tool,$(CHECK))

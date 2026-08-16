@@ -10,6 +10,10 @@
 DECKS := $(patsubst %/_quarto.yml,%,$(wildcard \
              template/_quarto.yml demo/_quarto.yml talks/*/_quarto.yml))
 
+# Quarto and uv both install into ~/.local/bin, which a non-login shell does not
+# always inherit. Appended, not prepended, so anything already on PATH wins.
+export PATH := $(PATH):$(HOME)/.local/bin
+
 .DEFAULT_GOAL := help
 .PHONY: help check demo clean
 
