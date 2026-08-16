@@ -180,7 +180,18 @@ quarto render talk.qmd --to clean-typst
 
 Measured on `template/`: 841.89 × 473.56 pt, a title slide, section divider slides for `#` headings, slide numbers, and one page per `##` — no LaTeX and no browser anywhere. It is a real option, and it is worth knowing it exists.
 
-What it is **not** is a PDF of *this* deck. The same run showed why: the two-column slide lost its columns, stacked, and split across two pages (6 slides → 7 pages), stranding the figure's `.credit` alone on a page under a repeated title; `.highlight` flattened to a plain paragraph; `::: notes` printed into the body again; and the whole thing came out in the extension's Clean theme rather than `theme.scss`. That is not a bug — every one of those is CSS, and Touying has no way to read it.
+What it is **not** is a PDF of *this* deck. Run on this demo, **34 slides came out as 58 pages** — and Touying's own counter reads "53", so not even the deck agrees with itself. What survives the Markdown round trip, and what does not:
+
+| | |
+| --- | --- |
+| survives | headings, bullets, tables, code blocks with highlighting, ordinary maths, citations — and Mermaid, which Quarto renders to an image Typst can embed |
+| **silently lost** | **video** — `<video>` produces nothing at all, leaving a caption under blank space |
+| **silently broken** | **`\class{fragment}{..}` maths** — the whole `$$…$$` prints as raw LaTeX source on the slide |
+| re-flowed | every `.columns-*` collapses and the slide then splits across 2–4 pages, stranding `.credit` lines and captions on pages of their own under a repeated title |
+| dropped | `.highlight`, `.fig`, `.media-row`, `.absolute`, `.r-stack` (each fragment becomes its own page), the footer, and `theme.scss` entirely — the output wears the extension's Clean theme |
+| leaked | `::: notes` printed into the body, where an audience reads it |
+
+None of that is a bug in the extension. Every layout class in this flavour is CSS, and Touying cannot read CSS; the video and fragment cases are simply things a PDF cannot do.
 
 So it is a **third flavour**, not an exporter: same Markdown, different deck. If you want a deck built by Typst, `template/` at the repository root is the supported route and gives you the full Touying API rather than what survives a Markdown round trip.
 

@@ -185,11 +185,14 @@ rescue: what does not fit hangs off the edge.
 - **A .qmd → Touying bridge does exist**, and it makes real slides:
   `quarto add kazuyanagimoto/quarto-clean-typst` then `--to clean-typst` gives 841.89 x 473.56 pt,
   one page per `##`, section dividers, slide numbers, no LaTeX and no browser. But it is a *third
-  flavour*, not an exporter for this deck: every layout class here is CSS, so columns collapse (the
-  two-column slide split across two pages), `.fig` credits strand, `.highlight` flattens, `::: notes`
-  prints into the body, and the output wears the extension's theme rather than `theme.scss`. For a
-  deck genuinely built by Typst, use the Typst + Touying flavour at the repository root — it gives
-  you the full Touying API instead of what survives a Markdown round trip.
+  flavour*, not an exporter for this deck. Run on `quarto/demo`, 34 slides became **58 pages**: every
+  layout class here is CSS, so columns collapse and slides split 2–4 ways, `.fig` credits strand on
+  pages of their own, `.highlight`/`.media-row`/`.absolute`/`.r-stack` drop, `::: notes` prints into
+  the body, and the output wears the extension's theme. Two failures are silent and would reach the
+  room: **video renders as nothing** (a caption over blank space) and **`\class{fragment}{..}` maths
+  prints as raw LaTeX source**. Mermaid does survive. For a deck genuinely built by Typst, use the
+  Typst + Touying flavour at the repository root — the full Touying API instead of what survives a
+  Markdown round trip.
 - **`.qmd` YAML and `_quarto.yml` merge**, with the `.qmd` winning. Deck-wide options belong in
   `_quarto.yml`; only this talk's identity — title, author, date, footer — belongs in the `.qmd`.
 - **`---` in a `.qmd` starts a new slide**, exactly as in the Typst flavour a bare `---` starts a
