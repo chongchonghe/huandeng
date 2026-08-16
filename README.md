@@ -42,7 +42,7 @@ Read [`demo/`](demo/) for every feature working at once, and [`demo/README.md`](
 
 ### By LLM
 
-Open the folder in [Claude Code](https://claude.com/claude-code) or Codex and ask for what you want, in plain words. The skill in `.agents/skills/` already tells it how this repo works, so you do not have to explain any of it.
+Open the folder in [Claude Code](https://claude.com/claude-code) or Codex and ask for what you want, in plain words. The skills in `.agents/skills/` already tell it how this repo works, so you do not have to explain any of it — **`quarto-deck`** for the machinery (the local classes, the build, the traps that raise no error) and **`slide-style`** for the writing (terse bullets, narrative in speaker notes, readable equations). Both travel with the repository, so a collaborator who clones it gets the same guidance you do.
 
 > Write a deck about the Kelvin–Helmholtz instability, using the figures in `~/figs/` and the notes in `notes.md`.
 
@@ -71,7 +71,7 @@ template/               the starting point. Copy it; never edit it in place.
 demo/                   every feature, working, as a reference deck
 talks/                  yours — gitignored, so your decks stay out of this repo
 trash/                  dead ends, with a README recording why they are dead
-.agents/skills/         the agent skill (.claude/skills is a symlink to it)
+.agents/skills/         the agent skills (.claude/skills is a symlink to it)
 Makefile                make check verifies every deck at once
 ```
 

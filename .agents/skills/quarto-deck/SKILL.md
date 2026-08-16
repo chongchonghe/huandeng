@@ -79,6 +79,13 @@ FLD:
 **Size images inside `.fig` in `px` or `pt`, never `%`** — `.fig` is `width: fit-content`, so a
 percentage inside it has nothing to resolve against.
 
+**Prefer Markdown and Pandoc attributes over raw HTML.** `![](fig/x.png){width="200pt"}`, not an
+`<img style="...">`. Reach for HTML only where Quarto cannot express the intent — `data-autoplay`
+on a `<video>` is the usual case.
+
+**Inside a slide, subheadings start at `####`.** `##` is the slide title and `###` is already large;
+going straight to `####` keeps the hierarchy visible without competing with the title.
+
 Reveal's own `.incremental`, `.fragment`, `.absolute`, `.r-stack`, `.r-stretch`, `. . .`,
 `{background-color=".."}` and `{auto-animate="true"}` all work on top of these.
 
@@ -120,9 +127,12 @@ and `make check` at the root verifies every deck at once.
 
 ## House style
 
-The **quarto-revealjs-styles** skill, if installed, carries the author's slide-writing style —
-terse bullets, narrative in `::: notes`, readable equations. It applies here unchanged. On top of
-that:
+**Invoke the `slide-style` skill** whenever you are writing or revising the words and maths of a
+deck rather than its plumbing. It lives in this repo, beside this one, and covers terse bullets,
+narrative in `::: notes`, readable equations, citations and acronyms. Skills do not load each other,
+so it will not arrive on its own — ask for it.
+
+The figure-specific half of the house style is here, because it is about the classes above:
 
 - **Figures are drawn too small by default.** A figure is the content of a slide, not an
   illustration beside it. Start near the width the slide allows and come down only if something

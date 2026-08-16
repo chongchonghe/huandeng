@@ -42,7 +42,7 @@ make preview
 
 ### 用大模型
 
-用 [Claude Code](https://claude.com/claude-code) 或 Codex 打开这个文件夹，直接用大白话说你要什么。`.agents/skills/` 里的技能已经告诉它这个仓库怎么用了，你不需要解释。
+用 [Claude Code](https://claude.com/claude-code) 或 Codex 打开这个文件夹，直接用大白话说你要什么。`.agents/skills/` 里的技能已经告诉它这个仓库怎么用了，你不需要解释——**`quarto-deck`** 讲机制（本地的排版类、构建流程、那些不会报错的坑），**`slide-style`** 讲怎么写（要点要短、叙述放进演讲者备注、公式怎么写才好读）。两个技能都随仓库走，所以别人 clone 下来得到的指引和你完全一样。
 
 > 写一份关于开尔文-亥姆霍兹不稳定性的幻灯片，图用 `~/figs/` 里的，内容参考 `notes.md`。
 

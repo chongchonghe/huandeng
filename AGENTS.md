@@ -10,13 +10,16 @@ demo/                   every feature, working, as a reference deck
 talks/                  the user's own decks — gitignored, never commit anything here
 trash/                  dead ends, with a README recording why. Read it before
                         proposing LaTeX, Typst or Pandoc's PPTX writer again.
-.agents/skills/         the agent skill; .claude/skills symlinks here, as CLAUDE.md does to this file
+.agents/skills/         the agent skills; .claude/skills symlinks here, as CLAUDE.md does to this file
 ```
 
 A deck is `talk.qmd` + `_quarto.yml` + `theme.scss` + `fonts.html` + `guides.html` + `attach/`,
 plus a `Makefile` that only wraps the commands below — it holds no build logic of its own.
-Full detail lives in `README.md` and `demo/README.md`. For slide authoring invoke the
-**quarto-deck** skill.
+Full detail lives in `README.md` and `demo/README.md`. Two skills, and they are separate on
+purpose: invoke **quarto-deck** for the machinery — the local classes, the build, the traps — and
+**slide-style** for the words and the maths. Skills do not load each other, so writing a talk
+usually wants both, asked for by name. Nothing here depends on a skill installed outside the
+repository.
 
 ## Rules that prevent silent breakage
 
