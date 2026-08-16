@@ -25,6 +25,11 @@ out/
 /quarto/*/*.pptx
 /quarto/*/*_files/
 
+# Dead-end exports kept for reference. The README there says how to regenerate
+# them, which is worth committing; the artefacts themselves are not.
+/quarto/trash/*
+!/quarto/trash/README.md
+
 # Your own decks. The folder is tracked so it is there after a clone; everything
 # you put in it is not, so your talks never become part of this repository and
 # `git pull` never conflicts with your work.

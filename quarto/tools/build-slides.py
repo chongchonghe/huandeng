@@ -355,8 +355,38 @@ PAGINATION_JS = r"""
 """
 
 
+# Two PDFs, from one render. Reveal reads config overrides off the query string,
+# so `pdfSeparateFragments` can be flipped per print without re-rendering the
+# deck — the same HTML gives both files.
+#
+#   <deck>.pdf                      one page per *step*: the deck as presented,
+#                                   so a build arrives a piece at a time and an
+#                                   image sequence becomes a flip-book
+#   <deck>-one-page-per-slide.pdf   one page per slide, fully built — the
+#                                   handout, and what you read to check a deck
+PDF_VARIANTS = (
+    ("", "?print-pdf&pdfSeparateFragments=true", "one page per step"),
+    ("-one-page-per-slide", "?print-pdf", "one page per slide"),
+)
+
+
+def print_one_pdf(page, html: Path, query: str, path: Path) -> dict:
+    open_deck(page, html, query)
+    # A video's play bar is furniture for the live deck; on paper it is a grey
+    # slab across the poster frame. (The frame is all a PDF can hold — a movie
+    # prints as its first frame and there is nothing to be done about that.)
+    page.add_style_tag(
+        content="video::-webkit-media-controls { display: none !important }"
+    )
+    page.wait_for_timeout(1200)
+    layout = page.evaluate(PAGINATION_JS)
+    page.emulate_media(media="print")
+    page.pdf(path=str(path), prefer_css_page_size=True, print_background=True)
+    return layout
+
+
 def build_pdf(deck: Deck) -> Path:
-    """Print through reveal's own `?print-pdf` layout.
+    """Print through reveal's own `?print-pdf` layout, twice.
 
     That mode lays every slide out as a static page of exactly the configured
     slide size, which is what makes a browser print come out one slide per page
@@ -365,27 +395,19 @@ def build_pdf(deck: Deck) -> Path:
     ensure_html(deck)
     with with_playwright() as pw:
         browser, page = browser_page(pw)
-        open_deck(page, deck.html, "?print-pdf")
-        # A video's play bar is furniture for the live deck; on paper it is a
-        # grey slab across the poster frame.
-        page.add_style_tag(
-            content="video::-webkit-media-controls { display: none !important }"
-        )
-        page.wait_for_timeout(1200)
-        layout = page.evaluate(PAGINATION_JS)
-        page.emulate_media(media="print")
-        page.pdf(path=str(deck.pdf), prefer_css_page_size=True, print_background=True)
+        for suffix, query, what in PDF_VARIANTS:
+            path = deck.out / f"{deck.name}{suffix}.pdf"
+            layout = print_one_pdf(page, deck.html, query, path)
+            print(f"wrote {path}")
+            if layout["split"]:
+                extra = sum(s["pages"] - 1 for s in layout["split"])
+                print(f"  {layout['total'] + extra} pages, {what} — except:")
+                for s in layout["split"]:
+                    print(f"    {s['i']} ({s['title']}) spills onto {s['pages']} pages")
+                print("  run --check to see how far past the edge each one goes")
+            else:
+                print(f"  {layout['total']} pages, {what}")
         browser.close()
-
-    print(f"wrote {deck.pdf}")
-    if layout["split"]:
-        extra = sum(s["pages"] - 1 for s in layout["split"])
-        print(f"  {layout['total'] + extra} pages for {layout['total']} slides:")
-        for s in layout["split"]:
-            print(f"    slide {s['i']} ({s['title']}) spills onto {s['pages']} pages")
-        print("  run --check to see how far past the edge each one goes")
-    else:
-        print(f"  {layout['total']} pages, one per slide")
     return deck.pdf
 
 

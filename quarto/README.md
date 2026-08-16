@@ -51,8 +51,9 @@ If you are writing a conference talk with three simulation movies in it, this fl
 
 | | |
 | --- | --- |
-| **One source, four outputs** | HTML, a single self-contained HTML, PDF and PPTX — from the same `talk.qmd` |
-| **Video that needs no pipeline** | an `.mp4` in `attach/` and one `<video>` tag; reveal starts it on the slide and rewinds it on the way out |
+| **One source, five outputs** | HTML, a single self-contained HTML, two PDFs and a PPTX — from the same `talk.qmd` |
+| **A PDF that keeps the builds** | `make pdf` writes one page per *step* to present from, and one page per slide to hand out. Printed in headless Chromium, so it is the deck you wrote — no LaTeX anywhere |
+| **Video that needs no pipeline** | an `.mp4` in `attach/` and one `<video>` tag; reveal starts it on the slide and rewinds it on the way out. For an animation that survives the PDF too, a flip-book of frames steps in place live and takes one page per frame on paper |
 | **A checker for silent failures** | a reveal.js slide that holds too much does not error and does not shrink — it hangs off the edge, and how much of that the room sees depends on the screen's aspect ratio. `make check` catches it, catches figures drawn at the wrong aspect ratio, and catches images that never loaded |
 | **A visible slide boundary** | every slide is laid out in exactly 1280 &times; 720 and scaled to the screen; press **X** to draw that box while you write. See [Slide geometry](demo/README.md#slide-geometry) |
 | **Figures with academic credits** | `::: {.fig}` puts the credit against the figure's own edge, not the slide's |

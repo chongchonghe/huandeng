@@ -103,7 +103,7 @@ For two clips that have to keep their true relative scale, `.video-pair` with `s
 | --- | --- |
 | HTML | the deck: real video, fragments, speaker view, the lot |
 | standalone HTML | the same in one file, video and fonts and MathJax inlined |
-| PDF | one page per slide, printed through reveal's own `?print-pdf` layout; video appears as its poster frame |
+| PDF | two of them — one page per step, and one page per slide. See [Two PDFs, and why](#two-pdfs-and-why). Video prints as its first frame |
 | PPTX | Pandoc's re-flow of the Markdown — the text and the images, none of the layout |
 
 ## Export
@@ -160,6 +160,19 @@ Three different things look identical — a small deck in a wide empty border �
 1. **`fill` is low.** The slide box fills the screen; the *slide* is half empty. This is by far the commonest case — across this demo the median slide uses 61% of the box height, and the emptiest uses 22%. No reveal setting touches it: put more on the slide, make the figures bigger, or raise `$presentation-font-size-root` in `theme.scss` (30 px here, against a 720 px box).
 2. **`ar` is not 1.78.** A 16:9 deck on a 16:10 or 3:2 laptop letterboxes — the box is as large as it can be and the leftover is unavoidable. It is not visible on a white slide, because the page behind is white too; it *is* visible while presenting on a display that is not 16:9. Nothing to fix: the deck is built for the projector, not the laptop.
 3. **`CAPPED by max-scale` appears.** Reveal refuses to scale past 2× by default, so past about 2560 CSS px wide the deck stops growing and sits in a border that no `margin` will close — at 3200 × 1800 that is a 320 px border left and right. `max-scale: 5` in `_quarto.yml` removes the ceiling; nothing in the deck is a bitmap, so there is no reason to keep it.
+
+### Two PDFs, and why
+
+`make pdf` writes both, from one render:
+
+| file | pages, on this demo | for |
+| --- | --- | --- |
+| `out/demo.pdf` | 55 — **one page per step** | presenting from, and archiving what the room saw. A build arrives a piece at a time; a flip-book animates. |
+| `out/demo-one-page-per-slide.pdf` | 34 — one page per slide, fully built | the handout, and reading the deck back to check it |
+
+Reveal reads config overrides off the query string, so this costs one browser pass each and no second render: `?print-pdf&pdfSeparateFragments=true` for the first, plain `?print-pdf` for the second.
+
+**A `<video>` prints as one still frame.** A page cannot play anything, and nothing can be done about that. When an animation has to survive on paper, use a **flip-book** instead — an `.r-stack` of image frames, each after the first wrapped in `::: {.fragment .fade-in-then-out}`. In the live deck it steps in place like a movie; in `demo.pdf` each frame gets its own page, so twelve frames come out as twelve consecutive pages you can hold an arrow key down through. That is the Quarto flavour's equivalent of the Typst side's `#movie`, and the demo's "A flip-book, in place" slide is the worked example.
 
 ### Where the PDF comes from
 

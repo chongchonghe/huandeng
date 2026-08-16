@@ -38,7 +38,8 @@ anywhere, years from now.
 
 - `out/demo.html` — the deck, plus its assets beside it
 - `out/demo-standalone.html` — the same, in one file you can email
-- `out/demo.pdf` — one page per slide
+- `out/demo.pdf` — **one page per step**: the deck as presented
+- `out/demo-one-page-per-slide.pdf` — fully built, for reading
 - `out/demo.pptx` — PowerPoint, re-flowed by Pandoc
 :::
 
@@ -413,25 +414,54 @@ that has to land on a particular feature.
 arithmetic.]{.small}
 :::
 
-## A slideshow in place
+## A flip-book, in place
 
 `.r-stack` piles its children on one spot; wrap each in a fragment and they
 advance one at a time, in the same frame, with nothing else on the slide moving.
+Twelve frames of the clip two slides on, as a sequence of images.
 
 ::: {.r-stack}
-![](attach/zoom-steps/step-1.png){height="330px"}
+![](attach/zoom-frames/frame-01.jpg){height="320px"}
 
 ::: {.fragment .fade-in-then-out}
-![](attach/zoom-steps/step-2.png){height="330px"}
+![](attach/zoom-frames/frame-02.jpg){height="320px"}
+:::
+::: {.fragment .fade-in-then-out}
+![](attach/zoom-frames/frame-03.jpg){height="320px"}
+:::
+::: {.fragment .fade-in-then-out}
+![](attach/zoom-frames/frame-04.jpg){height="320px"}
+:::
+::: {.fragment .fade-in-then-out}
+![](attach/zoom-frames/frame-05.jpg){height="320px"}
+:::
+::: {.fragment .fade-in-then-out}
+![](attach/zoom-frames/frame-06.jpg){height="320px"}
+:::
+::: {.fragment .fade-in-then-out}
+![](attach/zoom-frames/frame-07.jpg){height="320px"}
+:::
+::: {.fragment .fade-in-then-out}
+![](attach/zoom-frames/frame-08.jpg){height="320px"}
+:::
+::: {.fragment .fade-in-then-out}
+![](attach/zoom-frames/frame-09.jpg){height="320px"}
+:::
+::: {.fragment .fade-in-then-out}
+![](attach/zoom-frames/frame-10.jpg){height="320px"}
+:::
+::: {.fragment .fade-in-then-out}
+![](attach/zoom-frames/frame-11.jpg){height="320px"}
+:::
+::: {.fragment .fade-in-then-out}
+![](attach/zoom-frames/frame-12.jpg){height="320px"}
+:::
 :::
 
-::: {.fragment .fade-in-then-out}
-![](attach/zoom-steps/step-3.png){height="330px"}
-:::
-
-::: {.fragment .fade-in-then-out}
-![](attach/zoom-steps/step-4.png){height="330px"}
-:::
+::: {.caption-line}
+This is the only animation that survives the PDF: `make pdf` gives each fragment
+its own page, so the twelve frames come out as twelve pages you can hold an
+arrow key down through. A `<video>` on the next slide prints as one still.
 :::
 
 # Video
@@ -455,6 +485,11 @@ cannot do better. Here the deck *is* a browser, so a video is a video.
 - `controls` gives a scrub bar for questions
 - `muted` is what browsers require before they will autoplay anything
 - `r-stretch` sizes it to whatever height the slide has left
+
+::: {.small .muted}
+In the PDF this prints as one still frame — a page cannot play anything. When
+the animation has to survive on paper too, use the flip-book instead.
+:::
 :::
 
 ::: {.column}

@@ -31,6 +31,15 @@ make all        # HTML, PDF and PPTX
 make standalone # one self-contained .html to email
 ```
 
+`make pdf` writes two files, printed from the built deck in headless Chromium — no LaTeX anywhere:
+
+| | |
+| --- | --- |
+| `out/talk.pdf` | one page per **step**, so builds and flip-books survive; present from this |
+| `out/talk-one-page-per-slide.pdf` | one page per slide, fully built; the handout |
+
+A `<video>` prints as one still frame. For an animation that survives on paper, use an `.r-stack` of image frames with `::: {.fragment .fade-in-then-out}` on each after the first — every frame then gets its own PDF page.
+
 ## What you get
 
 `##` starts a slide, `#` starts a section, `. . .` reveals the rest of it on the

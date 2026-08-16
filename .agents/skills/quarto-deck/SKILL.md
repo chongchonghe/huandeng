@@ -102,7 +102,20 @@ breaks its sizing. For a video beside text, drop `r-stretch` and give it an expl
 
 **Build and export** — every deck has a `Makefile`: `make` for the HTML (Quarto only, no Python),
 `make preview`, `make check`, `make png`, `make all` for HTML + PDF + PPTX, `make standalone` for
-one self-contained file. From the repo root instead:
+one self-contained file.
+
+`make pdf` writes **two** files from one render, both printed in headless Chromium — no LaTeX ever:
+`out/<deck>.pdf` is one page per *step* (builds arrive a piece at a time, flip-books animate) and
+`out/<deck>-one-page-per-slide.pdf` is one page per slide, fully built, for reading and handouts.
+
+**An animation that survives the PDF** is a flip-book, not a video: an `.r-stack` of image frames
+with `::: {.fragment .fade-in-then-out}` on each after the first. Live it steps in place; in the
+per-step PDF each frame takes its own page. A `<video>` prints as one still frame and nothing can
+change that. This is the Quarto flavour's answer to the Typst side's `#movie` — see the demo's
+"A flip-book, in place" slide. Use JPEG for frames of dense simulation output; PNG is roughly ten
+times the size for no visible gain.
+
+From the repo root instead:
 `uv run --extra quarto python quarto/tools/build-slides.py <deck> [--check|--pdf|--png|--pptx|--standalone]`,
 and `make check` at the root verifies both flavours at once.
 
