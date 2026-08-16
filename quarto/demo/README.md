@@ -167,6 +167,12 @@ Quarto has several unrelated PDF paths, and reveal.js is not one of them. `forma
 
 **So do not reach for `quarto render talk.qmd --to pdf`.** It does not fail; it quietly renders the Markdown as a LaTeX *article* and throws the deck away. Measured on the template: `--to pdf` gives 2 pages of US Letter portrait (612 × 792 pt), where `make pdf` gives 6 pages at 998 × 561 pt, one per slide.
 
+`--to typst` is the same trap without the LaTeX. It is a *document* format — an alternative to `format: pdf`, not to `revealjs` — so it also flows the Markdown into a continuous document: slide boundaries gone (6 slides became 4 pages), theme gone, columns collapsed, and `::: notes` printed into the body where an audience would read them. Setting `papersize: presentation-16-9` makes the paper 841.89 × 473.56 pt without making the content slides.
+
+That page size is worth recognising: it is exactly what the Touying decks at the repository root produce. **Typst slides are not missing from this project — they are the other flavour.** If you want a deck built by Typst, with no browser and no LaTeX anywhere, use `template/` at the root; converting a Quarto deck into one is not something to do by hand.
+
+None of this affects `make pdf`, which has never touched LaTeX: it renders the deck to HTML and prints that page in headless Chromium.
+
 ### In the PDF, overflow paginates instead of cutting
 
 Reveal's `?print-pdf` mode wraps each slide in a `.pdf-page` whose height is a whole number of printed pages. A slide that holds too much comes out **two pages tall — the title alone on one page, the body on the next** — which is exactly the silent split the Typst decks get. `--pdf` measures those boxes before printing and names any slide that spills:
