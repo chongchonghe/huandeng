@@ -161,6 +161,12 @@ Three different things look identical — a small deck in a wide empty border �
 2. **`ar` is not 1.78.** A 16:9 deck on a 16:10 or 3:2 laptop letterboxes — the box is as large as it can be and the leftover is unavoidable. It is not visible on a white slide, because the page behind is white too; it *is* visible while presenting on a display that is not 16:9. Nothing to fix: the deck is built for the projector, not the laptop.
 3. **`CAPPED by max-scale` appears.** Reveal refuses to scale past 2× by default, so past about 2560 CSS px wide the deck stops growing and sits in a border that no `margin` will close — at 3200 × 1800 that is a 320 px border left and right. `max-scale: 5` in `_quarto.yml` removes the ceiling; nothing in the deck is a bitmap, so there is no reason to keep it.
 
+### Where the PDF comes from
+
+Quarto has several unrelated PDF paths, and reveal.js is not one of them. `format: pdf` and `format: beamer` go through Pandoc to **LaTeX** (LuaLaTeX by default here) and need a TeX installation; `format: typst` goes through the Typst binary Quarto bundles. `format: revealjs` has **no PDF format at all** — it is a web page, and the PDF comes from printing that page in a browser through reveal's own `?print-pdf` layout. `--pdf` automates exactly that, in headless Chromium.
+
+**So do not reach for `quarto render talk.qmd --to pdf`.** It does not fail; it quietly renders the Markdown as a LaTeX *article* and throws the deck away. Measured on the template: `--to pdf` gives 2 pages of US Letter portrait (612 × 792 pt), where `make pdf` gives 6 pages at 998 × 561 pt, one per slide.
+
 ### In the PDF, overflow paginates instead of cutting
 
 Reveal's `?print-pdf` mode wraps each slide in a `.pdf-page` whose height is a whole number of printed pages. A slide that holds too much comes out **two pages tall — the title alone on one page, the body on the next** — which is exactly the silent split the Typst decks get. `--pdf` measures those boxes before printing and names any slide that spills:

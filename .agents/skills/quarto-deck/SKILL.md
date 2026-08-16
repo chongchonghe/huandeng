@@ -175,6 +175,11 @@ rescue: what does not fit hangs off the edge.
   that is the build to hand to someone who may be offline.
 - **PPTX is Pandoc's re-flow of the Markdown**, not the deck. Columns, fragments and the theme do
   not survive. It is a delivery format, not a source format.
+- **Never `quarto render <deck>.qmd --to pdf`.** `revealjs` has no PDF format: the deck is a web
+  page and its PDF comes from printing that page through reveal's `?print-pdf` layout, which is what
+  `make pdf` does in headless Chromium. `--to pdf` does not fail — it quietly renders the Markdown
+  as a LaTeX *article* and throws the deck away (measured: 2 pages of US Letter portrait against
+  `make pdf`'s 6 pages at 16:9).
 - **`.qmd` YAML and `_quarto.yml` merge**, with the `.qmd` winning. Deck-wide options belong in
   `_quarto.yml`; only this talk's identity — title, author, date, footer — belongs in the `.qmd`.
 - **`---` in a `.qmd` starts a new slide**, exactly as in the Typst flavour a bare `---` starts a
