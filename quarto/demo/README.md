@@ -174,7 +174,7 @@ Reveal reads config overrides off the query string, so this costs one browser pa
 
 ### PPTX is pictures
 
-`make pptx` rasterises that per-step PDF at 200 dpi (`--dpi` to change it) and puts one full-bleed image on each slide, which is exactly what the Typst decks do.
+`make pptx` rasterises that per-step PDF and puts one full-bleed image on each slide, which is exactly what the Typst decks do. Sharpness is a pixel width rather than a print resolution, because these are pictures of a screen: the default 3840 puts a source pixel behind every pixel of a 4K projector, which works out to 277 dpi on this page size and 11.6 MB for the demo's 55 slides. `--width 5120` for a 5K panel, `--width 1920` if the file has to go by email.
 
 It is worth being clear about why, because Pandoc *does* have a native PowerPoint writer and it looks like the obvious answer. It re-flows the Markdown into PowerPoint's own layouts, and every single thing that gives a slide its shape here — the column grids, `.fig` and its credits, `.media-row`, `.highlight`, `.absolute`, the footer, fragments — is CSS. Styling it through a reference document reaches the theme fonts and colours and stops there; the result is a bulleted outline wearing none of the deck's design. Both attempts are in [`../trash/`](../trash/) with the reasoning.
 

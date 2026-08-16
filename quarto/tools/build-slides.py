@@ -5,7 +5,7 @@
     build-slides.py <deck> --html
     build-slides.py <deck> --standalone     one self-contained .html to email
     build-slides.py <deck> --pdf
-    build-slides.py <deck> --pptx           one slide image per page
+    build-slides.py <deck> --pptx           one slide image per page, at 4K
     build-slides.py <deck> --check          render, then look at every slide
     build-slides.py <deck> --png            one PNG per slide, to read
 
@@ -133,7 +133,7 @@ def build_standalone(deck: Deck) -> Path:
     return deck.standalone
 
 
-def build_pptx(deck: Deck, dpi: int) -> Path:
+def build_pptx(deck: Deck, width_px: int, dpi: int | None) -> Path:
     """PowerPoint, one full-bleed slide image per page — as the Typst decks do.
 
     Pandoc's own PPTX writer re-flows the Markdown into PowerPoint's layouts,
@@ -149,6 +149,11 @@ def build_pptx(deck: Deck, dpi: int) -> Path:
     you actually wrote.
 
     Pagination follows `<deck>.pdf`, so a build clicks through step by step.
+
+    Sharpness is set as a pixel width, not a print resolution: these are pictures
+    of a screen, and what matters is whether there is a source pixel behind every
+    display pixel. The default matches a 4K projector across the slide's full
+    width. Anything less is upscaled on the night and looks soft.
     """
     import pymupdf
     from pptx import Presentation
@@ -159,18 +164,26 @@ def build_pptx(deck: Deck, dpi: int) -> Path:
         build_pdf(deck)
 
     doc = pymupdf.open(pdf)
+    page_w_in = doc[0].rect.width / 72
+    # `--dpi` still wins if someone asks for one by name, so the flag means the
+    # same thing here as it does on the Typst side.
+    render_dpi = dpi if dpi is not None else round(width_px / page_w_in)
+
     pres = Presentation()
     # The page is already the slide's shape; take it verbatim rather than
     # rounding to PowerPoint's nominal widescreen, which would rescale every
     # image by a hair.
-    pres.slide_width = Inches(doc[0].rect.width / 72)
+    pres.slide_width = Inches(page_w_in)
     pres.slide_height = Inches(doc[0].rect.height / 72)
     blank = pres.slide_layouts[6]
 
+    px = (0, 0)
     with tempfile.TemporaryDirectory() as scratch:
         for i, page in enumerate(doc):
             frame = Path(scratch) / f"{i + 1:04d}.png"
-            page.get_pixmap(dpi=dpi).save(frame)
+            pixmap = page.get_pixmap(dpi=render_dpi)
+            px = (pixmap.width, pixmap.height)
+            pixmap.save(frame)
             slide = pres.slides.add_slide(blank)
             slide.shapes.add_picture(
                 str(frame), 0, 0, width=pres.slide_width, height=pres.slide_height
@@ -179,8 +192,12 @@ def build_pptx(deck: Deck, dpi: int) -> Path:
     out = deck.out / f"{deck.name}.pptx"
     pres.save(out)
     normalize_zip(out)
+    size_mb = out.stat().st_size / 1e6
     print(f"wrote {out}")
-    print(f"  {doc.page_count} slides, one image each at {dpi} dpi")
+    print(
+        f"  {doc.page_count} slides at {px[0]}x{px[1]}px "
+        f"({render_dpi} dpi), {size_mb:.1f} MB"
+    )
     doc.close()
     return out
 
@@ -513,7 +530,16 @@ def main(argv: list[str] | None = None) -> int:
     )
     ap.add_argument("--pdf", action="store_true")
     ap.add_argument("--pptx", action="store_true")
-    ap.add_argument("--dpi", type=int, default=200, help="PPTX slide image DPI")
+    ap.add_argument(
+        "--width",
+        type=int,
+        default=3840,
+        metavar="PX",
+        help="PPTX slide image width in pixels (default 3840, a 4K projector)",
+    )
+    ap.add_argument(
+        "--dpi", type=int, help="PPTX slide image DPI, overriding --width"
+    )
     ap.add_argument("--png", action="store_true", help="one PNG per slide")
     ap.add_argument("--check", action="store_true", help="overflow and aspect ratio")
     ap.add_argument(
@@ -534,7 +560,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.pdf:
         build_pdf(deck)
     if args.pptx:
-        build_pptx(deck, args.dpi)
+        build_pptx(deck, args.width, args.dpi)
     if args.png:
         build_png(deck)
     # Last, so its verdict is the last thing on screen and the exit code.

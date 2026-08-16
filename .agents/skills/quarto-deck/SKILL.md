@@ -191,7 +191,8 @@ rescue: what does not fit hangs off the edge.
   that is the build to hand to someone who may be offline.
 - **PPTX is slide images**, one full-bleed picture per page rasterised from the PDF, exactly as the
   Typst decks do it. Nothing is editable in PowerPoint and the deck arrives looking like itself.
-  `--dpi` (default 200) if you need it sharper or smaller. **Do not reach for Pandoc's native
+  Rendered 3840 px wide by default, so a 4K projector has a source pixel for every display
+  pixel; `--width 5120` or `--width 1920` to change it. **Do not reach for Pandoc's native
   PowerPoint writer** — every layout class here is CSS, so it re-flows the Markdown into a bulleted
   outline wearing none of the design, and a `reference-doc` reaches the theme fonts and colours and
   no further. Both attempts are in `quarto/trash/` with the reasoning.
