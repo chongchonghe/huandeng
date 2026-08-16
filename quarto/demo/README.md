@@ -104,7 +104,7 @@ For two clips that have to keep their true relative scale, `.video-pair` with `s
 | HTML | the deck: real video, fragments, speaker view, the lot |
 | standalone HTML | the same in one file, video and fonts and MathJax inlined |
 | PDF | two of them — one page per step, and one page per slide. See [Two PDFs, and why](#two-pdfs-and-why). Video prints as its first frame |
-| PPTX | Pandoc's re-flow of the Markdown — the text and the images, none of the layout |
+| PPTX | one full-bleed slide image per page, rasterised from that PDF. Not editable, and pixel-identical to the deck |
 
 ## Export
 
@@ -171,6 +171,14 @@ Three different things look identical — a small deck in a wide empty border �
 | `out/demo-one-page-per-slide.pdf` | 34 — one page per slide, fully built | the handout, and reading the deck back to check it |
 
 Reveal reads config overrides off the query string, so this costs one browser pass each and no second render: `?print-pdf&pdfSeparateFragments=true` for the first, plain `?print-pdf` for the second.
+
+### PPTX is pictures
+
+`make pptx` rasterises that per-step PDF at 200 dpi (`--dpi` to change it) and puts one full-bleed image on each slide, which is exactly what the Typst decks do.
+
+It is worth being clear about why, because Pandoc *does* have a native PowerPoint writer and it looks like the obvious answer. It re-flows the Markdown into PowerPoint's own layouts, and every single thing that gives a slide its shape here — the column grids, `.fig` and its credits, `.media-row`, `.highlight`, `.absolute`, the footer, fragments — is CSS. Styling it through a reference document reaches the theme fonts and colours and stops there; the result is a bulleted outline wearing none of the deck's design. Both attempts are in [`../trash/`](../trash/) with the reasoning.
+
+So: nothing in the PPTX is editable, and in exchange the deck arrives looking like itself. That is the right trade for a format whose entire purpose is the conference that insists on it.
 
 **A `<video>` prints as one still frame.** A page cannot play anything, and nothing can be done about that. When an animation has to survive on paper, use a **flip-book** instead — an `.r-stack` of image frames, each after the first wrapped in `::: {.fragment .fade-in-then-out}`. In the live deck it steps in place like a movie; in `demo.pdf` each frame gets its own page, so twelve frames come out as twelve consecutive pages you can hold an arrow key down through. That is the Quarto flavour's equivalent of the Typst side's `#movie`, and the demo's "A flip-book, in place" slide is the worked example.
 

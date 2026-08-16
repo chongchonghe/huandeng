@@ -17,21 +17,22 @@ out/
 
 # Quarto's own cache, and a stray in-place render: `quarto render <file>` writes
 # beside the source and ignores output-dir, where a bare `quarto render` does not.
-# fonts.html and reference.pptx are source, not output — the deck's @font-face
-# rules and the template Pandoc styles PowerPoint from.
+# fonts.html and guides.html are source, not output — the deck's @font-face
+# rules and its layout guides. The glob below is for stray in-place renders and
+# would otherwise eat them, which it silently did for several commits.
 .quarto/
 /quarto/*/*.html
 !/quarto/*/fonts.html
 !/quarto/*/guides.html
 /quarto/*/*.pdf
 /quarto/*/*.pptx
-!/quarto/*/reference.pptx
 /quarto/*/*_files/
 
 # Dead-end exports kept for reference. The README there says how to regenerate
 # them, which is worth committing; the artefacts themselves are not.
 /quarto/trash/*
 !/quarto/trash/README.md
+!/quarto/trash/*.py
 
 # Your own decks. The folder is tracked so it is there after a clone; everything
 # you put in it is not, so your talks never become part of this repository and

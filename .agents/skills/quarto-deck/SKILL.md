@@ -189,12 +189,12 @@ rescue: what does not fit hangs off the edge.
   costs no page — the whole equation stays one slide.
 - **Maths comes from a CDN** in a normal render. `make standalone` inlines it with everything else;
   that is the build to hand to someone who may be offline.
-- **PPTX is Pandoc's re-flow of the Markdown**, not the deck. Fragments, `.fig`, `.media-row`,
-  `.absolute` and video do not survive; it is a delivery format, not a source format. Two things do
-  help: write 50/50 splits as `.columns` (Pandoc maps that to a real two-column layout), and keep
-  the deck's `reference.pptx`, which is where Pandoc gets its masters, layouts and theme. Rebuild it
-  with `quarto/tools/make-reference-pptx.py <deck>`. Its font is Aptos, not the deck's Fira Sans,
-  because PPTX cannot embed fonts and Aptos is one current Office actually ships.
+- **PPTX is slide images**, one full-bleed picture per page rasterised from the PDF, exactly as the
+  Typst decks do it. Nothing is editable in PowerPoint and the deck arrives looking like itself.
+  `--dpi` (default 200) if you need it sharper or smaller. **Do not reach for Pandoc's native
+  PowerPoint writer** — every layout class here is CSS, so it re-flows the Markdown into a bulleted
+  outline wearing none of the design, and a `reference-doc` reaches the theme fonts and colours and
+  no further. Both attempts are in `quarto/trash/` with the reasoning.
 - **Never `quarto render <deck>.qmd --to pdf`, and never `--to typst`.** `revealjs` has no PDF
   format: the deck is a web page and its PDF comes from printing that page through reveal's
   `?print-pdf` layout, which is what `make pdf` does in headless Chromium — no LaTeX anywhere, ever.

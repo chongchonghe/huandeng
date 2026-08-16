@@ -5,14 +5,16 @@
     build-slides.py <deck> --html
     build-slides.py <deck> --standalone     one self-contained .html to email
     build-slides.py <deck> --pdf
-    build-slides.py <deck> --pptx
+    build-slides.py <deck> --pptx           one slide image per page
     build-slides.py <deck> --check          render, then look at every slide
     build-slides.py <deck> --png            one PNG per slide, to read
 
-`--html`, `--standalone` and `--pptx` are `quarto render` with the right flags,
-and you can type those yourself. `--pdf`, `--png` and `--check` drive a headless
+`--html` and `--standalone` are `quarto render` with the right flags, and you
+can type those yourself. `--pdf`, `--png` and `--check` drive a headless
 Chromium through Playwright, because they need a browser to have laid the slides
-out before there is anything to measure or print.
+out before there is anything to measure or print; `--pptx` then rasterises that
+PDF, because a deck whose layout is CSS cannot survive Pandoc's PowerPoint
+writer — see `build_pptx`.
 
 `--check` is the reason this file exists. A reveal.js slide that holds too much
 does not error and does not shrink: the surplus hangs into the thin margin
@@ -32,6 +34,8 @@ import argparse
 import shutil
 import subprocess
 import sys
+import tempfile
+import zipfile
 from pathlib import Path
 
 TOLERANCE_PX = 2.0  # slide-space pixels of overflow to forgive
@@ -129,15 +133,71 @@ def build_standalone(deck: Deck) -> Path:
     return deck.standalone
 
 
-def build_pptx(deck: Deck) -> Path:
-    """PowerPoint from the same Markdown.
+def build_pptx(deck: Deck, dpi: int) -> Path:
+    """PowerPoint, one full-bleed slide image per page — as the Typst decks do.
 
-    Pandoc re-flows the slides into PowerPoint's own layouts; the reveal.js
-    theme, the column grids and the fragments do not survive. It is a delivery
-    format for the conference that insists on one, not a source format.
+    Pandoc's own PPTX writer re-flows the Markdown into PowerPoint's layouts,
+    and everything that makes a slide a slide here is CSS: the columns, the
+    figure credits, the callouts, the theme. What comes out is a bulleted
+    outline wearing none of the deck's design. Styling it through a reference
+    document reaches the fonts and the colours and no further.
+
+    So do what the Typst side does instead and ship pictures. Each page of the
+    PDF — already printed from the real deck in a real browser — becomes one
+    image filling one slide. Nothing is editable in PowerPoint, and that is the
+    honest trade: PPTX is a delivery format, and this way it delivers the deck
+    you actually wrote.
+
+    Pagination follows `<deck>.pdf`, so a build clicks through step by step.
     """
-    quarto(deck, "--to", "pptx")
-    return deck.out / f"{deck.name}.pptx"
+    import pymupdf
+    from pptx import Presentation
+    from pptx.util import Inches
+
+    pdf = deck.pdf
+    if not pdf.exists() or not deck.fresh:
+        build_pdf(deck)
+
+    doc = pymupdf.open(pdf)
+    pres = Presentation()
+    # The page is already the slide's shape; take it verbatim rather than
+    # rounding to PowerPoint's nominal widescreen, which would rescale every
+    # image by a hair.
+    pres.slide_width = Inches(doc[0].rect.width / 72)
+    pres.slide_height = Inches(doc[0].rect.height / 72)
+    blank = pres.slide_layouts[6]
+
+    with tempfile.TemporaryDirectory() as scratch:
+        for i, page in enumerate(doc):
+            frame = Path(scratch) / f"{i + 1:04d}.png"
+            page.get_pixmap(dpi=dpi).save(frame)
+            slide = pres.slides.add_slide(blank)
+            slide.shapes.add_picture(
+                str(frame), 0, 0, width=pres.slide_width, height=pres.slide_height
+            )
+
+    out = deck.out / f"{deck.name}.pptx"
+    pres.save(out)
+    normalize_zip(out)
+    print(f"wrote {out}")
+    print(f"  {doc.page_count} slides, one image each at {dpi} dpi")
+    doc.close()
+    return out
+
+
+ZIP_EPOCH = (1980, 1, 1, 0, 0, 0)
+
+
+def normalize_zip(path: Path) -> None:
+    """Rewrite an archive with fixed timestamps, so identical input gives identical bytes."""
+    with zipfile.ZipFile(path) as src:
+        members = [(info, src.read(info.filename)) for info in src.infolist()]
+    with zipfile.ZipFile(path, "w", zipfile.ZIP_DEFLATED) as out:
+        for info, data in members:
+            fixed = zipfile.ZipInfo(info.filename, date_time=ZIP_EPOCH)
+            fixed.compress_type = info.compress_type
+            fixed.external_attr = info.external_attr
+            out.writestr(fixed, data)
 
 
 # ----------------------------------------------------------------- browser --
@@ -453,6 +513,7 @@ def main(argv: list[str] | None = None) -> int:
     )
     ap.add_argument("--pdf", action="store_true")
     ap.add_argument("--pptx", action="store_true")
+    ap.add_argument("--dpi", type=int, default=200, help="PPTX slide image DPI")
     ap.add_argument("--png", action="store_true", help="one PNG per slide")
     ap.add_argument("--check", action="store_true", help="overflow and aspect ratio")
     ap.add_argument(
@@ -473,7 +534,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.pdf:
         build_pdf(deck)
     if args.pptx:
-        build_pptx(deck)
+        build_pptx(deck, args.dpi)
     if args.png:
         build_png(deck)
     # Last, so its verdict is the last thing on screen and the exit code.

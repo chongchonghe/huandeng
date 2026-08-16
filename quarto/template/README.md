@@ -15,7 +15,6 @@ make preview
 | `theme.scss` | the look: colours, type, the layout classes |
 | `fonts.html` | ships Fira Sans with the deck; see the note inside |
 | `guides.html` | the **X** key: draws the 1280 × 720 slide boundary while you write |
-| `reference.pptx` | the template Pandoc styles PowerPoint from; rebuild with `quarto/tools/make-reference-pptx.py` |
 | `attach/` | images and video, referenced as `attach/foo.png` |
 | `fonts/` | Fira Sans, so the deck renders the same anywhere |
 | `ref.bib` | citations, if the talk has any |
@@ -40,6 +39,8 @@ make standalone # one self-contained .html to email
 | `out/talk-one-page-per-slide.pdf` | one page per slide, fully built; the handout |
 
 A `<video>` prints as one still frame. For an animation that survives on paper, use an `.r-stack` of image frames with `::: {.fragment .fade-in-then-out}` on each after the first — every frame then gets its own PDF page.
+
+`make pptx` rasterises that PDF into `out/talk.pptx`, one full-bleed image per slide. Nothing is editable in PowerPoint; in exchange the deck arrives looking like itself, which Pandoc's native writer cannot manage because the layout is CSS.
 
 ## What you get
 

@@ -22,7 +22,7 @@ A browser opens on the deck and reloads every time you save. Edit `talk.qmd`, an
 | `make` | render `out/talk.html` |
 | `make preview` | the same, reloading as you save |
 | `make check` | render, then look at every slide for the things that fail silently |
-| `make all` | also write a PDF and a PowerPoint file |
+| `make all` | also write the PDFs and a PowerPoint of slide images |
 | `make standalone` | one self-contained `.html` you can email |
 | `make png` | one PNG per slide, so you can read them |
 
@@ -51,7 +51,7 @@ If you are writing a conference talk with three simulation movies in it, this fl
 
 | | |
 | --- | --- |
-| **One source, five outputs** | HTML, a single self-contained HTML, two PDFs and a PPTX — from the same `talk.qmd` |
+| **One source, five outputs** | HTML, a single self-contained HTML, two PDFs and a PPTX of slide images — from the same `talk.qmd` |
 | **A PDF that keeps the builds** | `make pdf` writes one page per *step* to present from, and one page per slide to hand out. Printed in headless Chromium, so it is the deck you wrote — no LaTeX anywhere |
 | **Video that needs no pipeline** | an `.mp4` in `attach/` and one `<video>` tag; reveal starts it on the slide and rewinds it on the way out. For an animation that survives the PDF too, a flip-book of frames steps in place live and takes one page per frame on paper |
 | **A checker for silent failures** | a reveal.js slide that holds too much does not error and does not shrink — it hangs off the edge, and how much of that the room sees depends on the screen's aspect ratio. `make check` catches it, catches figures drawn at the wrong aspect ratio, and catches images that never loaded |
@@ -64,7 +64,8 @@ If you are writing a conference talk with three simulation movies in it, this fl
 
 ```
 quarto/
-  tools/build-slides.py   the browser-backed half: --check, --pdf, --png
+  tools/build-slides.py   the browser-backed half: --check, --pdf, --png, --pptx
+  trash/                  dead ends, with a README recording why
   template/               the starting point. Copy it; never edit it in place.
   demo/                   every feature, working, as a reference deck
   Makefile                make check verifies every Quarto deck at once

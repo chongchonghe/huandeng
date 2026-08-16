@@ -26,6 +26,20 @@ It is the closest of the three, and worth understanding rather than dismissing �
 
 None of that is a bug in the extension. It is a *third flavour* — same Markdown, different deck — not an exporter. If you want a deck genuinely built by Typst, `template/` at the repository root is the supported route and hands you the full Touying API instead of what survives a Markdown round trip.
 
+## Pandoc's own PowerPoint writer
+
+`demo-pandoc-styled.pptx` and `make-reference-pptx.py` are the second dead end, and they are here for the same reason: to save the next person the afternoon.
+
+Pandoc has a real PPTX writer, and it can be styled — not by CSS but by a *reference document*, which supplies the slide masters, layouts, theme fonts and theme colours. The script rebuilds Pandoc's own default with the deck's palette, and patches `<p:titleStyle>` on the master so titles come out primary blue and left aligned rather than centred black. It works, as far as it goes:
+
+- `.columns` (not `.columns-1-1` — Pandoc only knows the former) becomes a real two-column **Two Content** slide
+- theme colours travel inside the file, so they always arrive
+- fonts do **not** travel: PowerPoint embeds fonts on Windows only and Pandoc does not do it at all, so the reference doc used Aptos rather than the deck's Fira Sans
+
+And it still looked like a Pandoc outline rather than the deck, because everything that gives a slide its shape here — the columns beyond 50/50, `.fig` and its credits, `.media-row`, `.highlight`, `.absolute`, the footer, fragments — is CSS, and PowerPoint has never heard of CSS.
+
+**The conclusion is the same as the Typst one, and it is the same conclusion twice: only a browser can render this deck.** So `--pptx` now rasterises the PDF and ships one full-bleed image per slide, exactly as the Typst decks do. Nothing is editable in PowerPoint, and in exchange the deck arrives looking like itself.
+
 ## Regenerating any of this
 
 ```bash
