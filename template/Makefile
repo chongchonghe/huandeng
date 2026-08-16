@@ -1,57 +1,67 @@
 # Build this deck. Run from the deck's own directory.
 #
-#   make          the PDF, with Typst alone — the fast loop while writing
-#   make watch    the same, recompiled on every save
-#   make check    build and verify; catches a slide that silently spilled
-#   make all      PDF, HTML and PPTX
-#   make clean    delete out/
+#   make            render the HTML — the fast loop while writing
+#   make preview    a browser that reloads every time you save
+#   make check      render, then look at every slide: overflow, stretched figures
+#   make png        one PNG per slide, so you can read them
+#   make all        HTML, PDF and PPTX
+#   make standalone one self-contained .html you can email
+#   make clean      delete out/
 #
-# `make` and `make watch` need nothing but Typst, so they still work in a deck
-# copied anywhere, years from now. The other three need the shared build tool,
-# which by design lives outside the deck; they look for it up the directory tree
-# and say so plainly if it is not there.
+# `make` and `make preview` need nothing but Quarto, so they still work in a
+# deck copied anywhere, years from now. The other targets need the shared build
+# tool, which by design lives outside the deck; they look for it up the
+# directory tree and say so plainly if it is not there.
 
-DECK  := $(notdir $(CURDIR))
-FONTS := $(if $(wildcard fonts),--font-path fonts,)
+DECK := $(notdir $(CURDIR))
 
-# Set EXPECT only if this deck deliberately produces a page count the source does
-# not imply — a slide split on purpose, a multi-page bibliography. Pinning the
-# real number keeps `make check` meaningful: it still fails the day a slide
-# starts overflowing, because the count moves off the pinned one.
+# Set EXPECT only if you want the slide count pinned. `make check` then fails
+# the day a slide appears or disappears without you meaning it to.
 EXPECT ?=
 CHECK  := --check $(if $(EXPECT),--expect $(EXPECT),)
-ROOT  := $(shell d="$(CURDIR)"; while [ "$$d" != "/" ]; do \
-             if [ -f "$$d/tools/build-slides.py" ]; then echo "$$d"; break; fi; \
-             d=$$(dirname "$$d"); \
-         done)
+
+ROOT := $(shell d="$(CURDIR)"; while [ "$$d" != "/" ]; do \
+            if [ -f "$$d/tools/build-slides.py" ]; then echo "$$d"; break; fi; \
+            d=$$(dirname "$$d"); \
+        done)
 
 # Every tool target runs from the repo root, so `uv` finds the project, and is
 # given this deck by absolute path.
 define run-tool
 @if [ -z "$(ROOT)" ]; then \
     echo "No tools/build-slides.py above $(CURDIR)."; \
-    echo "This deck is on its own — 'make' and 'make watch' still work."; \
+    echo "This deck is on its own — 'make' and 'make preview' still work."; \
     exit 1; \
 fi; \
 cd "$(ROOT)" && uv run python tools/build-slides.py "$(CURDIR)" $(1)
 endef
 
-.DEFAULT_GOAL := pdf
-.PHONY: pdf watch check all clean
+.DEFAULT_GOAL := html
+.PHONY: html preview check png pdf pptx standalone all clean
 
-pdf:
-	@mkdir -p out
-	typst compile $(FONTS) main.typ out/$(DECK).pdf
+html:
+	quarto render
 
-watch:
-	@mkdir -p out
-	typst watch $(FONTS) main.typ out/$(DECK).pdf
+preview:
+	quarto preview
 
 check:
 	$(call run-tool,$(CHECK))
+
+png:
+	$(call run-tool,--png)
+
+pdf:
+	$(call run-tool,--pdf)
+
+pptx:
+	$(call run-tool,--pptx)
+
+standalone:
+	$(call run-tool,--standalone)
 
 all:
 	$(call run-tool,)
 
 clean:
-	rm -rf out
+	rm -rf out .quarto

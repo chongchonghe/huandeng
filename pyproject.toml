@@ -1,20 +1,17 @@
 [project]
-name = "touying-template"
+name = "huandeng"
 version = "0.1.0"
+description = "Academic slide decks in plain text, on Quarto and reveal.js"
 requires-python = ">=3.13"
 dependencies = [
+    # Drives a headless Chromium: the PDF, the per-slide PNGs, and every check.
+    # A browser is not optional here — the deck's layout is CSS, so nothing else
+    # can tell you where a slide's content actually landed.
+    "playwright>=1.49.0",
+    # Rasterises PDF pages into the PPTX.
     "pymupdf>=1.28.0",
     "python-pptx>=1.0.2",
-    "typst>=0.15.0",
 ]
 
-# Only the Quarto decks need a browser, and only for `--check`, `--pdf` and
-# `--png`. Keeping it out of the base dependencies means a Typst-only checkout
-# never downloads Chromium.
-#
-#   uv sync --extra quarto
-#   uv run --extra quarto playwright install chromium
-[project.optional-dependencies]
-quarto = [
-    "playwright>=1.49.0",
-]
+# After `uv sync`, fetch the browser once:
+#     uv run playwright install chromium

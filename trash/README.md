@@ -2,7 +2,7 @@
 
 Dead ends, kept because knowing *why* they are dead ends is worth more than the disk they cost. Nothing here is part of the build; nothing here is committed except this file. Delete the folder whenever you like — the commands below regenerate all of it.
 
-The question these answer: **can a Quarto deck be turned into a PDF by something other than a browser?** Every attempt below says no, for the same underlying reason — the layout of this flavour is CSS, and neither LaTeX nor Typst can read CSS.
+The question these answer: **can a Quarto deck be turned into a PDF by something other than a browser?** Every attempt below says no, for the same underlying reason — the layout here is CSS, and neither LaTeX nor Typst can read CSS.
 
 | file | what made it | verdict |
 | --- | --- | --- |
@@ -24,7 +24,7 @@ It is the closest of the three, and worth understanding rather than dismissing �
 - **dropped** — `.highlight`, `.fig`, `.media-row`, `.absolute`, `.r-stack`, the footer, and `theme.scss` entirely
 - **leaked** — `::: notes` printed into the body, where an audience reads it
 
-None of that is a bug in the extension. It is a *third flavour* — same Markdown, different deck — not an exporter. If you want a deck genuinely built by Typst, `template/` at the repository root is the supported route and hands you the full Touying API instead of what survives a Markdown round trip.
+None of that is a bug in the extension. It is a different deck built from the same Markdown, not an exporter for this one. If you want slides genuinely built by Typst, write [Touying](https://github.com/touying-typ/touying) by hand — its full API beats whatever survives a Markdown round trip.
 
 ## Pandoc's own PowerPoint writer
 
@@ -38,12 +38,12 @@ Pandoc has a real PPTX writer, and it can be styled — not by CSS but by a *ref
 
 And it still looked like a Pandoc outline rather than the deck, because everything that gives a slide its shape here — the columns beyond 50/50, `.fig` and its credits, `.media-row`, `.highlight`, `.absolute`, the footer, fragments — is CSS, and PowerPoint has never heard of CSS.
 
-**The conclusion is the same as the Typst one, and it is the same conclusion twice: only a browser can render this deck.** So `--pptx` now rasterises the PDF and ships one full-bleed image per slide, exactly as the Typst decks do. Nothing is editable in PowerPoint, and in exchange the deck arrives looking like itself.
+**The conclusion is the same as the Typst one, and it is the same conclusion twice: only a browser can render this deck.** So `--pptx` now rasterises the PDF and ships one full-bleed image per slide. Nothing is editable in PowerPoint, and in exchange the deck arrives looking like itself.
 
 ## Regenerating any of this
 
 ```bash
-cp -r quarto/template /tmp/scratch && cd /tmp/scratch
+cp -r template /tmp/scratch && cd /tmp/scratch
 
 quarto render talk.qmd --to pdf                       # LuaLaTeX
 quarto render talk.qmd --to typst -M keep-typ:true    # stock Typst

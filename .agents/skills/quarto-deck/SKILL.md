@@ -1,19 +1,16 @@
 ---
 name: quarto-deck
-description: Write or edit slides in this repo's Quarto + reveal.js decks (the quarto/ flavour). Use when adding or changing slides in a .qmd, starting a new Quarto talk, inserting a figure with a source credit, adding video or a GIF, exporting to HTML/PDF/PPTX, or debugging a slide whose content runs off the edge. Covers the repo's own theme classes (fig, credit, media-row, columns-N-M) which are NOT part of stock Quarto.
+description: Write or edit slides in this repo's Quarto + reveal.js decks. Use when adding or changing slides in a .qmd, starting a new Quarto talk, inserting a figure with a source credit, adding video or a GIF, exporting to HTML/PDF/PPTX, or debugging a slide whose content runs off the edge. Covers the repo's own theme classes (fig, credit, media-row, columns-N-M) which are NOT part of stock Quarto.
 ---
 
 # Quarto deck
 
-This repo has two flavours. **Typst + Touying** at the root (`template/`, `demo/`) and **Quarto +
-reveal.js** under `quarto/`. They are siblings, not versions: pick per talk, never convert one into
-the other. For the Typst flavour use the **slide-deck** skill instead — nothing below applies to it.
-
-A deck here is Quarto Markdown plus a layer of local CSS classes. Stock Quarto knowledge is
+This repo builds slide decks with **Quarto + reveal.js**. A deck is Quarto Markdown plus a layer
+of local CSS classes. Stock Quarto knowledge is
 [online](https://quarto.org/docs/presentations/revealjs/); **this skill covers what is local and
 therefore unguessable.**
 
-Authoritative source is always the code: `quarto/template/theme.scss` defines every class below.
+Authoritative source is always the code: `template/theme.scss` defines every class below.
 Read it rather than trusting this summary if the two disagree.
 
 ## Structure
@@ -87,13 +84,13 @@ Reveal's own `.incremental`, `.fragment`, `.absolute`, `.r-stack`, `.r-stretch`,
 
 ## Workflows
 
-**New talk** — `cp -r quarto/template talks/2027-my-talk`, then edit `talk.qmd`. Fill in the YAML
+**New talk** — `cp -r template talks/2027-my-talk`, then edit `talk.qmd`. Fill in the YAML
 block first: title, author, institute, and `footer`, which is the only place the short forms appear.
 
 **Write and look** — `make preview` from the deck. Quarto serves it and reloads on every save.
 
 **Add video** — drop the `.mp4` in `attach/` and write the tag. There is no pipeline and no frame
-extraction; that machinery belongs to the Typst flavour, which needs it because PDF has no video.
+extraction: the deck is a browser, so a video is a video.
 
 ```html
 <video class="r-stretch video-center" src="attach/clip.mp4"
@@ -114,24 +111,18 @@ one self-contained file.
 **An animation that survives the PDF** is a flip-book, not a video: an `.r-stack` of image frames
 with `::: {.fragment .fade-in-then-out}` on each after the first. Live it steps in place; in the
 per-step PDF each frame takes its own page. A `<video>` prints as one still frame and nothing can
-change that. This is the Quarto flavour's answer to the Typst side's `#movie` — see the demo's
-"A flip-book, in place" slide. Use JPEG for frames of dense simulation output; PNG is roughly ten
+change that. See the demo's "A flip-book, in place" slide. Use JPEG for frames of dense simulation output; PNG is roughly ten
 times the size for no visible gain.
 
 From the repo root instead:
-`uv run --extra quarto python quarto/tools/build-slides.py <deck> [--check|--pdf|--png|--pptx|--standalone]`,
-and `make check` at the root verifies both flavours at once.
-
-**Convert a PowerPoint or Keynote deck** — there is no Quarto-specific importer. Use
-**pptx-to-typst** to extract the media correctly (it reads PowerPoint's own crop rectangles and
-corrects video pixel aspect ratio), then re-typeset the text as Markdown rather than Typst.
+`uv run python tools/build-slides.py <deck> [--check|--pdf|--png|--pptx|--standalone]`,
+and `make check` at the root verifies every deck at once.
 
 ## House style
 
 The **quarto-revealjs-styles** skill, if installed, carries the author's slide-writing style —
-terse bullets, narrative in `::: notes`, readable equations. It applies here unchanged. The
-figure-specific rules from the Typst flavour also carry over, because they are about slides, not
-about Typst:
+terse bullets, narrative in `::: notes`, readable equations. It applies here unchanged. On top of
+that:
 
 - **Figures are drawn too small by default.** A figure is the content of a slide, not an
   illustration beside it. Start near the width the slide allows and come down only if something
@@ -185,17 +176,17 @@ rescue: what does not fit hangs off the edge.
   the SCSS and the deck silently falls back to another typeface and re-flows every line.
 - **`\color{red}{..}`, never `\textcolor`.** The web maths renderer does not define the latter and
   prints it as literal red error text.
-- **`\class{fragment}{..}`** builds an equation up one term per keypress. Unlike Typst's `#pause` it
-  costs no page — the whole equation stays one slide.
+- **`\class{fragment}{..}`** builds an equation up one term per keypress, and the whole equation
+  stays one slide.
 - **Maths comes from a CDN** in a normal render. `make standalone` inlines it with everything else;
   that is the build to hand to someone who may be offline.
-- **PPTX is slide images**, one full-bleed picture per page rasterised from the PDF, exactly as the
-  Typst decks do it. Nothing is editable in PowerPoint and the deck arrives looking like itself.
+- **PPTX is slide images**, one full-bleed picture per page rasterised from the PDF. Nothing is
+  editable in PowerPoint and the deck arrives looking like itself.
   Rendered 3840 px wide by default, so a 4K projector has a source pixel for every display
   pixel; `--width 5120` or `--width 1920` to change it. **Do not reach for Pandoc's native
   PowerPoint writer** — every layout class here is CSS, so it re-flows the Markdown into a bulleted
   outline wearing none of the design, and a `reference-doc` reaches the theme fonts and colours and
-  no further. Both attempts are in `quarto/trash/` with the reasoning.
+  no further. Both attempts are in `trash/` with the reasoning.
 - **Never `quarto render <deck>.qmd --to pdf`, and never `--to typst`.** `revealjs` has no PDF
   format: the deck is a web page and its PDF comes from printing that page through reveal's
   `?print-pdf` layout, which is what `make pdf` does in headless Chromium — no LaTeX anywhere, ever.
@@ -206,20 +197,18 @@ rescue: what does not fit hangs off the edge.
 - **A .qmd → Touying bridge does exist**, and it makes real slides:
   `quarto add kazuyanagimoto/quarto-clean-typst` then `--to clean-typst` gives 841.89 x 473.56 pt,
   one page per `##`, section dividers, slide numbers, no LaTeX and no browser. But it is a *third
-  flavour*, not an exporter for this deck. Run on `quarto/demo`, 34 slides became **58 pages**: every
+  deck built from the same Markdown, not an exporter for this one. Run on `demo`, 34 slides became
+  **58 pages**: every
   layout class here is CSS, so columns collapse and slides split 2–4 ways, `.fig` credits strand on
   pages of their own, `.highlight`/`.media-row`/`.absolute`/`.r-stack` drop, `::: notes` prints into
   the body, and the output wears the extension's theme. Two failures are silent and would reach the
   room: **video renders as nothing** (a caption over blank space) and **`\class{fragment}{..}` maths
-  prints as raw LaTeX source**. Mermaid does survive. For a deck genuinely built by Typst, use the
-  Typst + Touying flavour at the repository root — the full Touying API instead of what survives a
-  Markdown round trip.
+  prints as raw LaTeX source**. Mermaid does survive. If you want slides genuinely built by Typst,
+  write Touying by hand — its full API beats whatever survives a Markdown round trip.
 - **`.qmd` YAML and `_quarto.yml` merge**, with the `.qmd` winning. Deck-wide options belong in
   `_quarto.yml`; only this talk's identity — title, author, date, footer — belongs in the `.qmd`.
-- **`---` in a `.qmd` starts a new slide**, exactly as in the Typst flavour a bare `---` starts a
-  new page. Do not write an em dash as `---` in prose.
-- **`make check` needs Chromium**: `uv sync --extra quarto && uv run --extra quarto playwright
-  install chromium`. `make` and `make preview` need only Quarto.
+- **`---` in a `.qmd` starts a new slide.** Do not write an em dash as `---` in prose.
+- **`make check` needs Chromium**: `uv sync && uv run playwright install chromium`. `make` and `make preview` need only Quarto.
 - **"The deck does not fill the screen" is usually not `margin`.** `margin` removes that fraction of
   the *window* in total, half a side — 0.04 is a 38px border at 1920 wide, nothing like a "huge"
   one. Press **X** and read the label: low `fill %` means the slide itself is half empty (the
