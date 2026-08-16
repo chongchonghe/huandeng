@@ -134,9 +134,12 @@ so it will not arrive on its own — ask for it.
 
 The figure-specific half of the house style is here, because it is about the classes above:
 
-- **Figures are drawn too small by default.** A figure is the content of a slide, not an
-  illustration beside it. Start near the width the slide allows and come down only if something
-  collides.
+- **A figure fills its column.** A figure is the content of a slide, not an illustration beside it,
+  so the default is the full width of whatever it sits in — the column, or the slide. Come down from
+  that only when the height would overflow or something collides, and then bind on the height and
+  take whatever width that implies. Drawing a figure smaller than its column because the slide looks
+  better balanced is the standing mistake here: it is invisible while you write, because a
+  half-size figure is not an error and `make check` passes it. `make png` and look.
 - **Captions go above the figure**; provenance goes in `.credit`; a statement about the whole slide
   goes in the slide body, not in a caption.
 - **Align figures on their tops**, not their centres — `.media-row` and `.columns-*` already do.
@@ -173,6 +176,16 @@ rescue: what does not fit hangs off the edge.
   the cap squeezes the width by 5% while an explicit `height` holds firm, and the figure comes out
   stretched. `theme.scss` raises the cap to 100%; a deck copied from an older template may not have
   that fix.
+- **An `.absolute` div carrying its own `style` must end that style with a semicolon.** Quarto
+  appends `top: ..px; left: ..px;` onto the existing `style` string without a separator, so
+  `style="font-size:1.15em"` compiles to `font-size:1.15emtop: 104px; left: 251px;` — the browser
+  discards the run-together first declaration, `top` goes with it, and the element falls back to its
+  static position. Every label on the slide then stacks in one row under the heading, `left` alone
+  having survived. Write `style="font-size:1.15em;"` and it is fine. Nothing warns.
+- **A `:::` fence does not parse inside a list item.** A `::: {.small}` block indented under a
+  bullet is left alone by Pandoc: the literal `:::` prints onto the slide and the build says only
+  `The following string was found in the document: :::`. Use a span — `[text]{.small}` — for styled
+  prose that has to sit under a bullet.
 - **Slide backgrounds must be attributes, not CSS.** reveal paints them on a layer of its own,
   behind and outside the 4% margin, so `background:` in `theme.scss` stops at the margin and leaves
   a white frame. Use `{background-color="#0a6ebd"}` on the heading, or `title-slide-attributes:` in
