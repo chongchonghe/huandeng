@@ -179,10 +179,17 @@ rescue: what does not fit hangs off the edge.
   format: the deck is a web page and its PDF comes from printing that page through reveal's
   `?print-pdf` layout, which is what `make pdf` does in headless Chromium — no LaTeX anywhere, ever.
   `--to pdf` does not fail; it quietly renders the Markdown as a LaTeX *article* and throws the deck
-  away (measured: 2 pages of US Letter portrait against `make pdf`'s 6 pages at 16:9). `--to typst`
-  is the same trap without the LaTeX — a document format, so slide boundaries, theme and columns all
-  go, and `::: notes` gets printed into the body. For Typst *slides*, use the Typst + Touying
-  flavour at the repository root; that is what it is for.
+  away (measured: 2 pages of US Letter portrait against `make pdf`'s 6 pages at 16:9). Quarto's
+  stock `--to typst` is the same trap without the LaTeX — a document format, so slide boundaries,
+  theme and columns all go, and `::: notes` gets printed into the body.
+- **A .qmd → Touying bridge does exist**, and it makes real slides:
+  `quarto add kazuyanagimoto/quarto-clean-typst` then `--to clean-typst` gives 841.89 x 473.56 pt,
+  one page per `##`, section dividers, slide numbers, no LaTeX and no browser. But it is a *third
+  flavour*, not an exporter for this deck: every layout class here is CSS, so columns collapse (the
+  two-column slide split across two pages), `.fig` credits strand, `.highlight` flattens, `::: notes`
+  prints into the body, and the output wears the extension's theme rather than `theme.scss`. For a
+  deck genuinely built by Typst, use the Typst + Touying flavour at the repository root — it gives
+  you the full Touying API instead of what survives a Markdown round trip.
 - **`.qmd` YAML and `_quarto.yml` merge**, with the `.qmd` winning. Deck-wide options belong in
   `_quarto.yml`; only this talk's identity — title, author, date, footer — belongs in the `.qmd`.
 - **`---` in a `.qmd` starts a new slide**, exactly as in the Typst flavour a bare `---` starts a

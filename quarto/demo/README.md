@@ -167,9 +167,22 @@ Quarto has several unrelated PDF paths, and reveal.js is not one of them. `forma
 
 **So do not reach for `quarto render talk.qmd --to pdf`.** It does not fail; it quietly renders the Markdown as a LaTeX *article* and throws the deck away. Measured on the template: `--to pdf` gives 2 pages of US Letter portrait (612 × 792 pt), where `make pdf` gives 6 pages at 998 × 561 pt, one per slide.
 
-`--to typst` is the same trap without the LaTeX. It is a *document* format — an alternative to `format: pdf`, not to `revealjs` — so it also flows the Markdown into a continuous document: slide boundaries gone (6 slides became 4 pages), theme gone, columns collapsed, and `::: notes` printed into the body where an audience would read them. Setting `papersize: presentation-16-9` makes the paper 841.89 × 473.56 pt without making the content slides.
+`--to typst` is the same trap without the LaTeX. Quarto's stock `typst` format is a *document* format — an alternative to `format: pdf`, not to `revealjs` — so it also flows the Markdown into a continuous document: slide boundaries gone (6 slides became 4 pages), theme gone, columns collapsed, and `::: notes` printed into the body where an audience would read them. Setting `papersize: presentation-16-9` makes the paper 841.89 × 473.56 pt without making the content slides.
 
-That page size is worth recognising: it is exactly what the Touying decks at the repository root produce. **Typst slides are not missing from this project — they are the other flavour.** If you want a deck built by Typst, with no browser and no LaTeX anywhere, use `template/` at the root; converting a Quarto deck into one is not something to do by hand.
+### Typst slides from the same .qmd, via Touying
+
+A Quarto extension **does** bridge `.qmd` to Touying, and it produces genuine slides — [`kazuyanagimoto/quarto-clean-typst`](https://github.com/kazuyanagimoto/quarto-clean-typst), which wraps the [`touying-quarto-clean`](https://typst.app/universe/package/touying-quarto-clean/) Typst package:
+
+```bash
+quarto add kazuyanagimoto/quarto-clean-typst
+quarto render talk.qmd --to clean-typst
+```
+
+Measured on `template/`: 841.89 × 473.56 pt, a title slide, section divider slides for `#` headings, slide numbers, and one page per `##` — no LaTeX and no browser anywhere. It is a real option, and it is worth knowing it exists.
+
+What it is **not** is a PDF of *this* deck. The same run showed why: the two-column slide lost its columns, stacked, and split across two pages (6 slides → 7 pages), stranding the figure's `.credit` alone on a page under a repeated title; `.highlight` flattened to a plain paragraph; `::: notes` printed into the body again; and the whole thing came out in the extension's Clean theme rather than `theme.scss`. That is not a bug — every one of those is CSS, and Touying has no way to read it.
+
+So it is a **third flavour**, not an exporter: same Markdown, different deck. If you want a deck built by Typst, `template/` at the repository root is the supported route and gives you the full Touying API rather than what survives a Markdown round trip.
 
 None of this affects `make pdf`, which has never touched LaTeX: it renders the deck to HTML and prints that page in headless Chromium.
 
