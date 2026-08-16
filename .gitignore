@@ -17,12 +17,15 @@ out/
 
 # Quarto's own cache, and a stray in-place render: `quarto render <file>` writes
 # beside the source and ignores output-dir, where a bare `quarto render` does not.
-# fonts.html is source, not output — it is the deck's @font-face rules.
+# fonts.html and reference.pptx are source, not output — the deck's @font-face
+# rules and the template Pandoc styles PowerPoint from.
 .quarto/
 /quarto/*/*.html
 !/quarto/*/fonts.html
+!/quarto/*/guides.html
 /quarto/*/*.pdf
 /quarto/*/*.pptx
+!/quarto/*/reference.pptx
 /quarto/*/*_files/
 
 # Dead-end exports kept for reference. The README there says how to regenerate

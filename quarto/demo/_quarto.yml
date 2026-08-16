@@ -27,6 +27,15 @@ project:
 title-slide-attributes:
   data-background-gradient: "linear-gradient(135deg, #072f4f 0%, #0a6ebd 65%, #2e97db 100%)"
 
+# Pandoc styles PPTX from a reference document — masters, layouts, theme fonts
+# and colours — rather than inventing a look. This one carries the deck's
+# colours; rebuild it with quarto/tools/make-reference-pptx.py.
+#
+# It sits at the top level rather than under `format: pptx:` on purpose: listing
+# a second format there would make a plain `quarto render` build the PowerPoint
+# too, every time. `--to pptx` still picks this up.
+reference-doc: reference.pptx
+
 format:
   revealjs:
     theme: [default, theme.scss]

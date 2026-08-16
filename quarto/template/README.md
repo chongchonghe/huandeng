@@ -15,6 +15,7 @@ make preview
 | `theme.scss` | the look: colours, type, the layout classes |
 | `fonts.html` | ships Fira Sans with the deck; see the note inside |
 | `guides.html` | the **X** key: draws the 1280 × 720 slide boundary while you write |
+| `reference.pptx` | the template Pandoc styles PowerPoint from; rebuild with `quarto/tools/make-reference-pptx.py` |
 | `attach/` | images and video, referenced as `attach/foo.png` |
 | `fonts/` | Fira Sans, so the deck renders the same anywhere |
 | `ref.bib` | citations, if the talk has any |
