@@ -15,11 +15,12 @@ trash/                  dead ends, with a README recording why. Read it before
 
 A deck is `talk.qmd` + `_quarto.yml` + `theme.scss` + `fonts.html` + `guides.html` + `attach/`,
 plus a `Makefile` that only wraps the commands below — it holds no build logic of its own.
-Full detail lives in `README.md` and `demo/README.md`. Two skills, and they are separate on
-purpose: invoke **quarto-deck** for the machinery — the local classes, the build, the traps — and
-**slide-style** for the words and the maths. Skills do not load each other, so writing a talk
-usually wants both, asked for by name. Nothing here depends on a skill installed outside the
-repository.
+Full detail lives in `README.md` and `demo/README.md`. Two skills, separate on purpose:
+**quarto-deck** for the machinery — the local classes, the build, the traps — with its reference
+docs bundled in `.agents/skills/quarto-deck/docs/`, so it needs no web lookup; and
+**quarto-academic-style** for the words, the maths and the house preferences. Skills do not load
+each other, so writing a talk usually wants both, asked for by name. Nothing here depends on a
+skill installed outside the repository.
 
 ## Rules that prevent silent breakage
 

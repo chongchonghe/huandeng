@@ -42,7 +42,7 @@ Read [`demo/`](demo/) for every feature working at once, and [`demo/README.md`](
 
 ### By LLM
 
-Open the folder in [Claude Code](https://claude.com/claude-code) or Codex and ask for what you want, in plain words. The skills in `.agents/skills/` already tell it how this repo works, so you do not have to explain any of it — **`quarto-deck`** for the machinery (the local classes, the build, the traps that raise no error) and **`slide-style`** for the writing (terse bullets, narrative in speaker notes, readable equations). Both travel with the repository, so a collaborator who clones it gets the same guidance you do.
+Open the folder in [Claude Code](https://claude.com/claude-code) or Codex and ask for what you want, in plain words. The skills in `.agents/skills/` already tell it how this repo works, so you do not have to explain any of it — **`quarto-deck`** for the machinery (the local classes, the build, the traps that raise no error) and **`quarto-academic-style`** for the writing (terse bullets, narrative in speaker notes, readable equations). `quarto-deck` bundles its own reference docs, so an agent can work without searching the web. Both travel with the repository, so a collaborator who clones it gets the same guidance you do.
 
 > Write a deck about the Kelvin–Helmholtz instability, using the figures in `~/figs/` and the notes in `notes.md`.
 

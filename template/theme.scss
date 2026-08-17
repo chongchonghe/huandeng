@@ -468,17 +468,9 @@ mjx-container:not([display]) {
 /* ---------------------------------------------------------------- video -- */
 
 /* `r-stretch` is the first choice — reveal sizes the element to the height the
-   slide has left. These are for the cases it cannot cover: a video beside
-   another element, or one that must keep a fixed size. */
-.video-frame {
-  max-height: 400px;
-  width: 88%;
-}
-
-.video-frame.large {
-  max-height: 560px;
-}
-
+   slide has left. For the cases it cannot cover — a video beside another
+   element, or one that must keep a fixed size — give the element an explicit
+   height, or use `.video-pair` below. */
 .video-center {
   display: block;
   margin: 0 auto;

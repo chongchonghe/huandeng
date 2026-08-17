@@ -1,243 +1,135 @@
 ---
 name: quarto-deck
-description: Write or edit slides in this repo's Quarto + reveal.js decks. Use when adding or changing slides in a .qmd, starting a new Quarto talk, inserting a figure with a source credit, adding video or a GIF, exporting to HTML/PDF/PPTX, or debugging a slide whose content runs off the edge. Covers the repo's own theme classes (fig, credit, media-row, columns-N-M) which are NOT part of stock Quarto.
+description: Build, edit and troubleshoot Quarto + reveal.js slide decks in this repo. Use when adding or changing slides in a .qmd, starting a new talk, inserting a figure with a source credit, adding video or animation, writing equations, exporting to HTML/PDF/PPTX, changing the theme, or debugging a slide whose content runs off the edge. Bundles the reference docs, so this needs no web lookup.
 ---
 
 # Quarto deck
 
-This repo builds slide decks with **Quarto + reveal.js**. A deck is Quarto Markdown plus a layer
-of local CSS classes. Stock Quarto knowledge is
-[online](https://quarto.org/docs/presentations/revealjs/); **this skill covers what is local and
-therefore unguessable.**
+Slide decks in Quarto Markdown, rendered by reveal.js, with a layer of local CSS classes and one
+shared Python tool. This skill and its `docs/` cover the machinery. For the *words* — how terse a
+bullet should be, how to write an equation for a reader, what to verify before stating a number —
+invoke **quarto-academic-style**, which builds on this one. Skills do not load each other; ask for
+it by name.
 
-Authoritative source is always the code: `template/theme.scss` defines every class below.
-Read it rather than trusting this summary if the two disagree.
+Authoritative source is always the code: the deck's own `theme.scss` defines every class, and
+`demo/demo.qmd` demonstrates every one of them under `make check`. Read those rather than trusting
+a summary if the two ever disagree.
+
+## Use the bundled docs
+
+Read only the file the task needs; do not load the whole tree.
+
+| read | when you are |
+| --- | --- |
+| `docs/slides.md` | structuring a deck — headings, `slide-level`, per-slide attributes, fragments, auto-animate, speaker notes |
+| `docs/layout.md` | placing things — columns, `.absolute` and centring, `.r-stack`, emphasis classes, tables |
+| `docs/figures.md` | inserting a figure — `.fig`, credits, sizing, aspect ratio, rows and grids of images |
+| `docs/media.md` | adding video, a GIF, or an animation that survives the PDF |
+| `docs/math.md` | writing equations — the renderer's quirks, colour, multi-line, building up |
+| `docs/citations.md` | citing anything, and the References slide you must not forget |
+| `docs/theme.md` | changing the look — `theme.scss`, fonts, the title slide, adding a class |
+| `docs/geometry.md` | something does not fit, or the deck looks small on screen |
+| `docs/exports.md` | producing HTML, PDF, PPTX — and why other routes were abandoned |
+
+The worked examples are not vendored here: `demo/demo.qmd` and `demo/theme.scss` in this repository
+are the reference, and unlike a copy they are build-verified on every commit.
 
 ## Structure
 
-A deck is five things and contains no build logic:
+A deck is six things and contains no build logic:
 
 | | |
 | --- | --- |
 | `talk.qmd` | the slides — normally the only file you touch |
 | `_quarto.yml` | slide size, slide level, theme, title-slide background |
-| `theme.scss` | the look, and every class below |
-| `fonts.html` | seven `@font-face` rules, injected into `<head>` |
-| `guides.html` | the **X** key: draws the 1280x720 slide boundary while you write |
+| `theme.scss` | the look, and every local class |
+| `fonts.html` | the deck's own copy of Fira Sans, injected into `<head>` |
+| `guides.html` | the **X** key: draws the 1280×720 slide boundary while you write |
 | `attach/` | images and video, referenced as `attach/foo.png` |
 
 Plus `fonts/`, `ref.bib` and a `Makefile`. **Each deck owns its own copies** — a deck copied from an
-older template may not have a class you expect. Check that deck's `theme.scss` before using
-anything.
+older template may lack a class you expect. Check that deck's `theme.scss` first.
 
-## Local classes
+## The local classes
+
+These are not stock Quarto. Full detail in `docs/layout.md` and `docs/figures.md`.
 
 ```markdown
-<!-- Figure with an academic source credit. `.fig` shrink-wraps the image, so the
-     credit lines up with the FIGURE's right edge, not the slide's.
-     `.caption` goes ABOVE — house default. `.below` is the exception. -->
-::: {.fig}
-[What it shows]{.caption}
-
-![](attach/x.png){width="420px"}
-
-[He et al. 2025]{.credit}
-
-[After 10 Myr]{.below}
+::: {.fig}                       figure + academic source credit
+[What it shows]{.caption}        above    ·  [He et al. 2025]{.credit}  right, at the figure's edge
+![](attach/x.png){width="420px"} px or pt, never % inside .fig
+[After 10 Myr]{.below}           under the credit
 :::
 
-<!-- Columns. `.columns` is a 50/50 split and the one to prefer for it: Pandoc
-     recognises that class, so the PPTX export gets a real two-column slide
-     instead of one flattened text box. Also -1-1 (same as .columns), -2-1,
-     -1-2, -2-3, -1-1-1. -->
-:::: {.columns-3-2}
-::: {.column}
-left
-:::
-::: {.column}
-right
-:::
+:::: {.columns}                  50/50 — prefer this; Pandoc maps it to a real PPTX two-column slide
+:::: {.columns-3-2}              also -2-1, -1-2, -2-3, -1-1-1
+
+:::: {.media-row}                a labelled strip of images on one line
+::: {.media-label} FLD: :::
+::: {.media-items} ![](a.png){height="98px"} ![](b.png){height="98px"} :::
 ::::
 
-<!-- A labelled strip of images on one line. -->
-:::: {.media-row}
-::: {.media-label}
-FLD:
-:::
-::: {.media-items}
-![](attach/a.png){height="98px"} ![](attach/b.png){height="98px"}
-:::
-::::
-
-::: {.highlight}     <!-- the one sentence the slide is about -->
-::: {.caption-line}  <!-- a caption for something .fig does not wrap -->
-::: {.video-pair}    <!-- two clips, style="flex: <pixel width>" on each -->
-[..]{.alert} [..]{.small} [..]{.tiny} [..]{.muted}
+::: {.highlight}                 the one sentence the slide is about
+::: {.caption-line}              a caption for something .fig does not wrap
+::: {.video-pair}                two clips at their true relative scale
+[..]{.alert}  [..]{.muted}  .small  .tiny  .center  .no-header
 ## Thanks! {.focus .center background-color="#0a6ebd"}
 ```
 
-**Size images inside `.fig` in `px` or `pt`, never `%`** — `.fig` is `width: fit-content`, so a
-percentage inside it has nothing to resolve against.
-
-**Prefer Markdown and Pandoc attributes over raw HTML.** `![](fig/x.png){width="200pt"}`, not an
-`<img style="...">`. Reach for HTML only where Quarto cannot express the intent — `data-autoplay`
-on a `<video>` is the usual case.
-
-**Inside a slide, subheadings start at `####`.** `##` is the slide title and `###` is already large;
-going straight to `####` keeps the hierarchy visible without competing with the title.
-
-Reveal's own `.incremental`, `.fragment`, `.absolute`, `.r-stack`, `.r-stretch`, `. . .`,
-`{background-color=".."}` and `{auto-animate="true"}` all work on top of these.
+Reveal's own `.incremental`, `.fragment`, `. . .`, `.absolute`, `.r-stack`, `.r-stretch`,
+`{background-color=".."}` and `{auto-animate="true"}` work on top of these.
 
 ## Workflows
 
-**New talk** — `cp -r template talks/2027-my-talk`, then edit `talk.qmd`. Fill in the YAML
-block first: title, author, institute, and `footer`, which is the only place the short forms appear.
+**New talk** — `cp -r template talks/2027-my-talk`, then edit `talk.qmd`. Fill in the YAML block
+first: title, author, institute, and `footer`, the only place the short forms appear.
 
-**Write and look** — `make preview` from the deck. Quarto serves it and reloads on every save.
+**Write and look** — `make preview` from the deck; Quarto serves it and reloads on every save.
+Press **X** to see the slide boundary.
 
-**Add video** — drop the `.mp4` in `attach/` and write the tag. There is no pipeline and no frame
-extraction: the deck is a browser, so a video is a video.
+**Build** — `make` for the HTML, `make all` for everything, `make check` after any slide edit.
+Details and the full target list in `docs/exports.md`.
 
-```html
-<video class="r-stretch video-center" src="attach/clip.mp4"
-       controls data-autoplay muted loop></video>
-```
+## Rules that prevent silent breakage
 
-`r-stretch` must be the **last element on the slide** and must not be wrapped in a div — wrapping
-breaks its sizing. For a video beside text, drop `r-stretch` and give it an explicit height.
+Each of these fails without an error message.
 
-**Build and export** — every deck has a `Makefile`: `make` for the HTML (Quarto only, no Python),
-`make preview`, `make check`, `make png`, `make all` for HTML + PDF + PPTX, `make standalone` for
-one self-contained file.
+1. **After ANY slide edit, run `make check`.** An over-full slide neither errors nor shrinks — the
+   surplus hangs off the edge, and a 16:10 laptop shows about 57 slide-px of it where a 16:9
+   projector shows 15. So it can look merely tight while you write and be cut on stage. Sideways is
+   worse: a `.media-items` row runs off the right with no cue at all. `docs/geometry.md`.
+2. **Give an image a width *or* a height, never both.** A stretched scientific figure still looks
+   plausible, which is why nobody catches it. `make check` fails past 2%. `docs/figures.md`.
+3. **`@font-face` lives in `fonts.html`, not `theme.scss`.** A relative font URL cannot work from a
+   compiled Quarto theme; the deck silently falls back to another typeface and re-flows every line.
+   `docs/theme.md`.
+4. **`\color{red}{..}`, never `\textcolor`.** The renderer here does not define the latter and
+   prints it as literal red error text. `docs/math.md`.
+5. **A References slide is mandatory if you cite anything** — otherwise the bibliography lands
+   outside every section and reveal paints it over every slide. `docs/citations.md`.
+6. **Never `--to pdf`, `--to typst`, or Pandoc's PPTX writer.** They do not fail; they quietly
+   produce a document that is not your deck. `docs/exports.md` and `trash/README.md`.
+7. **A `.gitignore` glob can eat a source file.** `fonts.html` and `guides.html` share a suffix with
+   build output. `guides.html` went missing for several commits this way. Add a negation for any new
+   source file whose extension collides, and verify with a fresh clone.
+8. **Edit `talk.qmd`.** `theme.scss` is shared API and `_quarto.yml` is configuration; changing
+   either affects every slide.
+9. **Never edit `template/` to write a talk.** Copy it into `talks/` first.
 
-`make pdf` writes **two** files from one render, both printed in headless Chromium — no LaTeX ever:
-`out/<deck>.pdf` is one page per *step* (builds arrive a piece at a time, flip-books animate) and
-`out/<deck>-one-page-per-slide.pdf` is one page per slide, fully built, for reading and handouts.
+## Style that is not personal taste
 
-**An animation that survives the PDF** is a flip-book, not a video: an `.r-stack` of image frames
-with `::: {.fragment .fade-in-then-out}` on each after the first. Live it steps in place; in the
-per-step PDF each frame takes its own page. A `<video>` prints as one still frame and nothing can
-change that. See the demo's "A flip-book, in place" slide. Use JPEG for frames of dense simulation output; PNG is roughly ten
-times the size for no visible gain.
+The house preferences live in **quarto-academic-style**. These few are just how the toolchain works
+best:
 
-From the repo root instead:
-`uv run python tools/build-slides.py <deck> [--check|--pdf|--png|--pptx|--standalone]`,
-and `make check` at the root verifies every deck at once.
-
-## House style
-
-**Invoke the `slide-style` skill** whenever you are writing or revising the words and maths of a
-deck rather than its plumbing. It lives in this repo, beside this one, and covers terse bullets,
-narrative in `::: notes`, readable equations, citations and acronyms. Skills do not load each other,
-so it will not arrive on its own — ask for it.
-
-The figure-specific half of the house style is here, because it is about the classes above:
-
-- **A figure fills its column.** A figure is the content of a slide, not an illustration beside it,
-  so the default is the full width of whatever it sits in — the column, or the slide. Come down from
-  that only when the height would overflow or something collides, and then bind on the height and
-  take whatever width that implies. Drawing a figure smaller than its column because the slide looks
-  better balanced is the standing mistake here: it is invisible while you write, because a
-  half-size figure is not an error and `make check` passes it. `make png` and look.
-- **Captions go above the figure**; provenance goes in `.credit`; a statement about the whole slide
-  goes in the slide body, not in a caption.
-- **Align figures on their tops**, not their centres — `.media-row` and `.columns-*` already do.
-- **Left-align prose and panel labels.** Centre titles and figures, not sentences.
-- **Shrinking text is the last lever, not the first.** Fix the layout — two columns instead of two
-  rows, a shorter sentence, one less bullet — before reaching for `.small`.
-
-## Fixing what does not fit
-
-Change the slide before the theme. A `.small` on that one block, a narrower figure, less text — all
-in the `.qmd`. Touch `theme.scss` or `_quarto.yml` only if the default is wrong for *any* deck, or
-if you would otherwise repeat the same fix on slide after slide.
-
-Reveal.js does **not** shrink an over-full slide, and `auto-stretch` is off. There is no automatic
-rescue: what does not fit hangs off the edge.
-
-## Traps
-
-- **Overflow is silent, and what you see is not what the room sees.** A slide that holds too much
-  does not error and does not shrink. Every slide is laid out in a box of exactly 1280x720, scaled
-  uniformly to the screen; content past that box hangs into the small margin reveal keeps around it
-  and is then cut by the window edge. A 16:10 laptop window leaves about 57 slide-px of that margin
-  showing, a 16:9 projector only 15 — so a slide can look merely tight while you write it and be cut
-  on stage. Printed, it splits across two PDF pages instead, title on one and body on the next.
-  Sideways is worse: `.media-items` is `flex-wrap: nowrap`, so one image too many slides off the
-  right with no visual cue at all. `make check` walks the built deck in a headless browser and
-  reports all of it; press **X** to see the boundary while you write. Run `make check` after any
-  slide edit.
-- **A stretched figure is a wrong figure, and nothing errors.** Give an image a width *or* a height,
-  never both. `make check` compares every drawn image and video against its own pixel dimensions and
-  fails past 2%.
-- **reveal caps every image at 95% of its container.** Inside a shrink-to-fit container — an
-  `.r-stack` grid cell, a flex item, a `.fig` — the container is already the image's own width, so
-  the cap squeezes the width by 5% while an explicit `height` holds firm, and the figure comes out
-  stretched. `theme.scss` raises the cap to 100%; a deck copied from an older template may not have
-  that fix.
-- **An `.absolute` div carrying its own `style` must end that style with a semicolon.** Quarto
-  appends `top: ..px; left: ..px;` onto the existing `style` string without a separator, so
-  `style="font-size:1.15em"` compiles to `font-size:1.15emtop: 104px; left: 251px;` — the browser
-  discards the run-together first declaration, `top` goes with it, and the element falls back to its
-  static position. Every label on the slide then stacks in one row under the heading, `left` alone
-  having survived. Write `style="font-size:1.15em;"` and it is fine. Nothing warns.
-- **A `:::` fence does not parse inside a list item.** A `::: {.small}` block indented under a
-  bullet is left alone by Pandoc: the literal `:::` prints onto the slide and the build says only
-  `The following string was found in the document: :::`. Use a span — `[text]{.small}` — for styled
-  prose that has to sit under a bullet.
-- **Slide backgrounds must be attributes, not CSS.** reveal paints them on a layer of its own,
-  behind and outside the 4% margin, so `background:` in `theme.scss` stops at the margin and leaves
-  a white frame. Use `{background-color="#0a6ebd"}` on the heading, or `title-slide-attributes:` in
-  `_quarto.yml` for the title slide.
-- **`quarto render` renders nothing** in a project unless `project.render` lists the inputs.
-  `render: ["*.qmd"]` is what makes `output-dir: out` take effect; rendering a single file by name
-  ignores `output-dir` and writes beside the source.
-- **A relative font URL in `theme.scss` cannot work.** Quarto compiles the theme into
-  `<deck>_files/libs/revealjs/dist/theme/`, five levels deep, and `url()` resolves against the
-  stylesheet, not the document. Hence `fonts.html` and `include-in-header`. Move those rules into
-  the SCSS and the deck silently falls back to another typeface and re-flows every line.
-- **`\color{red}{..}`, never `\textcolor`.** The web maths renderer does not define the latter and
-  prints it as literal red error text.
-- **`\class{fragment}{..}`** builds an equation up one term per keypress, and the whole equation
-  stays one slide.
-- **Maths comes from a CDN** in a normal render. `make standalone` inlines it with everything else;
-  that is the build to hand to someone who may be offline.
-- **PPTX is slide images**, one full-bleed picture per page rasterised from the PDF. Nothing is
-  editable in PowerPoint and the deck arrives looking like itself.
-  Rendered 3840 px wide by default, so a 4K projector has a source pixel for every display
-  pixel; `--width 5120` or `--width 1920` to change it. **Do not reach for Pandoc's native
-  PowerPoint writer** — every layout class here is CSS, so it re-flows the Markdown into a bulleted
-  outline wearing none of the design, and a `reference-doc` reaches the theme fonts and colours and
-  no further. Both attempts are in `trash/` with the reasoning.
-- **Never `quarto render <deck>.qmd --to pdf`, and never `--to typst`.** `revealjs` has no PDF
-  format: the deck is a web page and its PDF comes from printing that page through reveal's
-  `?print-pdf` layout, which is what `make pdf` does in headless Chromium — no LaTeX anywhere, ever.
-  `--to pdf` does not fail; it quietly renders the Markdown as a LaTeX *article* and throws the deck
-  away (measured: 2 pages of US Letter portrait against `make pdf`'s 6 pages at 16:9). Quarto's
-  stock `--to typst` is the same trap without the LaTeX — a document format, so slide boundaries,
-  theme and columns all go, and `::: notes` gets printed into the body.
-- **A .qmd → Touying bridge does exist**, and it makes real slides:
-  `quarto add kazuyanagimoto/quarto-clean-typst` then `--to clean-typst` gives 841.89 x 473.56 pt,
-  one page per `##`, section dividers, slide numbers, no LaTeX and no browser. But it is a *third
-  deck built from the same Markdown, not an exporter for this one. Run on `demo`, 34 slides became
-  **58 pages**: every
-  layout class here is CSS, so columns collapse and slides split 2–4 ways, `.fig` credits strand on
-  pages of their own, `.highlight`/`.media-row`/`.absolute`/`.r-stack` drop, `::: notes` prints into
-  the body, and the output wears the extension's theme. Two failures are silent and would reach the
-  room: **video renders as nothing** (a caption over blank space) and **`\class{fragment}{..}` maths
-  prints as raw LaTeX source**. Mermaid does survive. If you want slides genuinely built by Typst,
-  write Touying by hand — its full API beats whatever survives a Markdown round trip.
-- **`.qmd` YAML and `_quarto.yml` merge**, with the `.qmd` winning. Deck-wide options belong in
-  `_quarto.yml`; only this talk's identity — title, author, date, footer — belongs in the `.qmd`.
-- **`---` in a `.qmd` starts a new slide.** Do not write an em dash as `---` in prose.
-- **`make check` needs Chromium**: `uv sync && uv run playwright install chromium`. `make` and `make preview` need only Quarto.
-- **"The deck does not fill the screen" is usually not `margin`.** `margin` removes that fraction of
-  the *window* in total, half a side — 0.04 is a 38px border at 1920 wide, nothing like a "huge"
-  one. Press **X** and read the label: low `fill %` means the slide itself is half empty (the
-  common case, and no setting fixes it); `ar` far from 1.78 means the screen is not 16:9 and the
-  letterboxing is unavoidable; `CAPPED by max-scale` means reveal's 2x scale ceiling is holding the
-  deck small on a large display, which `max-scale: 5` in `_quarto.yml` removes.
+- **Prefer Markdown and Pandoc attributes over raw HTML.** `![](x.png){width="200pt"}`, not an
+  `<img style="..">`. Reach for HTML only where Quarto cannot express the intent — `data-autoplay`
+  on a `<video>` is the usual case.
+- **Intra-slide subheadings start at `####`.** `##` is the slide title; `###` competes with it.
+- **Fix fitting problems in the slide, not the theme**, and reach for the layout before the font
+  size. `docs/geometry.md`.
+- **Keep comments that record intent or preserve recoverable material** —
+  `<!-- Keep this derivation hidden unless the backup slide is restored. -->`. Delete empty ones and
+  conversion artefacts.
 
 ## Verifying
 

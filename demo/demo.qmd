@@ -568,6 +568,38 @@ and talk over.
 [He et al. 2025]{.credit}
 :::
 
+## Auto-animate {auto-animate="true" auto-animate-easing="ease-in-out"}
+
+Two consecutive slides with `{auto-animate="true"}`. Reveal matches elements by
+`data-id` and tweens whatever differs between them — size, position, margin.
+
+![](attach/placeholder-image.png){data-id="anim" width="180px"}
+
+Useful for growing a figure you have just discussed, or moving it aside to make
+room for the next thing.
+
+## Auto-animate {auto-animate="true" auto-animate-easing="ease-in-out"}
+
+:::: {.columns}
+
+::: {.column}
+![](attach/placeholder-image.png){data-id="anim" width="420px"}
+:::
+
+::: {.column}
+::: {.fragment .fade-left}
+The same image, one `data-id`, two slides. Nothing was re-declared: only the
+width changed.
+:::
+
+::: {.fragment .fade-left}
+In the PDF the two slides print as two pages, so the before and after both
+survive on paper.
+:::
+:::
+
+::::
+
 # Math and diagrams
 
 ## Math
