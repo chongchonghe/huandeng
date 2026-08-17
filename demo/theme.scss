@@ -109,31 +109,64 @@ $selection-background-color: #d8edf5 !default;
   text-transform: none;
 }
 
-/* The slide title. `padding-right` keeps it clear of the logo slot. */
+/* The slide title, with its rule ending where the words end rather than running
+   the width of the slide.
+
+   `fit-content` is what shrinks the box to the text; `max-width` lets a title
+   too long for one line still wrap, and a wrapped title fills the measure, so
+   its rule goes back to running the whole way — the only thing it can sensibly
+   do. Nothing here reserves room for the logo any more: the slot moved to the
+   slide below, because a box anchored to a heading this narrow would sit
+   against the title instead of at the slide's right edge. */
 .reveal h2 {
   border-bottom: 2px solid var(--deck-rule);
   color: var(--deck-primary);
   font-size: 1.3em;
   font-weight: 600;
   margin: 0 0 0.5em;
+  max-width: 100%;
   padding-bottom: 0.12em;
-  padding-right: 4.5rem;
   position: relative;
+  width: fit-content;
 }
 
-/* Logo slot, top right of every content slide. Point it at your own file and
-   uncomment; `attach/` is copied next to the HTML, so the path is relative. */
-.reveal h2::after {
-  /* background-image: url("attach/logo.png"); */
-  background-position: right center;
-  background-repeat: no-repeat;
-  background-size: contain;
-  content: "";
-  height: 1.6em;
-  position: absolute;
-  right: 0;
-  top: -0.15em;
-  width: 4rem;
+/* The logo is Quarto's `logo:` in _quarto.yml, not CSS. A relative `url()`
+   written here resolves against the *compiled stylesheet*, which Quarto puts
+   five directories down in <deck>_files/libs/revealjs/dist/theme/ — the same
+   trap that keeps the @font-face rules in fonts.html, and it silently 404s.
+   `logo:` writes an <img class="slide-logo"> into the page instead, where the
+   path resolves against the document and simply works.
+
+   Quarto parks it bottom right, on top of the slide number. Top right instead,
+   lined up with the footer, and clear of a title that now ends wherever the
+   words do. */
+.reveal .slide-logo {
+  bottom: auto;
+  max-height: 2rem;
+  right: 30px;
+  top: 12px;
+}
+
+/* Quarto moves the slide number to the top right the moment a logo exists, to
+   keep the two apart — which is exactly where this deck puts the logo. Put the
+   number back where it sits on every deck without one: turning a logo on should
+   not move the page number.
+
+   `div.` is load-bearing. Quarto's rule is `.reveal.has-logo .slide-number`,
+   the same three classes as this one, and its stylesheet is a plugin that loads
+   after the theme — so an equal-specificity rule here loses on source order.
+   The element selector breaks the tie without reaching for `!important`. */
+div.reveal.has-logo .slide-number {
+  bottom: 12px;
+  right: 30px;
+  top: auto;
+}
+
+/* A title long enough to fill the measure would run under the logo. This is the
+   only thing the old `padding-right: 4.5rem` was for, and it charged every deck
+   for it whether or not a logo was ever set. */
+.reveal.has-logo h2 {
+  max-width: calc(100% - 5rem);
 }
 
 .reveal h3 {
@@ -597,21 +630,6 @@ mjx-container:not([display]) {
   color: var(--deck-muted);
 }
 
-/* The logo belongs on the title slide, not in the header of every slide.
-   Point it at your own file and uncomment both lines. */
-.reveal .slides section.quarto-title-block::after {
-  /* background-image: url("attach/logo.png"); */
-  /* content: ""; */
-  background-position: right top;
-  background-repeat: no-repeat;
-  background-size: contain;
-  height: 4rem;
-  position: absolute;
-  right: 1.5rem;
-  top: 1.5rem;
-  width: 8rem;
-}
-
 /* -------------------------------------------------------- section slides -- */
 
 /* A `#` heading under `slide-level: 2` becomes a divider slide, which Quarto
@@ -668,15 +686,14 @@ mjx-container:not([display]) {
    `## Thanks! {.focus .center background-color="#0a6ebd"}` — `.focus` sets the
    type, `.center` is reveal's own vertical centring, and the colour has to be
    an attribute to reach outside the slide margin. */
+/* `width: auto` puts the full-width box back. A shrink-wrapped heading has
+   nothing for `text-align: center` to centre inside, so the one statement on
+   the slide would sit against the left edge. */
 .reveal .slides section.focus h2 {
   border: none;
   font-size: 1.9em;
-  padding-right: 0;
   text-align: center;
-}
-
-.reveal .slides section.focus h2::after {
-  content: none;
+  width: auto;
 }
 
 .reveal .slides section.focus p {
@@ -743,13 +760,5 @@ mjx-container:not([display]) {
   .reveal .columns-2-3,
   .reveal .columns-1-1-1 {
     grid-template-columns: 1fr;
-  }
-
-  .reveal h2 {
-    padding-right: 0;
-  }
-
-  .reveal h2::after {
-    display: none;
   }
 }

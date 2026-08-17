@@ -68,6 +68,22 @@ A `<style>` element in the document resolves against *the document*, which is `o
 The failure is silent: the deck still renders, in whatever sans-serif the machine has, at different
 metrics, with every line breaking somewhere else.
 
+**The same trap catches every other `url()` in `theme.scss`**, not just `@font-face`. A slide logo
+written as `background-image: url("attach/logo.png")` 404s for exactly this reason, and the deck
+renders perfectly with no logo on it. Use Quarto's own `logo:` in `_quarto.yml`, which writes an
+`<img class="slide-logo">` into the page — that path resolves against the document. `theme.scss`
+positions it top right and pins the slide number back to the bottom, because Quarto moves the number
+up as soon as a logo exists.
+
+## The slide title
+
+`.reveal h2` is `width: fit-content; max-width: 100%`, so its rule stops where the words stop rather
+than running the width of the slide. Two things follow. A title too long for one line wraps, fills
+the measure, and its rule goes back to spanning the whole way — there is nothing else it could do.
+And the heading box is *narrow*: anything you position against its right edge lands beside the text,
+not at the slide's edge. `section.focus h2` sets `width: auto` back for exactly that reason, since a
+shrink-wrapped box gives `text-align: center` nothing to centre inside.
+
 ## The title slide
 
 Quarto 1.9 emits it as `section.quarto-title-block`. The older `.title-slide` class now belongs to
