@@ -90,7 +90,7 @@ def virial(ekin, egrav):
 
 # Wrapping up
 
-## Thanks! {.focus .center background-color="#073642"}
+## Thanks! {.focus .center}
 
 Questions? Comments?
 

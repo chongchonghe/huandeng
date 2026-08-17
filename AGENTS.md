@@ -99,8 +99,8 @@ A deck must render correctly when copied anywhere, on its own, years later.
 - The cost is real — a fix in `template/` reaches old decks only if you carry it there — and it is
   accepted knowingly, in exchange for talks that never rot.
 - **`themes/` is not an exception.** `make theme THEME=nord` *copies* that theme's `theme.scss` in
-  and rewrites two lines of `_quarto.yml`; afterwards the deck owns its look outright and renders
-  with `themes/` deleted. Nothing links, and no deck may start linking. `themes/README.md`.
+  and rewrites the one line of `_quarto.yml` a theme owns; afterwards the deck owns its look and
+  renders with `themes/` deleted. Nothing links, and no deck may start linking. `themes/README.md`.
 
 ## Only a browser can render this deck
 

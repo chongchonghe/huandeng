@@ -700,7 +700,7 @@ slide in the deck.
 ::: {#refs}
 :::
 
-## Thanks! {.focus .center background-color="#0a6ebd"}
+## Thanks! {.focus .center}
 
 Questions? Comments? Feedback welcome!
 

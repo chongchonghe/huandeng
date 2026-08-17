@@ -543,24 +543,44 @@ mjx-container:not([display]) {
 
 /* Quarto 1.9 builds the title slide as `section.quarto-title-block`. The
    `.title-slide` class it used to carry now belongs to the *section divider*
-   slides, so do not reach for it here. The gradient behind it is set by
-   `title-slide-attributes` in _quarto.yml — see the note there. */
+   slides, so do not reach for it here.
+
+   The title slide stands on the deck's own ground, like every other slide: the
+   type carries it, and a rule under the title does the work a field of colour
+   used to. For a coloured one, uncomment `title-slide-attributes` in
+   _quarto.yml — the note there says why that cannot be CSS — and set the four
+   colours below to something that reads on it. */
 .reveal .slides section.quarto-title-block {
   box-sizing: border-box;
   padding: 0 2rem;
   text-align: center;
 }
 
+/* Kills the section-divider rule, which would otherwise land here too. The
+   title's own rule below is one class more specific, so it still wins. */
+.reveal .quarto-title-block h1::after {
+  content: none;
+}
+
 .reveal .quarto-title-block h1.title {
-  color: #ffffff;
+  color: var(--deck-primary);
   font-size: 1.55em;
   font-weight: 600;
   line-height: 1.15;
   margin-bottom: 0.15em;
 }
 
+.reveal .quarto-title-block h1.title::after {
+  background: var(--deck-rule);
+  content: "";
+  display: block;
+  height: 1px;
+  margin: 0.45em auto 0;
+  width: 55%;
+}
+
 .reveal .quarto-title-block .subtitle {
-  color: var(--deck-tertiary);
+  color: var(--deck-muted);
   font-size: 0.85em;
   margin-bottom: 1.2em;
 }
@@ -571,7 +591,7 @@ mjx-container:not([display]) {
 .reveal .quarto-title-block .institute,
 .reveal .quarto-title-block .quarto-title-affiliation,
 .reveal .quarto-title-block .date {
-  color: rgba(255, 255, 255, 0.92);
+  color: var(--deck-ink);
   font-size: 0.7em;
   line-height: 1.35;
   margin: 0;
@@ -580,11 +600,7 @@ mjx-container:not([display]) {
 .reveal .quarto-title-block .institute,
 .reveal .quarto-title-block .quarto-title-affiliation,
 .reveal .quarto-title-block .date {
-  color: rgba(255, 255, 255, 0.7);
-}
-
-.reveal .quarto-title-block h1::after {
-  content: none;
+  color: var(--deck-muted);
 }
 
 /* The logo belongs on the title slide, not in the header of every slide.
@@ -804,36 +820,10 @@ mjx-container:not([display]) {
   background: var(--deck-primary);
 }
 
-/* A light title slide. The colour field is the wrong gesture for this theme, so
-   the gradient in _quarto.yml is barely a tint and the type goes back to ink —
-   the shared body sets it white for a dark field. */
-.reveal .quarto-title-block h1.title {
-  color: var(--deck-primary);
-}
-
-.reveal .quarto-title-block h1.title::after {
-  background: var(--deck-rule);
-  content: "";
-  display: block;
-  height: 1px;
-  margin: 0.45em auto 0;
-  width: 55%;
-}
-
-.reveal .quarto-title-block .subtitle {
-  color: var(--deck-muted);
-  font-style: italic;
-}
-
-.reveal .quarto-title-block .quarto-title-authors,
-.reveal .quarto-title-block .quarto-title-author-name,
-.reveal .quarto-title-block .author {
-  color: var(--deck-ink);
-}
-
+/* The date and affiliation on the title slide go sans, with the rest of the
+   metadata. The title itself stays serif, as a paper's does. */
 .reveal .quarto-title-block .institute,
 .reveal .quarto-title-block .quarto-title-affiliation,
 .reveal .quarto-title-block .date {
-  color: var(--deck-muted);
   font-family: "Fira Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }

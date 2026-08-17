@@ -87,11 +87,11 @@ def die(msg: str) -> None:
 
 THEMES_DIR = Path(__file__).resolve().parent.parent / "themes"
 
-# The two lines a theme owns outside theme.scss. The title slide's background
-# has to be a reveal attribute rather than CSS — see the note in _quarto.yml —
-# and the code highlighting is a Pandoc theme, not a stylesheet, so neither can
-# live in the SCSS with everything else.
-THEME_KEYS = ("data-background-gradient", "highlight-style")
+# The one line a theme owns outside theme.scss: code highlighting is a Pandoc
+# theme rather than a stylesheet, so it cannot live in the SCSS with the rest of
+# the look. The title slide used to be here too, back when it carried a colour
+# field; it now stands on the deck's own ground, so there is nothing to carry.
+THEME_KEYS = ("highlight-style",)
 
 
 def themes() -> list[str]:
@@ -118,7 +118,8 @@ def apply_theme(deck: Deck, name: str) -> None:
 
     # Transplant only the lines the theme owns. Replacing the whole _quarto.yml
     # would be simpler and would silently throw away anything this deck had
-    # changed about its own geometry.
+    # changed about its own geometry — including a title-slide colour field it
+    # had deliberately turned back on.
     yml = deck.dir / "_quarto.yml"
     text = yml.read_text()
     want = {}

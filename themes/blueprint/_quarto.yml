@@ -22,12 +22,18 @@ project:
     - fonts/
     - attach/
 
-# The title slide's background. It has to be set here rather than in theme.scss:
-# reveal paints slide backgrounds on a layer of its own, behind and outside the
-# 4% margin, and CSS on the <section> only ever reaches inside that margin. Any
-# slide can do the same with `## Title {background-color="#0a6ebd"}`.
-title-slide-attributes:
-  data-background-gradient: "linear-gradient(135deg, #062546 0%, #0b3a6f 60%, #12508f 100%)"
+# The title slide stands on the deck's own background, like every other slide.
+# For a field of colour behind it, uncomment the two lines below.
+#
+# It has to be set here rather than in theme.scss: reveal paints slide
+# backgrounds on a layer of its own, behind and outside the 4% margin, and CSS
+# on the <section> only ever reaches inside that margin. Any slide can do the
+# same with `## Title {background-color="#0a6ebd"}`. If you turn it on, put the
+# title type back to something that reads on it — theme.scss sets it in the
+# deck's own ink, for a title slide the same colour as the rest of the deck.
+#
+# title-slide-attributes:
+#   data-background-gradient: "linear-gradient(135deg, #072f4f 0%, #0a6ebd 65%, #2e97db 100%)"
 
 format:
   revealjs:

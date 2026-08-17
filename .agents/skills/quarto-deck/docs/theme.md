@@ -74,8 +74,11 @@ Quarto 1.9 emits it as `section.quarto-title-block`. The older `.title-slide` cl
 the **section divider** slides (`section.level1`), so do not reach for it here — that is a rename
 that silently restyles the wrong thing.
 
-Its background is set by `title-slide-attributes` in `_quarto.yml`, not by CSS, because reveal paints
-backgrounds on a layer outside the slide margin. See `geometry.md`.
+It stands on the deck's own background, like every other slide: the title takes `--deck-primary` and
+a hairline under it does the work a colour field used to. To put a field back, uncomment
+`title-slide-attributes` in `_quarto.yml` and change the four title-slide colours to suit. It has to
+be set there rather than in CSS, because reveal paints backgrounds on a layer outside the slide
+margin. See `geometry.md`.
 
 ## guides.html
 
@@ -96,14 +99,14 @@ cd talks/2027-my-talk && make theme THEME=nord   # or re-dress one already writt
 make check
 ```
 
-`make theme` **copies**: it overwrites `theme.scss` and rewrites two lines of `_quarto.yml`, and
+`make theme` **copies**: it overwrites `theme.scss` and rewrites one line of `_quarto.yml`, and
 afterwards the deck owns its look and renders with `themes/` deleted. It is the self-containment
 rule automated, not an exception to it. Tell the author to commit first — `git diff` is how the
 change is read and `git checkout` is how it is undone.
 
-Two lines of `_quarto.yml` rather than none, because neither can live in the SCSS: the title slide's
-`data-background-gradient` is a reveal attribute (backgrounds are painted outside the slide margin),
-and `highlight-style` is a Pandoc theme rather than a stylesheet.
+One line of `_quarto.yml` rather than none, because `highlight-style` is a Pandoc theme rather than a
+stylesheet and cannot live in the SCSS. Nothing else: no theme here puts a colour field behind the
+title slide or the closing slide, so there is no background left to carry across.
 
 Three things switching cannot do, all worth saying out loud before an author is surprised by them:
 

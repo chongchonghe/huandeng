@@ -57,7 +57,7 @@ $$ E = m c^2 $$
 
 # Wrapping up
 
-## Thanks! {.focus .center background-color="#0a6ebd"}
+## Thanks! {.focus .center}
 
 Questions? Comments?
 

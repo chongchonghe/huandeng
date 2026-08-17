@@ -35,19 +35,22 @@ make theme THEME=nord             # put that look on this deck
 make check                        # then look at it
 ```
 
-Commit before you run it. The command overwrites `theme.scss` and rewrites two lines of `_quarto.yml`, so `git diff` is how you read what happened and `git checkout` is how you undo it.
+Commit before you run it. The command overwrites `theme.scss` and rewrites one line of `_quarto.yml`, so `git diff` is how you read what happened and `git checkout` is how you undo it.
 
 ## What a theme owns, and what it does not
 
-A theme is `theme.scss` plus exactly two lines of `_quarto.yml`: the title slide's `data-background-gradient` and the `highlight-style` for code blocks. Those two cannot live in the SCSS. A slide background is painted by reveal on a layer outside the slide's own margin, so it has to be an attribute; and code highlighting is a Pandoc theme rather than a stylesheet.
+A theme is `theme.scss` plus one line of `_quarto.yml`: `highlight-style`, which sets the colours inside a code block. That one cannot live in the SCSS, because it is a Pandoc theme rather than a stylesheet.
 
-The one thing switching cannot reach is a colour you wrote into a slide yourself:
+No theme puts a field of colour behind the title slide or the closing slide. Both stand on the deck's own ground, with the type and a hairline under the title doing the work. To turn a colour field back on, uncomment `title-slide-attributes` in your deck's `_quarto.yml` and set the four title-slide colours in `theme.scss` to something that reads on it. That has to be YAML rather than CSS: reveal paints slide backgrounds on a layer outside the slide's own margin, where a stylesheet cannot reach.
+
+The one thing switching cannot reach is a colour you wrote into a slide yourself. No deck here ships
+one, but if you add one:
 
 ```markdown
-## Thanks! {.focus .center background-color="#0a6ebd"}
+## Results {background-color="#0a6ebd"}
 ```
 
-That stays azure on a deck that has just gone dark grey. It has to: reveal reads that attribute as a literal colour, and writing `var(--deck-primary)` there would defeat the brightness test it uses to decide whether the type on that slide turns white. So a colour in a slide belongs to the talk, not the theme — `make theme` prints a note when it finds one.
+it stays azure on a deck that has just gone dark grey. It has to: reveal reads that attribute as a literal colour, and writing `var(--deck-primary)` there would defeat the brightness test it uses to decide whether the type on that slide turns white. So a colour in a slide belongs to the talk, not the theme — `make theme` prints a note when it finds one.
 
 ## Dark themes and scientific figures
 
@@ -65,7 +68,7 @@ Every `theme.scss` in here has three parts:
 
 To carry a fix from `template/theme.scss` into a theme, replace part 2. To change a theme, edit parts 1 and 3. The split exists so those two operations never collide.
 
-Two custom properties appear here that `template/theme.scss` does not have, because it writes both as literals: `--deck-accent`, the second colour a theme uses for emphasis, and `--deck-code-bg`.
+Custom properties appear here that `template/theme.scss` does not have. `--deck-accent` (the second colour a theme uses for emphasis) and `--deck-code-bg` are values the shared body writes as literals; `--deck-grid` and `--deck-sheet` belong to `whiteprint` and `blueprint` alone, and hold the drawing grid.
 
 ## Fonts
 

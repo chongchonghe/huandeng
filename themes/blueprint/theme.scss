@@ -47,6 +47,9 @@ $selection-background-color: rgba(174, 225, 255, 0.3) !default;
   --deck-accent: #ffd27a;
   --deck-code-bg: rgba(255, 255, 255, 0.07);
   --deck-grid: rgba(255, 255, 255, 0.07);
+  --deck-sheet:
+    repeating-linear-gradient(0deg, var(--deck-grid) 0 1px, transparent 1px 40px),
+    repeating-linear-gradient(90deg, var(--deck-grid) 0 1px, transparent 1px 40px);
 }
 
 .reveal {
@@ -544,24 +547,44 @@ mjx-container:not([display]) {
 
 /* Quarto 1.9 builds the title slide as `section.quarto-title-block`. The
    `.title-slide` class it used to carry now belongs to the *section divider*
-   slides, so do not reach for it here. The gradient behind it is set by
-   `title-slide-attributes` in _quarto.yml — see the note there. */
+   slides, so do not reach for it here.
+
+   The title slide stands on the deck's own ground, like every other slide: the
+   type carries it, and a rule under the title does the work a field of colour
+   used to. For a coloured one, uncomment `title-slide-attributes` in
+   _quarto.yml — the note there says why that cannot be CSS — and set the four
+   colours below to something that reads on it. */
 .reveal .slides section.quarto-title-block {
   box-sizing: border-box;
   padding: 0 2rem;
   text-align: center;
 }
 
+/* Kills the section-divider rule, which would otherwise land here too. The
+   title's own rule below is one class more specific, so it still wins. */
+.reveal .quarto-title-block h1::after {
+  content: none;
+}
+
 .reveal .quarto-title-block h1.title {
-  color: #ffffff;
+  color: var(--deck-primary);
   font-size: 1.55em;
   font-weight: 600;
   line-height: 1.15;
   margin-bottom: 0.15em;
 }
 
+.reveal .quarto-title-block h1.title::after {
+  background: var(--deck-rule);
+  content: "";
+  display: block;
+  height: 1px;
+  margin: 0.45em auto 0;
+  width: 55%;
+}
+
 .reveal .quarto-title-block .subtitle {
-  color: var(--deck-tertiary);
+  color: var(--deck-muted);
   font-size: 0.85em;
   margin-bottom: 1.2em;
 }
@@ -572,7 +595,7 @@ mjx-container:not([display]) {
 .reveal .quarto-title-block .institute,
 .reveal .quarto-title-block .quarto-title-affiliation,
 .reveal .quarto-title-block .date {
-  color: rgba(255, 255, 255, 0.92);
+  color: var(--deck-ink);
   font-size: 0.7em;
   line-height: 1.35;
   margin: 0;
@@ -581,11 +604,7 @@ mjx-container:not([display]) {
 .reveal .quarto-title-block .institute,
 .reveal .quarto-title-block .quarto-title-affiliation,
 .reveal .quarto-title-block .date {
-  color: rgba(255, 255, 255, 0.7);
-}
-
-.reveal .quarto-title-block h1::after {
-  content: none;
+  color: var(--deck-muted);
 }
 
 /* The logo belongs on the title slide, not in the header of every slide.
@@ -747,20 +766,25 @@ mjx-container:not([display]) {
 
 /* ================================================== blueprint -- */
 
-/* The sheet. Drawn on each slide, not on `.reveal`: in the print layout
-   `.reveal` becomes one tall scrolling element, and a background painted there
-   never reaches the pages — `make pdf` came out plain, and so did the PPTX
-   rasterised from it. A grid each slide carries survives both, and on screen it
-   stops at the slide boundary, which is where a sheet of paper should end.
+/* The sheet. On `.reveal`, which is the whole window, rather than on each
+   slide: a slide's box is only as tall as its content once anything is
+   vertically centred — the title slide is 238px of a 720px box — so a grid
+   drawn there comes out as a band across the middle. Reveal's own background
+   layer sits above this one, so a slide that brings its own
+   `{background-color=".."}` still covers the grid, which is what you want.
 
-   Only the image, never a colour, and never on a slide that brought its own
-   background: reveal paints those on a layer behind the slide, so an opaque
-   background here would cover the title slide's gradient, and a grid over a
-   `{background-color=".."}` slide undoes the point of setting one. */
-.reveal .slides section:not([data-background-color]):not([data-background-gradient]):not([data-background-image]) {
-  background-image:
-    repeating-linear-gradient(0deg, var(--deck-grid) 0 1px, transparent 1px 40px),
-    repeating-linear-gradient(90deg, var(--deck-grid) 0 1px, transparent 1px 40px);
+   The `!important` below is not decoration. `?print-pdf` builds one `.pdf-page`
+   div per page and copies the deck's background onto each as an *inline* style,
+   which no stylesheet rule can outrank. Without it the grid is on screen and
+   silently missing from `make pdf` and from the PPTX rasterised out of that.
+   Overriding only `background-image` leaves reveal's inline colour underneath,
+   which is exactly what should be there. */
+.reveal {
+  background-image: var(--deck-sheet);
+}
+
+.pdf-page {
+  background-image: var(--deck-sheet) !important;
 }
 
 /* Headings are drawn, not typeset. */
@@ -803,8 +827,8 @@ mjx-container:not([display]) {
   border-bottom-color: var(--deck-rule);
 }
 
-/* The title slide keeps its white, which is set on the block itself and so is
-   not caught by the rules above. */
+/* The title slide sets its own colours on the block itself, so none of the
+   above reaches it. */
 
 .reveal .has-dark-background h1,
 .reveal .has-dark-background h2 {
