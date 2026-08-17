@@ -1,6 +1,6 @@
 ---
 title: "Your talk title"
-subtitle: "A subtitle, if the title needs one"
+subtitle: "the university theme — azure on white, the plain one"
 author: "Your Name"
 institute: "Your Institute"
 date: last-modified
@@ -35,25 +35,98 @@ the presenter window, which shows them beside a timer and the next slide.
 :::: {.columns-3-2}
 
 ::: {.column}
-Text on the left.
+Text on the left, a figure on the right.
 
-- A point
-- Another point
+- A point worth making
+- One that needs an [emphasis]{.alert}
+- One that can be [quieter]{.muted}
 
-$$ E = m c^2 $$
+$$ \alpha_{\rm vir} \equiv 2E_{\rm kin} / |E_{\rm grav}| $$
 :::
 
 ::: {.column}
 ::: {.fig}
-[A figure]{.caption}
+[What the panel shows]{.caption}
 
-![](attach/placeholder.png){width="380px"}
+![](attach/placeholder.png){width="330px"}
 
 [Your Name 2026]{.credit}
 :::
 :::
 
 ::::
+
+## Type, tables and code
+
+:::: {.columns-2-3}
+
+::: {.column}
+#### A subheading
+
+Body text at the size the theme sets, with `inline code`, a
+[link](https://quarto.org) and **bold** where a claim needs it.
+
+> A sentence somebody else wrote, set as a blockquote.
+
+::: {.small}
+`.small` for a block that has to give way.
+:::
+:::
+
+::: {.column}
+| Run | $N$ | Outcome |
+|:----|----:|:--------|
+| A   | 128 | collapses |
+| B   | 256 | fragments |
+| C   | 512 | disperses |
+
+```python
+def virial(ekin, egrav):
+    return 2 * ekin / abs(egrav)
+```
+:::
+
+::::
+
+## Grouping things
+
+::::: {.columns-1-1-1}
+
+:::: {.column}
+::: {.card}
+**Setup**
+
+Shear layer, two fluids
+
+[N = 512]{.pill}
+:::
+::::
+
+:::: {.column}
+::: {.card}
+**Result**
+
+Billows by $t \sim 3\,t_{\rm cross}$
+
+[converged]{.pill}
+:::
+::::
+
+:::: {.column}
+::: {.card}
+**Caveat**
+
+Ideal MHD only
+
+[preprint]{.pill}
+:::
+::::
+
+:::::
+
+::: {.highlight}
+`.card` groups, `.pill` tags, `.highlight` is the one sentence the slide is about.
+:::
 
 # Wrapping up
 
