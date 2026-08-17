@@ -1,7 +1,7 @@
 /*-- scss:defaults --*/
 
 // paper — a printed journal page: warm stock, serif text, navy heads, crimson
-// for emphasis. Hairlines, no shadows, no rounded corners.
+// for emphasis. Hairlines, no fills, no progress bar.
 //
 // Everything from `.reveal {` down to the marked block at the end of this file
 // is byte-identical to template/theme.scss. To carry a fix across, replace that
@@ -12,7 +12,7 @@ $font-family-monospace: "SFMono-Regular", Menlo, Consolas, "Liberation Mono", mo
 
 // 1280x720 slide. 30px is ~4.2% of the slide height.
 $presentation-font-size-root: 30px !default;
-$presentation-line-height: 1.35 !default;
+$presentation-line-height: 1.4 !default;
 
 $presentation-heading-font: $font-family-sans-serif !default;
 $presentation-heading-font-weight: 600 !default;
@@ -552,6 +552,37 @@ mjx-container:not([display]) {
   margin: 0;
 }
 
+/* A box that groups a few lines — three of them across a `.columns-1-1-1` is
+   the usual case. Not the same job as `.highlight`, which is the one sentence a
+   slide is about and says so in colour; a card carries no emphasis of its own,
+   it just draws a boundary. Every theme gives it a different edge, and that is
+   most of what tells two themes apart on a slide with no figure. */
+.card {
+  background: var(--deck-soft);
+  border: 1px solid var(--deck-rule);
+  border-radius: 4px;
+  padding: 0.45em 0.7em;
+}
+
+.reveal .card > :first-child {
+  margin-top: 0;
+}
+
+.reveal .card > :last-child {
+  margin-bottom: 0;
+}
+
+/* An inline tag: `[preprint]{.pill}`, `[N = 512]{.pill}`. */
+.pill {
+  background: var(--deck-soft);
+  border: 1px solid var(--deck-rule);
+  border-radius: 999px;
+  color: var(--deck-muted);
+  font-size: 0.7em;
+  padding: 0.1em 0.6em;
+  white-space: nowrap;
+}
+
 .muted {
   color: var(--deck-muted);
 }
@@ -771,6 +802,19 @@ mjx-container:not([display]) {
 
 /* ================================================== paper -- */
 
+/* No progress bar. It is presenter furniture, and this theme reads as a
+   document rather than as a running slideshow — the slide number in the corner
+   already answers "how far in are we".
+
+   `!important` is the only thing that works here. reveal writes
+   `progress.style.display` as an *inline* style from its own `progress:`
+   config, and an inline style beats any selector. The alternative is
+   `progress: false` in _quarto.yml, which would split this theme across two
+   files and make `make theme` carry a second line between decks. */
+.reveal .progress {
+  display: none !important;
+}
+
 /* Metadata in sans against a serif body, the way a paper sets its captions and
    running heads. Fira Sans is in fonts/ for exactly this. */
 .reveal .footer,
@@ -784,9 +828,20 @@ mjx-container:not([display]) {
   font-family: "Fira Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
-/* A hairline under the title, not a bar. */
+/* Set a little smaller and a good deal looser than the other themes. A serif at
+   a slide's size reads better with air between the lines, and a title in the
+   text face does not need to shout. */
 .reveal h2 {
   border-bottom-width: 1px;
+  font-size: 1.25em;
+}
+
+/* The subhead is a journal's, not a slide's: italic, in the text face, no
+   capitals anywhere. */
+.reveal h4 {
+  font-size: 0.9em;
+  font-style: italic;
+  font-weight: 400;
 }
 
 /* Emphasis is crimson here, the way a proof mark is. */
@@ -805,7 +860,23 @@ mjx-container:not([display]) {
   font-style: italic;
 }
 
-/* Nothing on paper is rounded and nothing casts a shadow. */
+/* Nothing on paper is rounded, tinted or raised: a card is a ruled box and a
+   pill is a small note in the margin face. */
+.card {
+  background: none;
+  border: 1px solid var(--deck-rule);
+  border-radius: 0;
+}
+
+.pill {
+  background: none;
+  border: 1px solid var(--deck-rule);
+  border-radius: 0;
+  font-family: "Fira Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
 .reveal pre code {
   background: var(--deck-code-bg);
   border: 1px solid var(--deck-rule);
@@ -823,16 +894,4 @@ mjx-container:not([display]) {
   background: var(--deck-ink);
   height: 1px;
   width: 8em;
-}
-
-.reveal .progress span {
-  background: var(--deck-primary);
-}
-
-/* The date and affiliation on the title slide go sans, with the rest of the
-   metadata. The title itself stays serif, as a paper's does. */
-.reveal .quarto-title-block .institute,
-.reveal .quarto-title-block .quarto-title-affiliation,
-.reveal .quarto-title-block .date {
-  font-family: "Fira Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }

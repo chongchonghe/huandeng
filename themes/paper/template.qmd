@@ -88,6 +88,46 @@ def virial(ekin, egrav):
 
 ::::
 
+## Grouping things
+
+::::: {.columns-1-1-1}
+
+:::: {.column}
+::: {.card}
+**Setup**
+
+Shear layer, two fluids
+
+[N = 512]{.pill}
+:::
+::::
+
+:::: {.column}
+::: {.card}
+**Result**
+
+Billows by $t \sim 3\,t_{\rm cross}$
+
+[converged]{.pill}
+:::
+::::
+
+:::: {.column}
+::: {.card}
+**Caveat**
+
+Ideal MHD only
+
+[preprint]{.pill}
+:::
+::::
+
+:::::
+
+::: {.highlight}
+`.card` groups, `.pill` tags, `.highlight` is the one sentence the slide is about.
+:::
+
 # Wrapping up
 
 ## Thanks! {.focus .center}

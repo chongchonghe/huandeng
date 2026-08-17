@@ -27,7 +27,8 @@ format:
 - `.columns` (50/50), `.columns-2-1`, `.columns-3-2`, `.columns-1-1-1`
 - `.fig` + `.caption` / `.credit` / `.below`
 - `.media-row` + `.media-label` / `.media-items`
-- `.highlight`, `.alert`, `.small`, `.tiny`, `.center`, `.muted`
+- `.card`, `.pill`, `.highlight`, `.alert`
+- `.small`, `.tiny`, `.center`, `.muted`
 :::
 
 ::: {.column}
@@ -201,6 +202,58 @@ slide and only the PDF spends paper on them.
 
 ::: {.highlight}
 `::: {.highlight}` is the callout for the one sentence a slide is really about.
+:::
+
+## Cards and tags
+
+::::: {.columns-1-1-1}
+
+:::: {.column}
+::: {.card}
+**Setup**
+
+Shear layer, two fluids
+
+[N = 512]{.pill}
+:::
+::::
+
+:::: {.column}
+::: {.card}
+**Result**
+
+Billows by $t \sim 3\,t_{\rm cross}$
+
+[converged]{.pill}
+:::
+::::
+
+:::: {.column}
+::: {.card}
+**Caveat**
+
+Ideal MHD only
+
+[preprint]{.pill}
+:::
+::::
+
+:::::
+
+`.card` draws a boundary round a group and carries no emphasis of its own;
+`.highlight` is the one sentence a slide is about and says so in colour.
+`[..]{.pill}` is an inline tag. Every theme gives all three a different edge.
+
+::: {.highlight}
+Do not start a fenced div with a heading. Pandoc writes that div out as a
+`<section>`, and reveal's slide selector is `.slides section` — a descendant
+selector — so it silently becomes a slide of its own. `make check` catches it.
+:::
+
+::: notes
+The three cards are a `.columns-1-1-1` of `.card` blocks. Note the fence
+lengths: five colons round the row, four round each column, three round each
+card. Same-length fences do not nest.
 :::
 
 ## Code highlighting

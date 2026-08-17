@@ -546,6 +546,37 @@ mjx-container:not([display]) {
   margin: 0;
 }
 
+/* A box that groups a few lines — three of them across a `.columns-1-1-1` is
+   the usual case. Not the same job as `.highlight`, which is the one sentence a
+   slide is about and says so in colour; a card carries no emphasis of its own,
+   it just draws a boundary. Every theme gives it a different edge, and that is
+   most of what tells two themes apart on a slide with no figure. */
+.card {
+  background: var(--deck-soft);
+  border: 1px solid var(--deck-rule);
+  border-radius: 4px;
+  padding: 0.45em 0.7em;
+}
+
+.reveal .card > :first-child {
+  margin-top: 0;
+}
+
+.reveal .card > :last-child {
+  margin-bottom: 0;
+}
+
+/* An inline tag: `[preprint]{.pill}`, `[N = 512]{.pill}`. */
+.pill {
+  background: var(--deck-soft);
+  border: 1px solid var(--deck-rule);
+  border-radius: 999px;
+  color: var(--deck-muted);
+  font-size: 0.7em;
+  padding: 0.1em 0.6em;
+  white-space: nowrap;
+}
+
 .muted {
   color: var(--deck-muted);
 }

@@ -1,7 +1,7 @@
 /*-- scss:defaults --*/
 
-// nord — a dark deck for a dark room: arctic blue-greys, frost accents,
-// nothing at full white. Read the note on figures in themes/README.md.
+// nord — a dark deck for a dark room: arctic blue-greys, frost accents, raised
+// cards. Read the note on figures in themes/README.md.
 //
 // Everything from `.reveal {` down to the marked block at the end of this file
 // is byte-identical to template/theme.scss. To carry a fix across, replace that
@@ -12,7 +12,7 @@ $font-family-monospace: "SFMono-Regular", Menlo, Consolas, "Liberation Mono", mo
 
 // 1280x720 slide. 30px is ~4.2% of the slide height.
 $presentation-font-size-root: 30px !default;
-$presentation-line-height: 1.3 !default;
+$presentation-line-height: 1.32 !default;
 
 $presentation-heading-font: $font-family-sans-serif !default;
 $presentation-heading-font-weight: 600 !default;
@@ -552,6 +552,37 @@ mjx-container:not([display]) {
   margin: 0;
 }
 
+/* A box that groups a few lines — three of them across a `.columns-1-1-1` is
+   the usual case. Not the same job as `.highlight`, which is the one sentence a
+   slide is about and says so in colour; a card carries no emphasis of its own,
+   it just draws a boundary. Every theme gives it a different edge, and that is
+   most of what tells two themes apart on a slide with no figure. */
+.card {
+  background: var(--deck-soft);
+  border: 1px solid var(--deck-rule);
+  border-radius: 4px;
+  padding: 0.45em 0.7em;
+}
+
+.reveal .card > :first-child {
+  margin-top: 0;
+}
+
+.reveal .card > :last-child {
+  margin-bottom: 0;
+}
+
+/* An inline tag: `[preprint]{.pill}`, `[N = 512]{.pill}`. */
+.pill {
+  background: var(--deck-soft);
+  border: 1px solid var(--deck-rule);
+  border-radius: 999px;
+  color: var(--deck-muted);
+  font-size: 0.7em;
+  padding: 0.1em 0.6em;
+  white-space: nowrap;
+}
+
 .muted {
   color: var(--deck-muted);
 }
@@ -799,13 +830,6 @@ mjx-container:not([display]) {
   border-bottom-color: var(--deck-rule);
 }
 
-/* The title slide sets its own colours on the block itself, so none of the
-   above reaches it. */
-
-.reveal pre code {
-  background: var(--deck-code-bg);
-}
-
 /* Quarto's highlight style paints `div.sourceCode`, which wraps the `pre code`
    this theme styles — leave it there and a slab of the highlight theme's own
    background shows around the block. */
@@ -813,16 +837,56 @@ mjx-container:not([display]) {
   background: transparent;
 }
 
-.reveal code:not(pre code) {
-  background: rgba(229, 233, 240, 0.12);
+/* The title slide sets its own colours on the block itself, so none of the
+   above reaches it. */
+
+/* The one theme here that looks like software rather than paper, so its boxes
+   are the ones an interface would draw: generous radius, a real shadow, a
+   surface lifted off the ground rather than ruled onto it. */
+.card {
+  background: var(--deck-soft);
+  border: 1px solid var(--deck-rule);
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  padding: 0.6em 0.85em;
 }
 
+.pill {
+  background: var(--deck-soft);
+  border-color: var(--deck-rule);
+  color: var(--deck-ink);
+}
+
+.reveal h4 {
+  color: var(--deck-primary);
+  font-size: 0.74em;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.reveal pre code {
+  background: var(--deck-code-bg);
+  border-radius: 8px;
+}
+
+.reveal code:not(pre code),
 .reveal .has-dark-background code:not(pre code) {
   background: rgba(229, 233, 240, 0.12);
 }
 
+/* Thin, and in the frost blue rather than the sand — the accent is saved for
+   things that want reading. */
 .reveal .progress {
-  background: rgba(229, 233, 240, 0.12);
+  background: rgba(229, 233, 240, 0.1);
+  height: 3px;
+}
+
+.reveal .progress span {
+  background: var(--deck-primary);
+}
+
+.alert {
+  color: var(--deck-accent);
 }
 
 .highlight {

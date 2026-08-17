@@ -102,6 +102,8 @@ make theme THEME=paper       # copies the look in; the deck still owns it afterw
 make check
 ```
 
+They differ in shape, not only in colour: `paper`, `whiteprint` and `solarized` carry no progress bar at all, line height runs from 1.28 to 1.42, and `::: {.card}` comes out as a ruled box, a hard offset shadow, a dashed construction line or a raised rounded surface depending on where you are.
+
 Two dark themes are in there because people ask for them, but a figure saved on a white canvas is a bright rectangle on a dark slide and no stylesheet can fix that. [`themes/README.md`](themes/README.md) has the detail.
 
 ## Requirements

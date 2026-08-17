@@ -327,6 +327,37 @@ def with_playwright():
     return sync_playwright()
 
 
+# Reveal's slide selector is `.slides section` — a *descendant* selector, so any
+# <section> anywhere inside a slide silently becomes a slide of its own, with a
+# blank entry in the progress bar and an arrow press that goes nowhere.
+#
+# Markdown gets you there without asking: Pandoc writes a fenced div whose first
+# block is a heading as a <section> carrying the div's class, so
+# `::: {.card}` + `#### Setup` compiles to `<section class="card">`. Quarto
+# rewrites `.column` itself and is safe; nothing else is.
+#
+# A section reveal means is a child of `.slides` or of another section. Anything
+# else got there by accident.
+STRAY_SECTION_JS = r"""
+() => {
+  const out = [];
+  document.querySelectorAll('.reveal .slides section').forEach(sec => {
+    const p = sec.parentElement;
+    if (p.classList.contains('slides') || p.tagName === 'SECTION') return;
+    const slide = p.closest('section');
+    const all = Reveal.getSlides();
+    const h = slide ? slide.querySelector('h1, h2') : null;
+    out.push({
+      cls: (sec.className || '(no class)').replace(/ ?(past|present|future)\b/g, ''),
+      slide: slide ? all.indexOf(slide) + 1 : 0,
+      title: h ? h.textContent.trim().slice(0, 40) : 'untitled',
+    });
+  });
+  return out;
+}
+"""
+
+
 # Runs inside the page, once per slide, after navigating to it.
 #
 # Everything is converted back into slide coordinates by dividing out
@@ -473,8 +504,17 @@ def check(deck: Deck, expect: int | None) -> int:
     with with_playwright() as pw:
         browser, page = browser_page(pw)
         open_deck(page, deck.html)
+        strays = page.evaluate(STRAY_SECTION_JS)
         total = visit_slides(page, look)
         browser.close()
+
+    for s in strays:
+        problems.append(
+            f"stray <section class=\"{s['cls']}\"> inside slide {s['slide']} "
+            f"({s['title']}) — reveal counts it as a slide of its own. A fenced "
+            f"div whose first block is a heading is written out as a section; "
+            f"lead it with anything else."
+        )
 
     print(f"{deck.name}: {total} slides")
     if expect is not None and total != expect:

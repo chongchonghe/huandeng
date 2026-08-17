@@ -1,7 +1,7 @@
 /*-- scss:defaults --*/
 
 // blueprint — a drawing sheet in reverse: deep blue ground, monospace
-// headings, amber for anything that matters.
+// headings, construction lines, amber for anything that matters.
 //
 // Everything from `.reveal {` down to the marked block at the end of this file
 // is byte-identical to template/theme.scss. To carry a fix across, replace that
@@ -552,6 +552,37 @@ mjx-container:not([display]) {
   margin: 0;
 }
 
+/* A box that groups a few lines — three of them across a `.columns-1-1-1` is
+   the usual case. Not the same job as `.highlight`, which is the one sentence a
+   slide is about and says so in colour; a card carries no emphasis of its own,
+   it just draws a boundary. Every theme gives it a different edge, and that is
+   most of what tells two themes apart on a slide with no figure. */
+.card {
+  background: var(--deck-soft);
+  border: 1px solid var(--deck-rule);
+  border-radius: 4px;
+  padding: 0.45em 0.7em;
+}
+
+.reveal .card > :first-child {
+  margin-top: 0;
+}
+
+.reveal .card > :last-child {
+  margin-bottom: 0;
+}
+
+/* An inline tag: `[preprint]{.pill}`, `[N = 512]{.pill}`. */
+.pill {
+  background: var(--deck-soft);
+  border: 1px solid var(--deck-rule);
+  border-radius: 999px;
+  color: var(--deck-muted);
+  font-size: 0.7em;
+  padding: 0.1em 0.6em;
+  white-space: nowrap;
+}
+
 .muted {
   color: var(--deck-muted);
 }
@@ -771,7 +802,8 @@ mjx-container:not([display]) {
 
 /* ================================================== blueprint -- */
 
-/* Headings are drawn, not typeset. */
+/* Headings are drawn, not typeset, and the rule under them is a construction
+   line — dashed, the way a drawing marks an edge that is not really there. */
 .reveal h1,
 .reveal h2,
 .reveal h3 {
@@ -780,7 +812,17 @@ mjx-container:not([display]) {
 }
 
 .reveal h2 {
+  border-bottom: 1px dashed var(--deck-rule);
+  font-size: 1.25em;
   font-weight: 500;
+}
+
+.reveal h4 {
+  color: var(--deck-tertiary);
+  font-family: $font-family-monospace;
+  font-size: 0.72em;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
 
 /* reveal adds `.has-dark-background` to a slide whose background it judges
@@ -811,12 +853,23 @@ mjx-container:not([display]) {
   border-bottom-color: var(--deck-rule);
 }
 
+/* Quarto's highlight style paints `div.sourceCode`, which wraps the `pre code`
+   this theme styles — leave it there and a slab of the highlight theme's own
+   background shows around the block. */
+.reveal div.sourceCode {
+  background: transparent;
+}
+
 /* The title slide sets its own colours on the block itself, so none of the
    above reaches it. */
 
 .reveal .has-dark-background h1,
 .reveal .has-dark-background h2 {
   color: var(--deck-primary);
+}
+
+.reveal .has-dark-background h2 {
+  border-bottom-color: var(--deck-rule);
 }
 
 .alert {
@@ -834,19 +887,26 @@ mjx-container:not([display]) {
 }
 
 /* Dashed, like the construction lines on a drawing. */
+.card {
+  background: var(--deck-soft);
+  border: 1px dashed var(--deck-rule);
+  border-radius: 0;
+}
+
+.pill {
+  background: none;
+  border: 1px dashed var(--deck-rule);
+  border-radius: 0;
+  color: var(--deck-tertiary);
+  font-family: $font-family-monospace;
+  text-transform: uppercase;
+}
+
 .reveal pre code {
   background: var(--deck-code-bg);
   border: 1px dashed var(--deck-rule);
   border-radius: 0;
 }
-
-/* Quarto's highlight style paints `div.sourceCode`, which wraps the `pre code`
-   this theme styles — leave it there and a slab of the highlight theme's own
-   background shows around the block. */
-.reveal div.sourceCode {
-  background: transparent;
-}
-
 
 .reveal code:not(pre code),
 .reveal .has-dark-background code:not(pre code) {
@@ -854,8 +914,14 @@ mjx-container:not([display]) {
   border-radius: 0;
 }
 
+/* A thin amber line, the one warm thing on the sheet. */
 .reveal .progress {
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.1);
+  height: 3px;
+}
+
+.reveal .progress span {
+  background: var(--deck-tertiary);
 }
 
 .reveal table th {

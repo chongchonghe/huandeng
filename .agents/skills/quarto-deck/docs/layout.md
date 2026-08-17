@@ -87,6 +87,8 @@ also how a flip-book animation is built; see `media.md`.
 | | |
 | --- | --- |
 | `::: {.highlight}` | the callout block for the one sentence a slide is about |
+| `::: {.card}` | a box round a group — carries no emphasis, just a boundary |
+| `[..]{.pill}` | an inline tag: `[N = 512]{.pill}`, `[preprint]{.pill}` |
 | `[..]{.alert}` | inline, in the theme's accent colour |
 | `[..]{.muted}` | inline, grey |
 | `.small` / `.tiny` | 0.78em / 0.62em, on a block or a span |
@@ -95,6 +97,36 @@ also how a flip-book animation is built; see `media.md`.
 
 `.center` does double duty: on a `:::` block it is `text-align: center`; on a `##` heading it is
 reveal's per-slide vertical centring, which is why the focus slide needs both classes.
+
+`.card` and `.highlight` do different jobs. A highlight is the one sentence the slide is about and
+says so in the theme's colour; a card is a container that draws a boundary and nothing else. Three
+cards across a `.columns-1-1-1` is the usual shape, and it is the widest difference between the
+themes on a slide that has no figure on it — hairline boxes in `paper`, a hard offset shadow in
+`swiss`, dashed construction lines in `blueprint`, a raised rounded surface in `nord`.
+
+### Two traps when nesting divs
+
+**Fences of the same length do not nest.** Pandoc closes the innermost open fence at the first
+matching `:::`, so a card inside a column inside a row needs three lengths, longest outside:
+
+```markdown
+::::: {.columns-1-1-1}
+:::: {.column}
+::: {.card}
+**Setup**
+
+Shear layer, two fluids
+:::
+::::
+:::::
+```
+
+**Never start a fenced div with a heading.** Pandoc writes a div whose first block is a heading out
+as a `<section>` carrying the div's class, and reveal's slide selector is `.slides section` — a
+*descendant* selector — so it becomes a slide of its own, with a blank entry in the progress bar and
+an arrow press that goes nowhere. `::: {.card}` followed by `#### Setup` costs three phantom slides
+and no error. Lead with `**bold text**` instead. `.column` is the exception, because Quarto rewrites
+those divs itself before Pandoc gets there. `make check` reports any stray section it finds.
 
 ## Tables
 

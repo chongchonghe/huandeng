@@ -70,6 +70,8 @@ These are not stock Quarto. Full detail in `docs/layout.md` and `docs/figures.md
 ::::
 
 ::: {.highlight}                 the one sentence the slide is about
+::: {.card}                      a box round a group; no emphasis of its own
+[..]{.pill}                      an inline tag
 ::: {.caption-line}              a caption for something .fig does not wrap
 ::: {.video-pair}                two clips at their true relative scale
 [..]{.alert}  [..]{.muted}  .small  .tiny  .center  .no-header
@@ -118,6 +120,11 @@ Each of these fails without an error message.
    either affects every slide.
 9. **Never edit `template/` or a `themes/` directory to write a talk.** Copy one into `talks/`
    first. Both are starting points, and editing one in place changes what everybody starts from.
+10. **Never start a fenced div with a heading.** Pandoc writes that div out as a `<section>`, and
+    reveal's slide selector is `.slides section` — a *descendant* selector — so it silently becomes
+    a slide of its own. `::: {.card}` then `#### Setup` costs you three phantom slides. Lead with
+    bold text instead. `.column` is safe because Quarto rewrites it itself. `make check` catches
+    this one. `docs/layout.md`.
 
 ## Style that is not personal taste
 

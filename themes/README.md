@@ -15,6 +15,21 @@ The default look — azure on white, Fira Sans — is not in here. It lives in `
 
 Each directory is a complete deck. `cd themes/paper && make` renders it; `make check` verifies it, and the repository's own `make check` walks all six.
 
+## What varies, beyond the colours
+
+A theme that only recoloured the default would not be worth switching to, so these differ in shape as well.
+
+| | |
+| --- | --- |
+| **Progress bar** | `paper`, `whiteprint` and `solarized` have none — they read as documents, and the slide number already says how far in you are. `swiss` has a flat 6px red one, `nord` a 3px frost line, `blueprint` a 3px amber line, the default a gradient. |
+| **Slide title** | a hairline in `paper`, a 3px rule in `swiss`, capitals under a hairline in `whiteprint`, a dashed construction line in `blueprint`. |
+| **Subhead (`####`)** | italic serif in `paper`; tracked-out capitals in `swiss`, `solarized` and `nord`; monospace capitals in `whiteprint` and `blueprint`. |
+| **`.card`** | a ruled box in `paper`, a hard 6px offset shadow in `swiss`, a square navy outline in `whiteprint`, a soft rounded surface in `solarized`, a raised rounded one in `nord`, dashed in `blueprint`. |
+| **Line height** | 1.28 in `swiss` up to 1.42 in `solarized`, the theme for a long talk in a bright room. |
+| **Section divider** | centred in most, flush left under a full-measure red bar in `swiss`, capitals in `whiteprint`. |
+
+The hard offset shadow, the card and the pill are the ideas worth taking from html-ppt-skill; they are rebuilt here rather than copied.
+
 ## Starting a talk in a theme
 
 ```bash

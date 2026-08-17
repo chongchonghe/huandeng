@@ -58,6 +58,7 @@ next keypress. Layout comes from classes in `theme.scss`:
 | `::: {.columns-3-2}` | other ratios; also `-2-1`, `-1-2`, `-2-3`, `-1-1-1` |
 | `::: {.media-row}` | a labelled strip of images, on one line |
 | `::: {.highlight}` | the callout for the one sentence a slide is about |
+| `::: {.card}` | a box round a group; `[..]{.pill}` for an inline tag |
 | `[..]{.alert}`, `.small`, `.tiny`, `.center`, `.muted` | inline emphasis and sizing |
 | `<video class="r-stretch" …>` | video, sized to whatever height the slide has left |
 

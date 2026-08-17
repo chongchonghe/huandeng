@@ -49,6 +49,7 @@ It walks the built deck slide by slide in headless Chromium and reports:
 - content past **any** edge of the 1280 × 720 box, in slide-px, naming the slide;
 - images and videos drawn more than 2% off their own pixel aspect ratio;
 - images that never loaded;
+- stray `<section>` elements inside a slide, which reveal counts as slides of their own;
 - the slide count, against `--expect N` if you pin one.
 
 Two categories of false alarm are suppressed deliberately, and both matter if you extend it: MathJax
