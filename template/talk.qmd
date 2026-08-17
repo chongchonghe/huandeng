@@ -45,6 +45,8 @@ $$ E = m c^2 $$
 
 ::: {.column}
 ::: {.fig}
+[A figure]{.caption}
+
 ![](attach/placeholder.png){width="380px"}
 
 [Your Name 2026]{.credit}
