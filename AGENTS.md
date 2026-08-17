@@ -7,6 +7,7 @@ Makefile                repo-wide: make check verifies every deck
 tools/build-slides.py   the toolchain — shared, never copied into a deck
 template/               the starting point: copy it, never edit it in place
 demo/                   every feature, working, as a reference deck
+themes/                 six alternative looks, each a complete deck. themes/README.md
 talks/                  the user's own decks — gitignored, never commit anything here
 trash/                  dead ends, with a README recording why. Read it before
                         proposing LaTeX, Typst or Pandoc's PPTX writer again.
@@ -40,7 +41,8 @@ These fail without an error, so they cannot be left to a lookup:
    SCSS makes the deck fall back to another typeface and re-flow every line. Silently.
 3. **Edit `talk.qmd`.** `theme.scss` is shared API and `_quarto.yml` is configuration; changing
    either affects every slide.
-4. **Never edit `template/` to write a talk.** Copy it into `talks/` first.
+4. **Never edit `template/` or a `themes/` directory to write a talk.** Copy one into `talks/`
+   first — both are starting points, and editing one in place changes what everybody starts from.
 5. **`out/` is not committed** and never needs to be.
 6. **Never change the aspect ratio of an image or a video.** These are scientific figures: the
    aspect ratio carries meaning. Stretch one and equal axes stop being square, a circle becomes an
@@ -96,6 +98,9 @@ A deck must render correctly when copied anywhere, on its own, years later.
   Fix one and copy it; do not symlink them.
 - The cost is real — a fix in `template/` reaches old decks only if you carry it there — and it is
   accepted knowingly, in exchange for talks that never rot.
+- **`themes/` is not an exception.** `make theme THEME=nord` *copies* that theme's `theme.scss` in
+  and rewrites two lines of `_quarto.yml`; afterwards the deck owns its look outright and renders
+  with `themes/` deleted. Nothing links, and no deck may start linking. `themes/README.md`.
 
 ## Only a browser can render this deck
 

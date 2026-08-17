@@ -35,6 +35,7 @@ A browser opens on the deck and reloads every time you save. Edit `talk.qmd`, an
 | `make all` | also write the PDFs and a PowerPoint of slide images |
 | `make standalone` | one self-contained `.html` you can email |
 | `make png` | one PNG per slide, so you can read them |
+| `make theme THEME=nord` | put another look on this deck (`make themes` lists them) |
 
 `make` and `make preview` need nothing but Quarto. The rest need Python and a headless browser — see [Requirements](#requirements).
 
@@ -61,6 +62,7 @@ It runs `make check` on its own work, so a slide it accidentally overflowed come
 | **A visible slide boundary** | every slide is laid out in exactly 1280 &times; 720 and scaled to the screen; press **X** to draw that box while you write. See [Slide geometry](demo/README.md#slide-geometry) |
 | **Figures with academic credits** | `::: {.fig}` puts the credit against the figure's own edge, not the slide's |
 | **A PowerPoint that looks like the deck** | one full-bleed slide image per page at 4K, because the layout is CSS and no PowerPoint writer can read CSS. Not editable, and pixel-identical |
+| **Seven looks, none of them locked in** | the default plus six themes — `paper`, `swiss`, `whiteprint`, `solarized`, `nord`, `blueprint`. `make theme THEME=paper` copies one onto a deck you have already written, and the deck still owns it afterwards. [`themes/README.md`](themes/README.md) |
 | **Decks that do not rot** | every deck owns its copies of the theme, the fonts and the assets, so it still renders years later, moved anywhere |
 
 ## Layout
@@ -69,6 +71,7 @@ It runs `make check` on its own work, so a slide it accidentally overflowed come
 tools/build-slides.py   the toolchain — shared by every deck, copied into none
 template/               the starting point. Copy it; never edit it in place.
 demo/                   every feature, working, as a reference deck
+themes/                 six alternative looks, each a complete deck of its own
 talks/                  yours — gitignored, so your decks stay out of this repo
 trash/                  dead ends, with a README recording why they are dead
 .agents/skills/         the agent skills (.claude/skills is a symlink to it)
@@ -76,6 +79,30 @@ Makefile                make check verifies every deck at once
 ```
 
 A deck is `talk.qmd` + `_quarto.yml` + `theme.scss` + `fonts.html` + `guides.html` + `attach/`, plus a `Makefile` that wraps the commands above and holds no build logic of its own.
+
+## Themes
+
+The default is azure on white. Six others live in [`themes/`](themes/), each a complete deck you can render and look at.
+
+| | |
+| --- | --- |
+| `paper` | a printed journal page: warm stock, serif text, navy heads, crimson emphasis |
+| `swiss` | white, black, one red; heavy rules and tight headings |
+| `whiteprint` | an engineering drawing — navy on a faint grid, monospace on every label |
+| `solarized` | low contrast, cream and teal, for a bright room or a long talk |
+| `nord` | dark blue-grey with frost accents |
+| `blueprint` | deep blue with a white grid and monospace headings |
+
+Start a talk in one by copying it — `cp -r themes/paper talks/my-talk` — or change a deck you have already written:
+
+```bash
+cd talks/my-talk
+make themes                  # what there is
+make theme THEME=paper       # copies the look in; the deck still owns it afterwards
+make check
+```
+
+Two dark themes are in there because people ask for them, but a figure saved on a white canvas is a bright rectangle on a dark slide and no stylesheet can fix that. [`themes/README.md`](themes/README.md) has the detail.
 
 ## Requirements
 
@@ -102,6 +129,6 @@ The cost is real: improving `template/` does not reach a talk you already copied
 
 ## Credits
 
-Built on [Quarto](https://quarto.org/) and [reveal.js](https://revealjs.com/). Fonts are [Fira Sans](https://github.com/mozilla/Fira), SIL OFL.
+Built on [Quarto](https://quarto.org/) and [reveal.js](https://revealjs.com/). Fonts are [Fira Sans](https://github.com/mozilla/Fira), SIL OFL. The six themes in `themes/` take their palettes and typographic character from [html-ppt-skill](https://github.com/lewislulu/html-ppt-skill) by lewis, MIT, rebuilt here as Quarto SCSS.
 
 MIT licensed. See [LICENSE](LICENSE).

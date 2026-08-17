@@ -35,6 +35,7 @@ make preview
 | `make all` | 同时生成两份 PDF 和一份图片版 PowerPoint |
 | `make standalone` | 一个可以直接发邮件的单文件 `.html` |
 | `make png` | 每页一张 PNG，方便你逐页看 |
+| `make theme THEME=nord` | 给这份幻灯片换一套外观（`make themes` 列出全部） |
 
 `make` 和 `make preview` 只需要 Quarto。其余的需要 Python 和一个无头浏览器，见[需要装什么](#需要装什么)。
 
@@ -61,6 +62,7 @@ make preview
 | **看得见的页面边界** | 每页都在精确的 1280 × 720 里排版再整体缩放到屏幕；写稿时按 **X** 就能把这个框画出来 |
 | **带出处的插图** | `::: {.fig}` 让出处贴着图本身的边缘，而不是幻灯片的边缘 |
 | **和幻灯片长得一样的 PPTX** | 每页一张 4K 满幅图片。因为版式是 CSS，任何 PowerPoint 写出器都读不懂 CSS。不可编辑，但逐像素一致 |
+| **七套外观，都不锁死** | 默认的一套，加上 `paper`、`swiss`、`whiteprint`、`solarized`、`nord`、`blueprint` 六套。`make theme THEME=paper` 把其中一套复制到你已经写好的幻灯片上，复制完这份幻灯片依然自己拥有它。见 [`themes/README.md`](themes/README.md) |
 | **不会随时间烂掉的幻灯片** | 每份幻灯片自带主题、字体和素材的副本，几年后换台电脑、挪到别处，照样渲染成原样 |
 
 ## 目录结构
@@ -69,6 +71,7 @@ make preview
 tools/build-slides.py   工具链——所有幻灯片共用，但不会被复制进任何一份
 template/               起点。复制它，不要直接改。
 demo/                   所有功能的可运行参考
+themes/                 六套备选外观，每一套本身都是一份完整的幻灯片
 talks/                  你自己的——已 gitignore，你的幻灯片不会进这个仓库
 trash/                  走不通的路，附一份说明为什么走不通
 .agents/skills/         AI 技能（.claude/skills 是指向它的软链接）
@@ -76,6 +79,30 @@ Makefile                make check 一次检查所有幻灯片
 ```
 
 一份幻灯片就是 `talk.qmd` + `_quarto.yml` + `theme.scss` + `fonts.html` + `guides.html` + `attach/`，外加一个只是包装上述命令、本身不含构建逻辑的 `Makefile`。
+
+## 主题
+
+默认那套是白底配 azure 蓝。另外六套在 [`themes/`](themes/) 里，每一套都是一份能直接渲染、直接看的完整幻灯片。
+
+| | |
+| --- | --- |
+| `paper` | 像一页印出来的期刊论文：暖白纸、衬线正文、深蓝标题、深红强调 |
+| `swiss` | 白、黑、一点红；粗线条，紧排标题 |
+| `whiteprint` | 工程图纸：淡网格上的深蓝，所有标注类文字用等宽字体 |
+| `solarized` | 低对比的米色配青色，适合亮房间或长报告 |
+| `nord` | 冷调深灰蓝，霜蓝色点缀 |
+| `blueprint` | 深蓝底、白网格、等宽标题 |
+
+要用其中一套开始一个新报告，复制它就行——`cp -r themes/paper talks/my-talk`；要给已经写好的幻灯片换一套：
+
+```bash
+cd talks/my-talk
+make themes                  # 有哪些
+make theme THEME=paper       # 把外观复制进来，复制完这份幻灯片依然自己拥有它
+make check
+```
+
+里面放了两套深色主题，因为总有人要，但白底存下来的图放在深色页面上就是一块刺眼的白方块，这一点没有任何样式表能补救。细节见 [`themes/README.md`](themes/README.md)。
 
 ## 需要装什么
 
@@ -102,6 +129,6 @@ Makefile                make check 一次检查所有幻灯片
 
 ## 致谢
 
-基于 [Quarto](https://quarto.org/) 和 [reveal.js](https://revealjs.com/)。字体为 [Fira Sans](https://github.com/mozilla/Fira)，SIL OFL 授权。
+基于 [Quarto](https://quarto.org/) 和 [reveal.js](https://revealjs.com/)。字体为 [Fira Sans](https://github.com/mozilla/Fira)，SIL OFL 授权。`themes/` 里六套主题的配色和字体气质来自 lewis 的 [html-ppt-skill](https://github.com/lewislulu/html-ppt-skill)（MIT），在这里用 Quarto SCSS 重写。
 
 MIT 授权，见 [LICENSE](LICENSE)。

@@ -6,6 +6,8 @@
 #   make png        one PNG per slide, so you can read them
 #   make all        HTML, PDF and PPTX
 #   make standalone one self-contained .html you can email
+#   make theme      put another look on this deck: make theme THEME=nord
+#   make themes     list the ones there are
 #   make clean      delete out/
 #
 # `make` and `make preview` need nothing but Quarto, so they still work in a
@@ -55,7 +57,7 @@ cd "$(ROOT)" && uv run python tools/build-slides.py "$(CURDIR)" $(1)
 endef
 
 .DEFAULT_GOAL := html
-.PHONY: html preview check png pdf pptx standalone all clean
+.PHONY: html preview check png pdf pptx standalone all theme themes clean
 
 html:
 	$(QUARTO) render
@@ -80,6 +82,17 @@ standalone:
 
 all:
 	$(call run-tool,)
+
+# Copies the theme's files in — this deck keeps owning its own look afterwards,
+# and never imports one. Commit before you run it; the diff is how you undo it.
+theme:
+	@if [ -z "$(THEME)" ]; then \
+	    echo "usage: make theme THEME=<name>   (make themes to see them)"; exit 1; \
+	fi
+	$(call run-tool,--theme $(THEME))
+
+themes:
+	$(call run-tool,--theme ?)
 
 clean:
 	rm -rf out .quarto

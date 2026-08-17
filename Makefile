@@ -5,10 +5,12 @@
 #   make clean     delete every out/
 #
 # DECKS is every directory holding a _quarto.yml, so a talk you copy into
-# talks/ is picked up with no edit here.
+# talks/ is picked up with no edit here. Each themes/<name>/ is a deck too —
+# the template wearing that look — so `make check` covers the gallery as well.
 
 DECKS := $(patsubst %/_quarto.yml,%,$(wildcard \
-             template/_quarto.yml demo/_quarto.yml talks/*/_quarto.yml))
+             template/_quarto.yml demo/_quarto.yml themes/*/_quarto.yml \
+             talks/*/_quarto.yml))
 
 # Quarto and uv both install into ~/.local/bin, which a non-login shell does not
 # always inherit. Appended, not prepended, so anything already on PATH wins.

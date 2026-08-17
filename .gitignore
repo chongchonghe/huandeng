@@ -32,6 +32,12 @@ out/
 /demo/*.pptx
 /template/*_files/
 /demo/*_files/
+/themes/*/*.html
+!/themes/*/fonts.html
+!/themes/*/guides.html
+/themes/*/*.pdf
+/themes/*/*.pptx
+/themes/*/*_files/
 
 # Dead ends kept for reference. The README there says how to regenerate them,
 # which is worth committing; the artefacts themselves are not.

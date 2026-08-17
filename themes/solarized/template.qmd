@@ -1,0 +1,97 @@
+---
+title: "Your talk title"
+subtitle: "the solarized theme — low contrast, cream and teal"
+author: "Your Name"
+institute: "Your Institute"
+date: last-modified
+date-format: "D MMM YYYY"
+bibliography: ref.bib
+format:
+  revealjs:
+    footer: "Your Name (Your Institute) &nbsp;·&nbsp; Short talk title"
+---
+
+# Getting started
+
+## The rules of the file
+
+- **New section** — a `#` heading, which becomes a divider slide
+- **New slide** — a `##` heading
+- **Another slide, same title** — a bare `---`
+- **Reveal step by step** — `. . .`, or a `::: {.fragment}` block
+- **Deck-wide options** — `_quarto.yml`; this talk's title and footer, the block above
+
+::: {.highlight}
+Edit this file, run `make`, and it is your deck.
+:::
+
+::: notes
+Speaker notes live in a `::: notes` block. Press **S** during the talk to open
+the presenter window, which shows them beside a timer and the next slide.
+:::
+
+## A slide with two columns
+
+:::: {.columns-3-2}
+
+::: {.column}
+Text on the left, a figure on the right.
+
+- A point worth making
+- One that needs an [emphasis]{.alert}
+- One that can be [quieter]{.muted}
+
+$$ \alpha_{\rm vir} \equiv 2E_{\rm kin} / |E_{\rm grav}| $$
+:::
+
+::: {.column}
+::: {.fig}
+[What the panel shows]{.caption}
+
+![](attach/placeholder.png){width="330px"}
+
+[Your Name 2026]{.credit}
+:::
+:::
+
+::::
+
+## Type, tables and code
+
+:::: {.columns-2-3}
+
+::: {.column}
+#### A subheading
+
+Body text at the size the theme sets, with `inline code`, a
+[link](https://quarto.org) and **bold** where a claim needs it.
+
+> A sentence somebody else wrote, set as a blockquote.
+
+::: {.small}
+`.small` for a block that has to give way.
+:::
+:::
+
+::: {.column}
+| Run | $N$ | Outcome |
+|:----|----:|:--------|
+| A   | 128 | collapses |
+| B   | 256 | fragments |
+| C   | 512 | disperses |
+
+```python
+def virial(ekin, egrav):
+    return 2 * ekin / abs(egrav)
+```
+:::
+
+::::
+
+# Wrapping up
+
+## Thanks! {.focus .center background-color="#073642"}
+
+Questions? Comments?
+
+your.email\@university.edu

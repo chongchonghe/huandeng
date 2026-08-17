@@ -8,6 +8,7 @@
     build-slides.py <deck> --pptx           one slide image per page, at 4K
     build-slides.py <deck> --check          render, then look at every slide
     build-slides.py <deck> --png            one PNG per slide, to read
+    build-slides.py <deck> --theme nord     copy themes/nord over this deck's look
 
 `--html` and `--standalone` are `quarto render` with the right flags, and you
 can type those yourself. `--pdf`, `--png` and `--check` drive a headless
@@ -79,6 +80,87 @@ class Deck:
 def die(msg: str) -> None:
     print(f"error: {msg}", file=sys.stderr)
     raise SystemExit(1)
+
+
+# ------------------------------------------------------------------ themes --
+
+
+THEMES_DIR = Path(__file__).resolve().parent.parent / "themes"
+
+# The two lines a theme owns outside theme.scss. The title slide's background
+# has to be a reveal attribute rather than CSS — see the note in _quarto.yml —
+# and the code highlighting is a Pandoc theme, not a stylesheet, so neither can
+# live in the SCSS with everything else.
+THEME_KEYS = ("data-background-gradient", "highlight-style")
+
+
+def themes() -> list[str]:
+    if not THEMES_DIR.is_dir():
+        return []
+    return sorted(d.name for d in THEMES_DIR.iterdir() if (d / "theme.scss").is_file())
+
+
+def apply_theme(deck: Deck, name: str) -> None:
+    """Dress the deck in themes/<name>.
+
+    A deck owns its look outright: nothing it renders reaches outside its own
+    directory, and themes/ does not have to exist for `make` to work. So putting
+    a theme on a deck means copying the theme's files in, which is all this
+    does. It touches three things and says so, and the diff is `git diff`.
+    """
+    have = themes()
+    if name not in have:
+        die(f"no theme {name!r} in {THEMES_DIR} — have: {', '.join(have) or '(none)'}")
+    src = THEMES_DIR / name
+
+    shutil.copyfile(src / "theme.scss", deck.dir / "theme.scss")
+    print(f"theme.scss  <- themes/{name}/theme.scss")
+
+    # Transplant only the lines the theme owns. Replacing the whole _quarto.yml
+    # would be simpler and would silently throw away anything this deck had
+    # changed about its own geometry.
+    yml = deck.dir / "_quarto.yml"
+    text = yml.read_text()
+    want = {}
+    for line in (src / "_quarto.yml").read_text().splitlines():
+        for key in THEME_KEYS:
+            if line.strip().startswith(key + ":"):
+                want[key] = line
+    for key in THEME_KEYS:
+        if key not in want:
+            die(f"themes/{name}/_quarto.yml has no {key}:")
+        old = [ln for ln in text.splitlines() if ln.strip().startswith(key + ":")]
+        if not old:
+            die(f"{yml} has no {key}: line to replace — apply the theme by hand")
+        # Keep this deck's indentation; take the theme's value.
+        indent = old[0][: len(old[0]) - len(old[0].lstrip())]
+        new = indent + want[key].strip()
+        if old[0] != new:
+            text = text.replace(old[0], new, 1)
+            print(f"_quarto.yml {key}: {want[key].split(':', 1)[1].strip()[:56]}")
+    yml.write_text(text)
+
+    # The one thing a copy cannot reach. A slide background has to be a reveal
+    # attribute rather than CSS, and reveal parses that attribute as a literal
+    # colour — a `var(--deck-primary)` there would work as a colour and then
+    # defeat the brightness test reveal uses to decide whether the type on that
+    # slide goes white. So a colour written into a slide belongs to the talk,
+    # and stays azure on a deck that has just gone dark green.
+    stale = sorted(
+        {
+            line.split('background-color="')[1].split('"')[0]
+            for line in deck.qmd.read_text().splitlines()
+            if 'background-color="#' in line
+        }
+    )
+    if stale:
+        print(
+            f"\nnote: {deck.qmd.name} sets a slide background by hand "
+            f"({', '.join(stale)}). That is the talk's, not the theme's — "
+            "change it there if it now clashes."
+        )
+
+    print(f"\n{deck.dir.name} is now the {name} theme. `make check` before you trust it.")
 
 
 # ------------------------------------------------------------------ quarto --
@@ -541,13 +623,31 @@ def main(argv: list[str] | None = None) -> int:
         "--dpi", type=int, help="PPTX slide image DPI, overriding --width"
     )
     ap.add_argument("--png", action="store_true", help="one PNG per slide")
+    ap.add_argument(
+        "--theme",
+        metavar="NAME",
+        help="copy themes/NAME over this deck's look, then stop; "
+        "pass '?' to list what is there",
+    )
     ap.add_argument("--check", action="store_true", help="overflow and aspect ratio")
     ap.add_argument(
         "--expect", type=int, metavar="N", help="fail unless the deck has N slides"
     )
     args = ap.parse_args(argv)
 
+    if args.theme in ("?", "list"):
+        print("\n".join(themes()) or f"no themes in {THEMES_DIR}")
+        return 0
+
     deck = Deck(args.deck)
+
+    # Changing the look and building in the same command would hide which of the
+    # two you meant, so --theme does the one thing and leaves the building to a
+    # second run you can read the output of.
+    if args.theme:
+        apply_theme(deck, args.theme)
+        return 0
+
     picked = any([args.html, args.standalone, args.pdf, args.pptx, args.png, args.check])
 
     if not picked:

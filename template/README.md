@@ -21,6 +21,8 @@ make preview
 
 Fill in the YAML block at the top of `talk.qmd` first: title, author, institute, and the `footer` line, which is the only place the short forms appear.
 
+This copy is the default look: azure on white, Fira Sans. To start somewhere else, copy a directory out of [`themes/`](../themes/) instead — each one is this template in another livery. To change your mind later, `make theme THEME=nord` from inside your own deck.
+
 ## Building
 
 ```bash
@@ -29,6 +31,8 @@ make preview    # the same, in a browser that reloads as you save
 make check      # render, then look at every slide
 make all        # HTML, PDF and PPTX
 make standalone # one self-contained .html to email
+make themes     # the looks available
+make theme THEME=nord   # copy one of them over this deck's
 ```
 
 `make pdf` writes two files, printed from the built deck in headless Chromium — no LaTeX anywhere:

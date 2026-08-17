@@ -84,6 +84,45 @@ inset, and a live readout of window size, aspect ratio, scale and how full the s
 through `Reveal.addKeyBinding`, so it appears in reveal's own `?` help and cannot collide with
 navigation — `X` because `G` is already reveal's jump-to-slide.
 
+## Changing the whole look
+
+`themes/` holds six alternatives to the default — `paper`, `swiss`, `whiteprint`, `solarized`,
+`nord`, `blueprint` — and each is a complete deck you can render and look at. `themes/README.md`
+says what each one is.
+
+```bash
+cp -r themes/paper talks/2027-my-talk    # start a new talk in one
+cd talks/2027-my-talk && make theme THEME=nord   # or re-dress one already written
+make check
+```
+
+`make theme` **copies**: it overwrites `theme.scss` and rewrites two lines of `_quarto.yml`, and
+afterwards the deck owns its look and renders with `themes/` deleted. It is the self-containment
+rule automated, not an exception to it. Tell the author to commit first — `git diff` is how the
+change is read and `git checkout` is how it is undone.
+
+Two lines of `_quarto.yml` rather than none, because neither can live in the SCSS: the title slide's
+`data-background-gradient` is a reveal attribute (backgrounds are painted outside the slide margin),
+and `highlight-style` is a Pandoc theme rather than a stylesheet.
+
+Three things switching cannot do, all worth saying out loud before an author is surprised by them:
+
+- **A `background-color="#0a6ebd"` written into a slide stays azure.** Reveal parses that attribute
+  as a literal colour; `var(--deck-primary)` there would render but would defeat the brightness test
+  reveal uses to decide whether that slide's type turns white. So it belongs to the talk. `make
+  theme` prints a note when it finds one.
+- **A dark theme is a decision about the figures.** A plot saved on a white canvas is a bright
+  rectangle punched into a dark slide, with black axis labels in the middle of a light-on-dark deck.
+  Inverting the image inverts the colour map too, which changes what the figure says. Either the
+  figures are re-saved transparent, or the deck stays light.
+- **Only Fira Sans is shipped.** The other families a theme names — Helvetica Neue, Charter, the
+  system monospace — fall back through a stack, so those decks render *close* on someone else's
+  machine rather than identically.
+
+Each theme's `theme.scss` is a header (defaults and `:root`), then the shared body byte-identical to
+`template/theme.scss` from `.reveal {` on, then an appendix under a marked banner. Carry a template
+fix across by replacing the middle; change the theme by editing the two ends.
+
 ## Adding a class
 
 Add it to the deck's own `theme.scss` and rebuild. To give an *existing* deck a class the template

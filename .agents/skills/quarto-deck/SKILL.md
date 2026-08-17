@@ -27,7 +27,7 @@ Read only the file the task needs; do not load the whole tree.
 | `docs/media.md` | adding video, a GIF, or an animation that survives the PDF |
 | `docs/math.md` | writing equations — the renderer's quirks, colour, multi-line, building up |
 | `docs/citations.md` | citing anything, and the References slide you must not forget |
-| `docs/theme.md` | changing the look — `theme.scss`, fonts, the title slide, adding a class |
+| `docs/theme.md` | changing the look — `theme.scss`, fonts, the title slide, adding a class, the six themes in `themes/` and what switching cannot reach |
 | `docs/geometry.md` | something does not fit, or the deck looks small on screen |
 | `docs/exports.md` | producing HTML, PDF, PPTX — and why other routes were abandoned |
 
@@ -82,7 +82,9 @@ Reveal's own `.incremental`, `.fragment`, `. . .`, `.absolute`, `.r-stack`, `.r-
 ## Workflows
 
 **New talk** — `cp -r template talks/2027-my-talk`, then edit `talk.qmd`. Fill in the YAML block
-first: title, author, institute, and `footer`, the only place the short forms appear.
+first: title, author, institute, and `footer`, the only place the short forms appear. To start in
+another look, copy `themes/<name>` instead; to re-dress a deck already written,
+`make theme THEME=<name>`. `docs/theme.md`.
 
 **Write and look** — `make preview` from the deck; Quarto serves it and reloads on every save.
 Press **X** to see the slide boundary.
@@ -114,7 +116,8 @@ Each of these fails without an error message.
    source file whose extension collides, and verify with a fresh clone.
 8. **Edit `talk.qmd`.** `theme.scss` is shared API and `_quarto.yml` is configuration; changing
    either affects every slide.
-9. **Never edit `template/` to write a talk.** Copy it into `talks/` first.
+9. **Never edit `template/` or a `themes/` directory to write a talk.** Copy one into `talks/`
+   first. Both are starting points, and editing one in place changes what everybody starts from.
 
 ## Style that is not personal taste
 
