@@ -1,6 +1,6 @@
 # Demo deck
 
-Every feature of this toolchain, working, with commentary. **Read it; do not start from it** — start from [`../template/`](../template/), which is the same machinery with the sample assets stripped out.
+Every feature of this toolchain, working, with commentary. **Read it; do not start from it** — start by copying one of [`../themes/`](../themes/), which is the same machinery with the sample assets stripped out and a look already chosen.
 
 Built on [Quarto](https://quarto.org/) and [reveal.js](https://revealjs.com/).
 
@@ -200,7 +200,7 @@ quarto add kazuyanagimoto/quarto-clean-typst
 quarto render talk.qmd --to clean-typst
 ```
 
-Measured on `template/`: 841.89 × 473.56 pt, a title slide, section divider slides for `#` headings, slide numbers, and one page per `##` — no LaTeX and no browser anywhere. It is a real option, and it is worth knowing it exists.
+Measured on a starting-point deck: 841.89 × 473.56 pt, a title slide, section divider slides for `#` headings, slide numbers, and one page per `##` — no LaTeX and no browser anywhere. It is a real option, and it is worth knowing it exists.
 
 What it is **not** is a PDF of *this* deck. Run on this demo, **34 slides came out as 58 pages** — and Touying's own counter reads "53", so not even the deck agrees with itself. What survives the Markdown round trip, and what does not:
 

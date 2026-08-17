@@ -20,8 +20,9 @@ Keynote 和 PowerPoint 用起来很快，直到你想让大模型帮忙的那一
 brew install --cask quarto                  # 其他系统见 quarto.org
 git clone <这个仓库>
 cd huandeng
-cp -r template talks/my-talk                # 你自己的副本，别动 template/
+cp -r themes/university talks/my-talk       # 也可以是 paper、swiss、nord……见下
 cd talks/my-talk
+mv template.qmd talk.qmd
 make preview
 ```
 
@@ -69,9 +70,8 @@ make preview
 
 ```
 tools/build-slides.py   工具链——所有幻灯片共用，但不会被复制进任何一份
-template/               起点。复制它，不要直接改。
+themes/                 七个起点。复制其中一个，不要直接改。
 demo/                   所有功能的可运行参考
-themes/                 六套备选外观，每一套本身都是一份完整的幻灯片
 talks/                  你自己的——已 gitignore，你的幻灯片不会进这个仓库
 trash/                  走不通的路，附一份说明为什么走不通
 .agents/skills/         AI 技能（.claude/skills 是指向它的软链接）
@@ -82,10 +82,11 @@ Makefile                make check 一次检查所有幻灯片
 
 ## 主题
 
-默认那套是白底配 azure 蓝。另外六套在 [`themes/`](themes/) 里，每一套都是一份能直接渲染、直接看的完整幻灯片。
+每个报告都从复制其中一套开始。每一套都是一份能直接渲染、先看后用的完整幻灯片。
 
 | | |
 | --- | --- |
+| `university` | 白底配 azure 蓝、Fira Sans、标题下一条细线——最朴素的院校风格 |
 | `paper` | 像一页印出来的期刊论文：暖白纸、衬线正文、深蓝标题、深红强调 |
 | `swiss` | 白、黑、一点红；粗线条，紧排标题 |
 | `whiteprint` | 工程图纸：白底深蓝，直角，所有标注类文字用等宽字体 |
@@ -93,7 +94,7 @@ Makefile                make check 一次检查所有幻灯片
 | `nord` | 冷调深灰蓝，霜蓝色点缀 |
 | `blueprint` | 深蓝底、等宽标题、琥珀色点缀 |
 
-要用其中一套开始一个新报告，复制它就行——`cp -r themes/paper talks/my-talk`；要给已经写好的幻灯片换一套：
+复制其中一套就可以开始——`cp -r themes/paper talks/my-talk`；要给已经写好的幻灯片换一套：
 
 ```bash
 cd talks/my-talk
@@ -123,7 +124,7 @@ make check
 
 一份幻灯片被复制到任何地方，多年以后都应该还能正确渲染。`theme.scss`、`_quarto.yml`、`fonts.html`、`guides.html`、`fonts/` 和所有素材都是*副本*，不是 import，任何一份幻灯片都不读取自己目录以外的东西。
 
-代价是实实在在的：改进 `template/` 不会自动惠及你已经复制出去的报告，要带过去只能手动复制。换来的是，讲完的报告就被冻结了。你 2026 年讲过的那份，到 2030 年在另一台电脑上、在模板早已改版之后，依然渲染成一模一样的样子——因为它依赖的东西没有一样能在它脚下变化。对于那些要反复使用、反复发出去的会议报告和讲义，这笔交易是划算的。
+代价是实实在在的：改进 改进主题不会自动惠及你已经复制出去的报告，要带过去只能手动复制。换来的是，讲完的报告就被冻结了。你 2026 年讲过的那份，到 2030 年在另一台电脑上、在模板早已改版之后，依然渲染成一模一样的样子——因为它依赖的东西没有一样能在它脚下变化。对于那些要反复使用、反复发出去的会议报告和讲义，这笔交易是划算的。
 
 `out/` 不进版本库，也从来不需要进。
 

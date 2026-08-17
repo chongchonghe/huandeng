@@ -1,5 +1,10 @@
 /*-- scss:defaults --*/
 
+// university — azure on white, Fira Sans, a rule under every title. The plain
+// institutional look a seminar room expects, and the one every other theme in
+// themes/ is a variation on: everything from `.reveal {` down is the shared
+// body they each carry a byte-identical copy of.
+//
 // Fira Sans ships in fonts/ so the deck looks the same on a machine that has
 // never heard of it. `@font-face` rules are in the rules section below.
 $font-family-sans-serif: "Fira Sans", "Helvetica Neue", Helvetica, Arial, sans-serif !default;

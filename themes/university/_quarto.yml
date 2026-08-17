@@ -1,3 +1,5 @@
+# Deck configuration, in the university theme — see themes/README.md.
+#
 # Deck configuration. This is the analogue of `main.typ` in the Typst decks:
 # every option that shapes the whole deck lives here, and the slides live in the
 # .qmd next to it. A talk's own title, author, date and footer stay in the .qmd,

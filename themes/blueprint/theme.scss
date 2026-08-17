@@ -4,8 +4,9 @@
 // headings, construction lines, amber for anything that matters.
 //
 // Everything from `.reveal {` down to the marked block at the end of this file
-// is byte-identical to template/theme.scss. To carry a fix across, replace that
-// stretch; to change what makes this theme this theme, edit the two ends.
+// is byte-identical to themes/university/theme.scss, which is where the shared
+// body lives. To carry a fix across, replace that stretch; to change what makes
+// this theme this theme, edit the two ends.
 
 $font-family-sans-serif: "Fira Sans", "Helvetica Neue", Helvetica, Arial, sans-serif !default;
 $font-family-monospace: "SFMono-Regular", Menlo, Consolas, "Liberation Mono", monospace !default;
@@ -42,8 +43,8 @@ $selection-background-color: rgba(174, 225, 255, 0.3) !default;
   --deck-faint: #7da8cf;
   --deck-soft: rgba(255, 255, 255, 0.08);
   --deck-rule: rgba(190, 220, 255, 0.35);
-  // Not in template/theme.scss: the two values every theme here needs to vary
-  // that the shared body writes as a literal.
+  // Not in themes/university/theme.scss: the two values every theme here needs
+  // to vary that the shared body writes as a literal.
   --deck-accent: #ffd27a;
   --deck-code-bg: rgba(255, 255, 255, 0.07);
 }

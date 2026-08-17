@@ -20,12 +20,15 @@ That last point is the design goal. **Every part of a deck here is text you can 
 brew install --cask quarto                  # or see quarto.org
 git clone <this repo>
 cd huandeng
-cp -r template talks/my-talk                # your copy — leave template/ alone
+cp -r themes/university talks/my-talk       # or paper, swiss, nord … see below
 cd talks/my-talk
+mv template.qmd talk.qmd
 make preview
 ```
 
 A browser opens on the deck and reloads every time you save. Edit `talk.qmd`, and it is your deck.
+
+Every talk starts by copying a folder out of [`themes/`](themes/). There are seven; `university` is the plain one to start from if you have no reason to pick another.
 
 | | |
 | --- | --- |
@@ -69,9 +72,8 @@ It runs `make check` on its own work, so a slide it accidentally overflowed come
 
 ```
 tools/build-slides.py   the toolchain — shared by every deck, copied into none
-template/               the starting point. Copy it; never edit it in place.
+themes/                 the seven starting points. Copy one; never edit in place.
 demo/                   every feature, working, as a reference deck
-themes/                 six alternative looks, each a complete deck of its own
 talks/                  yours — gitignored, so your decks stay out of this repo
 trash/                  dead ends, with a README recording why they are dead
 .agents/skills/         the agent skills (.claude/skills is a symlink to it)
@@ -82,10 +84,11 @@ A deck is `talk.qmd` + `_quarto.yml` + `theme.scss` + `fonts.html` + `guides.htm
 
 ## Themes
 
-The default is azure on white. Six others live in [`themes/`](themes/), each a complete deck you can render and look at.
+A talk starts as a copy of one of these. Each is a complete deck you can render and look at before you commit to it.
 
 | | |
 | --- | --- |
+| `university` | azure on white, Fira Sans, a rule under every title — the plain institutional look |
 | `paper` | a printed journal page: warm stock, serif text, navy heads, crimson emphasis |
 | `swiss` | white, black, one red; heavy rules and tight headings |
 | `whiteprint` | an engineering drawing — navy ink on white, monospace on every label |
@@ -93,7 +96,7 @@ The default is azure on white. Six others live in [`themes/`](themes/), each a c
 | `nord` | dark blue-grey with frost accents |
 | `blueprint` | deep blue with monospace headings and amber accents |
 
-Start a talk in one by copying it — `cp -r themes/paper talks/my-talk` — or change a deck you have already written:
+Copy one to start — `cp -r themes/paper talks/my-talk` — or change a deck you have already written:
 
 ```bash
 cd talks/my-talk
@@ -125,7 +128,7 @@ There is no Node.js requirement and no LaTeX requirement. The usual way to get a
 
 A deck must render correctly when copied anywhere, on its own, years later. `theme.scss`, `_quarto.yml`, `fonts.html`, `guides.html`, `fonts/` and every asset are **copies**, not imports, and no deck reads anything outside its own directory.
 
-The cost is real: improving `template/` does not reach a talk you already copied, and carrying a fix across means copying it in by hand. What you buy is that a finished talk is frozen. A deck you gave in 2026 renders identically in 2030, on a different machine, after the template has moved on — because nothing it depends on can change underneath it. For conference talks and lecture notes that get reused and re-sent for years, that trade is worth making.
+The cost is real: improving a theme does not reach a talk you already copied, and carrying a fix across means copying it in by hand. What you buy is that a finished talk is frozen. A deck you gave in 2026 renders identically in 2030, on a different machine, after the template has moved on — because nothing it depends on can change underneath it. For conference talks and lecture notes that get reused and re-sent for years, that trade is worth making.
 
 `out/` is not committed and never needs to be.
 

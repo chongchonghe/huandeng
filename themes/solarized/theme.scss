@@ -4,8 +4,9 @@
 // text, blue and magenta accents. Loose, round and quiet.
 //
 // Everything from `.reveal {` down to the marked block at the end of this file
-// is byte-identical to template/theme.scss. To carry a fix across, replace that
-// stretch; to change what makes this theme this theme, edit the two ends.
+// is byte-identical to themes/university/theme.scss, which is where the shared
+// body lives. To carry a fix across, replace that stretch; to change what makes
+// this theme this theme, edit the two ends.
 
 $font-family-sans-serif: "Fira Sans", "Helvetica Neue", Helvetica, Arial, sans-serif !default;
 $font-family-monospace: "SFMono-Regular", Menlo, Consolas, "Liberation Mono", monospace !default;
@@ -42,8 +43,8 @@ $selection-background-color: #d9e9f4 !default;
   --deck-faint: #93a1a1;
   --deck-soft: #eee8d5;
   --deck-rule: #ddd5c0;
-  // Not in template/theme.scss: the two values every theme here needs to vary
-  // that the shared body writes as a literal.
+  // Not in themes/university/theme.scss: the two values every theme here needs
+  // to vary that the shared body writes as a literal.
   --deck-accent: #d33682;
   --deck-code-bg: #eee8d5;
 }

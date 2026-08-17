@@ -48,7 +48,7 @@ A deck is six things and contains no build logic:
 | `attach/` | images and video, referenced as `attach/foo.png` |
 
 Plus `fonts/`, `ref.bib` and a `Makefile`. **Each deck owns its own copies** — a deck copied from an
-older template may lack a class you expect. Check that deck's `theme.scss` first.
+older starting point may lack a class you expect. Check that deck's `theme.scss` first.
 
 ## The local classes
 
@@ -83,10 +83,10 @@ Reveal's own `.incremental`, `.fragment`, `. . .`, `.absolute`, `.r-stack`, `.r-
 
 ## Workflows
 
-**New talk** — `cp -r template talks/2027-my-talk`, then edit `talk.qmd`. Fill in the YAML block
-first: title, author, institute, and `footer`, the only place the short forms appear. To start in
-another look, copy `themes/<name>` instead; to re-dress a deck already written,
-`make theme THEME=<name>`. `docs/theme.md`.
+**New talk** — `cp -r themes/<name> talks/2027-my-talk`, `mv template.qmd talk.qmd`, then write.
+There are seven starting points and `university` is the plain one; `themes/README.md` says what each
+looks like. Fill in the YAML block first: title, author, institute, and `footer`, the only place the
+short forms appear. To re-dress a deck already written, `make theme THEME=<name>`. `docs/theme.md`.
 
 **Write and look** — `make preview` from the deck; Quarto serves it and reloads on every save.
 Press **X** to see the slide boundary.
@@ -118,8 +118,8 @@ Each of these fails without an error message.
    source file whose extension collides, and verify with a fresh clone.
 8. **Edit `talk.qmd`.** `theme.scss` is shared API and `_quarto.yml` is configuration; changing
    either affects every slide.
-9. **Never edit `template/` or a `themes/` directory to write a talk.** Copy one into `talks/`
-   first. Both are starting points, and editing one in place changes what everybody starts from.
+9. **Never edit a `themes/` directory to write a talk.** Copy it into `talks/` first. Those seven
+   are what everybody starts from, and editing one in place changes every talk written after it.
 10. **Never start a fenced div with a heading.** Pandoc writes that div out as a `<section>`, and
     reveal's slide selector is `.slides section` — a *descendant* selector — so it silently becomes
     a slide of its own. `::: {.card}` then `#### Setup` costs you three phantom slides. Lead with

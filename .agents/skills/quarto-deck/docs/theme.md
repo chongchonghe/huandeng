@@ -12,8 +12,8 @@
 | `fonts/`, `attach/`, `ref.bib` | the deck's own copies of everything it needs |
 
 All of it is a **copy**. No deck imports anything from outside its own directory, so a talk given in
-2026 still renders in 2030 after the template has moved on. The cost is that a fix in `template/`
-reaches an existing deck only if you carry it there by hand. That trade is deliberate.
+2026 still renders in 2030 after its theme has moved on. The cost is that a fix in `themes/` reaches
+an existing deck only if you carry it there by hand. That trade is deliberate.
 
 ## theme.scss structure
 
@@ -105,9 +105,9 @@ navigation — `X` because `G` is already reveal's jump-to-slide.
 
 ## Changing the whole look
 
-`themes/` holds six alternatives to the default — `paper`, `swiss`, `whiteprint`, `solarized`,
-`nord`, `blueprint` — and each is a complete deck you can render and look at. `themes/README.md`
-says what each one is.
+`themes/` holds all seven starting points — `university` (the plain one, and the source of the
+shared body), `paper`, `swiss`, `whiteprint`, `solarized`, `nord`, `blueprint`. Each is a complete
+deck you can render and look at. `themes/README.md` says what each one is.
 
 ```bash
 cp -r themes/paper talks/2027-my-talk    # start a new talk in one
@@ -139,14 +139,15 @@ Three things switching cannot do, all worth saying out loud before an author is 
   machine rather than identically.
 
 Each theme's `theme.scss` is a header (defaults and `:root`), then the shared body byte-identical to
-`template/theme.scss` from `.reveal {` on, then an appendix under a marked banner. Carry a template
+`themes/university/theme.scss` from `.reveal {` on, then an appendix under a marked banner. Carry a
 fix across by replacing the middle; change the theme by editing the two ends.
 
 ## Adding a class
 
-Add it to the deck's own `theme.scss` and rebuild. To give an *existing* deck a class the template
-gained later, copy the rule into that deck's `theme.scss`. Never by making one deck import another —
-that is the rule the whole layout rests on.
+Add it to the deck's own `theme.scss` and rebuild. To give an *existing* deck a class its starting
+point gained later, copy the rule into that deck's `theme.scss`. Never by making one deck import
+another — that is the rule the whole layout rests on.
 
-`template/theme.scss` and `demo/theme.scss` are separate files that happen to be identical today.
-Fix one and copy it across; do not symlink them.
+A new class belongs in `themes/university/theme.scss`, which is the source of the shared body, and
+then in the other six and in `demo/theme.scss` — all separate files that happen to be identical
+through that stretch. Fix one and copy it across; do not symlink them.

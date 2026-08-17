@@ -5,16 +5,17 @@ Plain-text slide decks: **Quarto + reveal.js**, built by one shared Python tool.
 ```
 Makefile                repo-wide: make check verifies every deck
 tools/build-slides.py   the toolchain — shared, never copied into a deck
-template/               the starting point: copy it, never edit it in place
+themes/                 the seven starting points, each a complete deck of its own.
+                        Copy one into talks/; never edit one in place. themes/README.md
 demo/                   every feature, working, as a reference deck
-themes/                 six alternative looks, each a complete deck. themes/README.md
 talks/                  the user's own decks — gitignored, never commit anything here
 trash/                  dead ends, with a README recording why. Read it before
                         proposing LaTeX, Typst or Pandoc's PPTX writer again.
 .agents/skills/         the agent skills; .claude/skills symlinks here, as CLAUDE.md does to this file
 ```
 
-A deck is `talk.qmd` + `_quarto.yml` + `theme.scss` + `fonts.html` + `guides.html` + `attach/`,
+A talk starts as `cp -r themes/<name> talks/<my-talk>`. A deck is `talk.qmd` + `_quarto.yml` +
+`theme.scss` + `fonts.html` + `guides.html` + `attach/`,
 plus a `Makefile` that only wraps the commands below — it holds no build logic of its own.
 Full detail lives in `README.md` and `demo/README.md`. Two skills, separate on purpose:
 **quarto-deck** for the machinery — the local classes, the build, the traps — with its reference
@@ -41,8 +42,8 @@ These fail without an error, so they cannot be left to a lookup:
    SCSS makes the deck fall back to another typeface and re-flow every line. Silently.
 3. **Edit `talk.qmd`.** `theme.scss` is shared API and `_quarto.yml` is configuration; changing
    either affects every slide.
-4. **Never edit `template/` or a `themes/` directory to write a talk.** Copy one into `talks/`
-   first — both are starting points, and editing one in place changes what everybody starts from.
+4. **Never edit a `themes/` directory to write a talk.** Copy it into `talks/` first — those seven
+   are what everybody starts from, and editing one in place changes every talk written after it.
 5. **`out/` is not committed** and never needs to be.
 6. **Never change the aspect ratio of an image or a video.** These are scientific figures: the
    aspect ratio carries meaning. Stretch one and equal axes stop being square, a circle becomes an
@@ -90,13 +91,13 @@ A deck must render correctly when copied anywhere, on its own, years later.
 - **Never factor shared code out into a library at the repo root.** No deck may import from outside
   its own directory. `theme.scss`, `_quarto.yml`, `fonts.html`, `guides.html`, `fonts/` and every
   asset are *copies*, and that duplication is the point.
-- **A finished talk is frozen.** Improving `template/` must not change a single page of a talk
-  already given. That is only guaranteed if the talk owns its copy of everything.
+- **A finished talk is frozen.** Improving a theme must not change a single page of a talk already
+  given. That is only guaranteed if the talk owns its copy of everything.
 - **Propagate by copying, deliberately.** To give an existing deck a new class, copy it into that
   deck's own `theme.scss` and rebuild. Never by making it import one.
-- `template/theme.scss` and `demo/theme.scss` are separate files that happen to be identical today.
-  Fix one and copy it; do not symlink them.
-- The cost is real — a fix in `template/` reaches old decks only if you carry it there — and it is
+- `themes/university/theme.scss` is where the shared body lives, and `demo/theme.scss` is a separate
+  file that happens to be identical to it today. Fix one and copy it; do not symlink them.
+- The cost is real — a fix in a theme reaches old decks only if you carry it there — and it is
   accepted knowingly, in exchange for talks that never rot.
 - **`themes/` is not an exception.** `make theme THEME=nord` *copies* that theme's `theme.scss` in
   and rewrites the one line of `_quarto.yml` a theme owns; afterwards the deck owns its look and

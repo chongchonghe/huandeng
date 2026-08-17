@@ -20,23 +20,17 @@ out/
 # several commits, because the working tree still had it. Add a negation for any
 # new source file whose extension collides.
 .quarto/
-/template/*.html
 /demo/*.html
-!/template/fonts.html
-!/demo/fonts.html
-!/template/guides.html
-!/demo/guides.html
-/template/*.pdf
-/demo/*.pdf
-/template/*.pptx
-/demo/*.pptx
-/template/*_files/
-/demo/*_files/
 /themes/*/*.html
+!/demo/fonts.html
 !/themes/*/fonts.html
+!/demo/guides.html
 !/themes/*/guides.html
+/demo/*.pdf
 /themes/*/*.pdf
+/demo/*.pptx
 /themes/*/*.pptx
+/demo/*_files/
 /themes/*/*_files/
 
 # Dead ends kept for reference. The README there says how to regenerate them,
