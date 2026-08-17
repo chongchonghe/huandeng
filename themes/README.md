@@ -8,10 +8,10 @@ The default look — azure on white, Fira Sans — is not in here. It lives in `
 | --- | --- | --- | --- |
 | `paper` | warm cream | a printed journal page: serif text, navy heads, crimson emphasis, hairline rules | a seminar where the slides should feel like the paper |
 | `swiss` | white | the international style: black, one red, heavy rules, tight headings, nothing decorative | a talk that wants to look deliberate and modern |
-| `whiteprint` | white on a faint navy grid | an engineering drawing: navy ink, monospace on everything that labels rather than states | methods and instrument talks |
+| `whiteprint` | white | an engineering drawing: navy ink, square corners, monospace on everything that labels rather than states | methods and instrument talks |
 | `solarized` | cream | Ethan Schoonover's light palette — nothing at full black or full white | a long talk, or a bright room where full contrast is tiring |
 | `nord` | dark blue-grey | arctic, muted, frost-blue accents | a dark room, if your figures suit it — read the note below |
-| `blueprint` | deep blue with a white grid | a drawing sheet in reverse: monospace headings, amber for anything that matters | the same, with more of a statement |
+| `blueprint` | deep blue | a drawing sheet in reverse: monospace headings, amber for anything that matters | the same, with more of a statement |
 
 Each directory is a complete deck. `cd themes/paper && make` renders it; `make check` verifies it, and the repository's own `make check` walks all six.
 
@@ -68,7 +68,7 @@ Every `theme.scss` in here has three parts:
 
 To carry a fix from `template/theme.scss` into a theme, replace part 2. To change a theme, edit parts 1 and 3. The split exists so those two operations never collide.
 
-Custom properties appear here that `template/theme.scss` does not have. `--deck-accent` (the second colour a theme uses for emphasis) and `--deck-code-bg` are values the shared body writes as literals; `--deck-grid` and `--deck-sheet` belong to `whiteprint` and `blueprint` alone, and hold the drawing grid.
+Two custom properties appear here that `template/theme.scss` does not have, because it writes both as literals: `--deck-accent`, the second colour a theme uses for emphasis, and `--deck-code-bg`.
 
 ## Fonts
 

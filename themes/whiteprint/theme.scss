@@ -1,7 +1,7 @@
 /*-- scss:defaults --*/
 
-// whiteprint — an engineering drawing: white sheet, faint grid, navy ink, and
-// monospace on everything that labels rather than states.
+// whiteprint — an engineering drawing: a white sheet, navy ink, square
+// corners, and monospace on everything that labels rather than states.
 //
 // Everything from `.reveal {` down to the marked block at the end of this file
 // is byte-identical to template/theme.scss. To carry a fix across, replace that
@@ -46,10 +46,6 @@ $selection-background-color: #dce8fa !default;
   // that the shared body writes as a literal.
   --deck-accent: #c42a10;
   --deck-code-bg: #f4f7fb;
-  --deck-grid: rgba(10, 30, 70, 0.07);
-  --deck-sheet:
-    repeating-linear-gradient(0deg, var(--deck-grid) 0 1px, transparent 1px 40px),
-    repeating-linear-gradient(90deg, var(--deck-grid) 0 1px, transparent 1px 40px);
 }
 
 .reveal {
@@ -774,27 +770,6 @@ mjx-container:not([display]) {
 }
 
 /* ================================================== whiteprint -- */
-
-/* The sheet. On `.reveal`, which is the whole window, rather than on each
-   slide: a slide's box is only as tall as its content once anything is
-   vertically centred — the title slide is 238px of a 720px box — so a grid
-   drawn there comes out as a band across the middle. Reveal's own background
-   layer sits above this one, so a slide that brings its own
-   `{background-color=".."}` still covers the grid, which is what you want.
-
-   The `!important` below is not decoration. `?print-pdf` builds one `.pdf-page`
-   div per page and copies the deck's background onto each as an *inline* style,
-   which no stylesheet rule can outrank. Without it the grid is on screen and
-   silently missing from `make pdf` and from the PPTX rasterised out of that.
-   Overriding only `background-image` leaves reveal's inline colour underneath,
-   which is exactly what should be there. */
-.reveal {
-  background-image: var(--deck-sheet);
-}
-
-.pdf-page {
-  background-image: var(--deck-sheet) !important;
-}
 
 /* Anything that labels is drawn, not typeset: the running foot, the slide
    number, figure credits, the label column of a `.media-row`. */

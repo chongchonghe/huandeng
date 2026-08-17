@@ -1,6 +1,6 @@
 ---
 title: "Your talk title"
-subtitle: "the whiteprint theme — a white sheet on a faint grid"
+subtitle: "the whiteprint theme — a white sheet, navy ink, mono labels"
 author: "Your Name"
 institute: "Your Institute"
 date: last-modified

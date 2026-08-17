@@ -88,10 +88,10 @@ The default is azure on white. Six others live in [`themes/`](themes/), each a c
 | --- | --- |
 | `paper` | a printed journal page: warm stock, serif text, navy heads, crimson emphasis |
 | `swiss` | white, black, one red; heavy rules and tight headings |
-| `whiteprint` | an engineering drawing — navy on a faint grid, monospace on every label |
+| `whiteprint` | an engineering drawing — navy ink on white, monospace on every label |
 | `solarized` | low contrast, cream and teal, for a bright room or a long talk |
 | `nord` | dark blue-grey with frost accents |
-| `blueprint` | deep blue with a white grid and monospace headings |
+| `blueprint` | deep blue with monospace headings and amber accents |
 
 Start a talk in one by copying it — `cp -r themes/paper talks/my-talk` — or change a deck you have already written:
 

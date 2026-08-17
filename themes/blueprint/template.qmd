@@ -1,6 +1,6 @@
 ---
 title: "Your talk title"
-subtitle: "the blueprint theme — deep blue, white grid, amber"
+subtitle: "the blueprint theme — deep blue, mono headings, amber"
 author: "Your Name"
 institute: "Your Institute"
 date: last-modified
