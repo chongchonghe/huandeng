@@ -8,6 +8,7 @@
 #   make standalone one self-contained .html you can email
 #   make theme      put another look on this deck: make theme THEME=nord
 #   make themes     list the ones there are
+#   make gallery    all seven themes side by side, as out/gallery.html
 #   make clean      delete out/
 #
 # `make` and `make preview` need nothing but Quarto, so they still work in a
@@ -57,7 +58,7 @@ cd "$(ROOT)" && uv run python tools/build-slides.py "$(CURDIR)" $(1)
 endef
 
 .DEFAULT_GOAL := html
-.PHONY: html preview check png pdf pptx standalone all theme themes clean
+.PHONY: html preview check png pdf pptx standalone all theme themes gallery clean
 
 html:
 	$(QUARTO) render
@@ -93,6 +94,11 @@ theme:
 
 themes:
 	$(call run-tool,--theme ?)
+
+# Renders every themes/<name>/ deck and writes a contact sheet here. Nothing
+# in this deck changes; the gallery only shows you what there is to pick.
+gallery:
+	$(call run-tool,--gallery)
 
 clean:
 	rm -rf out .quarto

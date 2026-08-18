@@ -86,7 +86,9 @@ Reveal's own `.incremental`, `.fragment`, `. . .`, `.absolute`, `.r-stack`, `.r-
 **New talk** — `cp -r themes/<name> talks/2027-my-talk`, `mv template.qmd talk.qmd`, then write.
 There are seven starting points and `university` is the plain one; `themes/README.md` says what each
 looks like. Fill in the YAML block first: title, author, institute, and `footer`, the only place the
-short forms appear. To re-dress a deck already written, `make theme THEME=<name>`. `docs/theme.md`.
+short forms appear. To re-dress a deck already written, `make theme THEME=<name>`. When the
+choice is not obvious, `make gallery` renders all seven side by side as `out/gallery.html` —
+show that rather than describing the themes in words. `docs/theme.md`.
 
 **Write and look** — `make preview` from the deck; Quarto serves it and reloads on every save.
 Press **X** to see the slide boundary.

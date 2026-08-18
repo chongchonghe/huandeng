@@ -37,6 +37,7 @@ make preview
 | `make standalone` | 一个可以直接发邮件的单文件 `.html` |
 | `make png` | 每页一张 PNG，方便你逐页看 |
 | `make theme THEME=nord` | 给这份幻灯片换一套外观（`make themes` 列出全部） |
+| `make gallery` | 七套主题并排摆开，看一眼就能挑 |
 
 `make` 和 `make preview` 只需要 Quarto。其余的需要 Python 和一个无头浏览器，见[需要装什么](#需要装什么)。
 

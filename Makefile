@@ -17,13 +17,14 @@ DECKS := $(patsubst %/_quarto.yml,%,$(wildcard \
 export PATH := $(PATH):$(HOME)/.local/bin
 
 .DEFAULT_GOAL := help
-.PHONY: help check demo clean
+.PHONY: help check demo gallery clean
 
 help:
 	@echo "decks: $(DECKS)"
 	@echo
 	@echo "  make check   verify every deck (overflow, stretched figures)"
 	@echo "  make demo    build demo/ to HTML, PDF and PPTX"
+	@echo "  make gallery all seven themes side by side, to pick one"
 	@echo "  make clean   delete every out/"
 	@echo
 	@echo "For one deck: cd into it, then make / make preview / make check / make all"
@@ -43,6 +44,12 @@ check:
 
 demo:
 	uv run python tools/build-slides.py demo
+
+# The seven starting points, rendered and laid side by side, because a name is
+# not something anyone can choose between. Lands in demo/out/gallery.html; from
+# a deck of your own, `make gallery` there puts it in that deck's out/ instead.
+gallery:
+	uv run python tools/build-slides.py demo --gallery
 
 clean:
 	rm -rf $(addsuffix /out,$(DECKS)) $(addsuffix /.quarto,$(DECKS))

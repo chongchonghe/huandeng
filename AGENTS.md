@@ -27,6 +27,7 @@ make png        one PNG per slide, so you can read them
 make all        HTML, PDF and PPTX
 make standalone one self-contained .html to email
 make theme THEME=nord    another look on this deck; make themes lists them
+make gallery    all seven themes side by side, as out/gallery.html
 ```
 
 `make` and `make preview` need nothing but Quarto, which is why a deck copied anywhere still builds.

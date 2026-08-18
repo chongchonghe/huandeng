@@ -39,6 +39,7 @@ Every talk starts by copying a folder out of [`themes/`](themes/). There are sev
 | `make standalone` | one self-contained `.html` you can email |
 | `make png` | one PNG per slide, so you can read them |
 | `make theme THEME=nord` | put another look on this deck (`make themes` lists them) |
+| `make gallery` | all seven themes side by side, so you can pick one by looking |
 
 `make` and `make preview` need nothing but Quarto. The rest need Python and a headless browser — see [Requirements](#requirements).
 

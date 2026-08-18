@@ -111,6 +111,7 @@ deck you can render and look at. `themes/README.md` says what each one is.
 
 ```bash
 cp -r themes/paper talks/2027-my-talk    # start a new talk in one
+cd talks/2027-my-talk && make gallery            # all seven, rendered, to choose by eye
 cd talks/2027-my-talk && make theme THEME=nord   # or re-dress one already written
 make check
 ```

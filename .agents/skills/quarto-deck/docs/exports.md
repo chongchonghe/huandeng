@@ -13,7 +13,8 @@ make pdf          # both PDFs
 make pptx         # slide images
 make standalone   # one self-contained .html
 make all          # HTML + PDFs + PPTX
-make themes       # the looks in themes/
+make themes       # the looks in themes/, by name
+make gallery      # every theme rendered side by side — out/gallery.html
 make theme THEME=nord   # copy one onto this deck — see theme.md
 make clean        # delete out/
 ```

@@ -9,6 +9,7 @@
     build-slides.py <deck> --check          render, then look at every slide
     build-slides.py <deck> --png            one PNG per slide, to read
     build-slides.py <deck> --theme nord     copy themes/nord over this deck's look
+    build-slides.py <deck> --gallery        every theme side by side, to choose one
 
 `--html` and `--standalone` are `quarto render` with the right flags, and you
 can type those yourself. `--pdf`, `--png` and `--check` drive a headless
@@ -37,6 +38,7 @@ import subprocess
 import sys
 import tempfile
 import zipfile
+from html import escape
 from pathlib import Path
 
 TOLERANCE_PX = 2.0  # slide-space pixels of overflow to forgive
@@ -641,6 +643,178 @@ def build_png(deck: Deck) -> Path:
     return png_dir
 
 
+# ----------------------------------------------------------------- gallery --
+
+
+def theme_blurb(name: str) -> str:
+    """The theme's own opening sentence, read from the top of its theme.scss.
+
+    Taken from the file rather than written out here, because a second copy of
+    the seven descriptions is a second thing that has to stay true.
+    `themes/README.md` holds the long form; this is the line the theme leads
+    with, and it moves when the theme does.
+    """
+    blurb: list[str] = []
+    for line in (THEMES_DIR / name / "theme.scss").read_text().splitlines():
+        text = line.strip()
+        body = text[2:].strip() if text.startswith("//") else ""
+        if not blurb:
+            if body:
+                blurb.append(body)
+            continue
+        if not body:  # the blank `//` that closes the opening paragraph
+            break
+        blurb.append(body)
+    out = " ".join(blurb)
+    for dash in (" — ", " - "):
+        if out.lower().startswith(name.lower() + dash):
+            return out[len(name) + len(dash) :]
+    return out
+
+
+GALLERY_CSS = """
+:root { color-scheme: light dark; --ink: #14161a; --dim: #5d6470;
+        --ground: #f4f5f7; --card: #fff; --line: #d8dbe0; }
+@media (prefers-color-scheme: dark) {
+  :root { --ink: #e8eaed; --dim: #99a0ab; --ground: #16181c;
+          --card: #1e2126; --line: #333840; }
+}
+* { box-sizing: border-box; }
+body { margin: 0; padding: 2rem clamp(1rem, 4vw, 3rem); background: var(--ground);
+       color: var(--ink); font: 15px/1.5 -apple-system, "Fira Sans", Segoe UI, sans-serif; }
+h1 { font-size: 1.5rem; margin: 0 0 .3rem; }
+p.lede { color: var(--dim); margin: 0 0 .6rem; max-width: 78ch; }
+p.lede:last-of-type { margin-bottom: 1.8rem; }
+code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .92em; }
+
+/* The grid is the point: every theme deck holds the same slides, so a column
+   is one slide in seven themes and a row is one theme end to end. It scrolls
+   sideways rather than reflowing, because a row that wrapped would stop
+   lining up with the row above it. */
+.sheet { overflow-x: auto; background: var(--card); border: 1px solid var(--line);
+         border-radius: 8px; }
+table { border-collapse: collapse; }
+th, td { padding: 0; vertical-align: top; }
+th.slide-head { font-weight: 600; font-size: .78rem; text-align: left;
+                padding: .55rem .7rem; color: var(--dim); white-space: nowrap;
+                border-bottom: 1px solid var(--line); }
+th.slide-head b { color: var(--ink); font-weight: 700; }
+/* Sticky, so the name stays with the pictures however far right you scroll. */
+th.theme, th.corner { position: sticky; left: 0; z-index: 2; background: var(--card);
+                      border-right: 1px solid var(--line); text-align: left;
+                      padding: .8rem .9rem; width: 15rem; min-width: 15rem; }
+th.theme { border-top: 1px solid var(--line); vertical-align: top; }
+th.theme .name { font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+                 font-size: .95rem; font-weight: 700; }
+th.theme .blurb { font-weight: 400; font-size: .8rem; color: var(--dim);
+                  margin-top: .35rem; }
+th.theme .cmd { font-size: .74rem; color: var(--dim); margin-top: .6rem;
+                font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+td.shot { border-top: 1px solid var(--line); }
+/* Width only, never a height as well: these are 1280x720 screenshots and a
+   second dimension would squash them off ratio. */
+td.shot a { display: block; }
+td.shot img { width: 22rem; height: auto; display: block; }
+td.shot a:hover img { outline: 2px solid currentColor; outline-offset: -2px; }
+</style>
+"""
+
+
+def gallery_html(names: list[str], titles: list[str], shots: dict[str, list[Path]]) -> str:
+    head = "".join(
+        f'<th class="slide-head"><b>{i + 1}</b> {escape(t)}</th>'
+        for i, t in enumerate(titles)
+    )
+    rows = []
+    for name in names:
+        # Each thumbnail links to its own PNG, which is the whole 1280x720
+        # slide: small enough to compare seven themes at a glance, one click
+        # from big enough to read.
+        cells = "".join(
+            f'<td class="shot"><a href="gallery/{p.name}">'
+            f'<img src="gallery/{p.name}" alt="{escape(name)}, slide {i + 1}">'
+            f"</a></td>"
+            for i, p in enumerate(shots[name])
+        )
+        rows.append(
+            f'<tr><th class="theme"><div class="name">{escape(name)}</div>'
+            f'<div class="blurb">{escape(theme_blurb(name))}</div>'
+            f'<div class="cmd">make theme THEME={escape(name)}</div></th>{cells}</tr>'
+        )
+    return (
+        '<!doctype html><meta charset="utf-8">\n'
+        "<title>huandeng themes</title>\n<style>"
+        + GALLERY_CSS
+        + "\n<h1>The seven starting points</h1>\n"
+        '<p class="lede">Every theme, every slide of its own template deck. Read a row '
+        "for one theme end to end, or a column to compare the same slide across all "
+        "seven. The grid scrolls sideways for the rest of each deck, and any slide "
+        "opens full size if you click it.</p>\n"
+        '<p class="lede">Pick one, then either copy it — <code>cp -r themes/&lt;name&gt; '
+        "talks/my-talk</code> — or put it on a deck you have already written with "
+        "<code>make theme THEME=&lt;name&gt;</code>.</p>\n"
+        f'<div class="sheet"><table><tr><th class="corner"></th>{head}</tr>\n'
+        + "\n".join(rows)
+        + "</table></div>\n"
+    )
+
+
+def build_gallery(deck: Deck) -> Path:
+    """Every theme, side by side, so a person can point at one.
+
+    `make themes` prints seven names, and a name is not something anyone can
+    choose between. Showing them is cheap here because each `themes/<name>/` is
+    already a complete deck of the same slides — so rendering all seven gives a
+    grid that lines up, and no deck has to be dressed or copied to build it.
+
+    The gallery is written into whichever deck you run it from. Nothing is
+    modified anywhere: each theme deck builds in its own `out/`, exactly as
+    `make check` at the repository root already builds it.
+    """
+    names = themes()
+    if not names:
+        die(f"no themes in {THEMES_DIR}")
+
+    gallery = deck.out / "gallery"
+    gallery.mkdir(parents=True, exist_ok=True)
+    for old in gallery.glob("*.png"):
+        old.unlink()
+
+    shots: dict[str, list[Path]] = {}
+    titles: list[str] = []
+
+    with with_playwright() as pw:
+        browser = pw.chromium.launch()
+        page = browser.new_page(viewport={"width": 1280, "height": 720})
+        for name in names:
+            print(f"=== {name}", flush=True)
+            theme_deck = Deck(THEMES_DIR / name)
+            build_html(theme_deck)
+            open_deck(page, theme_deck.html)
+            # The progress bar stays. `make png` hides it as furniture in the
+            # way of reading a slide; here it is one of the things being chosen
+            # between, since three of the seven themes do not draw one at all.
+            written: list[Path] = []
+
+            def shoot(i: int, m: dict, _name: str = name) -> None:
+                path = gallery / f"{_name}-{i + 1:02d}.png"
+                page.screenshot(path=str(path))
+                written.append(path)
+                if _name == names[0]:
+                    titles.append(m["title"])
+
+            visit_slides(page, shoot)
+            shots[name] = written
+        browser.close()
+
+    sheet = deck.out / "gallery.html"
+    sheet.write_text(gallery_html(names, titles, shots))
+    n = sum(len(v) for v in shots.values())
+    print(f"\nwrote {sheet}")
+    print(f"  {len(names)} themes, {n} slides. Open it and point at one.")
+    return sheet
+
+
 # -------------------------------------------------------------------- main --
 
 
@@ -670,6 +844,11 @@ def main(argv: list[str] | None = None) -> int:
         help="copy themes/NAME over this deck's look, then stop; "
         "pass '?' to list what is there",
     )
+    ap.add_argument(
+        "--gallery",
+        action="store_true",
+        help="every theme, side by side, as out/gallery.html",
+    )
     ap.add_argument("--check", action="store_true", help="overflow and aspect ratio")
     ap.add_argument(
         "--expect", type=int, metavar="N", help="fail unless the deck has N slides"
@@ -687,6 +866,12 @@ def main(argv: list[str] | None = None) -> int:
     # second run you can read the output of.
     if args.theme:
         apply_theme(deck, args.theme)
+        return 0
+
+    # The gallery is about themes/ rather than about this deck — the deck only
+    # says where to put it — so it does the one thing and builds nothing else.
+    if args.gallery:
+        build_gallery(deck)
         return 0
 
     picked = any([args.html, args.standalone, args.pdf, args.pptx, args.png, args.check])

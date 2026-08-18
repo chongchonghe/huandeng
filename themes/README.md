@@ -48,7 +48,8 @@ make preview    # the same, in a browser that reloads as you save
 make check      # render, then look at every slide
 make all        # HTML, PDF and PPTX
 make standalone # one self-contained .html to email
-make themes     # the looks available
+make themes     # the looks available, by name
+make gallery    # ...and by sight: all seven rendered into out/gallery.html
 make theme THEME=nord   # copy one of them over this deck's
 ```
 
