@@ -672,6 +672,15 @@ def theme_blurb(name: str) -> str:
     return out
 
 
+# Which slides of a theme's template deck earn a column. Four is enough to tell
+# the seven apart, and a shorter row is a row you can take in at once: the title
+# slide for the ground and the type, then the three that carry the most theme —
+# bullets and inline code, the type scale with a table and a highlighted code
+# block, and the cards. Numbered as the deck numbers them, so a file called
+# swiss-05.png is slide 5 of swiss and nothing has to be counted back.
+GALLERY_SLIDES = (1, 3, 5, 6)
+
+
 GALLERY_CSS = """
 :root { color-scheme: light dark; --ink: #14161a; --dim: #5d6470;
         --ground: #f4f5f7; --card: #fff; --line: #d8dbe0; }
@@ -693,7 +702,11 @@ code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .
    lining up with the row above it. */
 .sheet { overflow-x: auto; background: var(--card); border: 1px solid var(--line);
          border-radius: 8px; }
-table { border-collapse: collapse; }
+/* Four columns share whatever is left over, so the sheet fits an ordinary
+   window and the slides get as big as that allows. Below the min-width the
+   container scrolls rather than shrinking them past reading. */
+table { border-collapse: collapse; width: 100%; table-layout: fixed;
+        min-width: 60rem; }
 th, td { padding: 0; vertical-align: top; }
 th.slide-head { font-weight: 600; font-size: .78rem; text-align: left;
                 padding: .55rem .7rem; color: var(--dim); white-space: nowrap;
@@ -714,7 +727,7 @@ td.shot { border-top: 1px solid var(--line); }
 /* Width only, never a height as well: these are 1280x720 screenshots and a
    second dimension would squash them off ratio. */
 td.shot a { display: block; }
-td.shot img { width: 22rem; height: auto; display: block; }
+td.shot img { width: 100%; height: auto; display: block; }
 td.shot a:hover img { outline: 2px solid currentColor; outline-offset: -2px; }
 </style>
 """
@@ -722,7 +735,7 @@ td.shot a:hover img { outline: 2px solid currentColor; outline-offset: -2px; }
 
 def gallery_html(names: list[str], titles: list[str], shots: dict[str, list[Path]]) -> str:
     head = "".join(
-        f'<th class="slide-head"><b>{i + 1}</b> {escape(t)}</th>'
+        f'<th class="slide-head"><b>{GALLERY_SLIDES[i]}</b> {escape(t)}</th>'
         for i, t in enumerate(titles)
     )
     rows = []
@@ -732,7 +745,7 @@ def gallery_html(names: list[str], titles: list[str], shots: dict[str, list[Path
         # from big enough to read.
         cells = "".join(
             f'<td class="shot"><a href="gallery/{p.name}">'
-            f'<img src="gallery/{p.name}" alt="{escape(name)}, slide {i + 1}">'
+            f'<img src="gallery/{p.name}" alt="{escape(name)}, slide {GALLERY_SLIDES[i]}">'
             f"</a></td>"
             for i, p in enumerate(shots[name])
         )
@@ -746,10 +759,9 @@ def gallery_html(names: list[str], titles: list[str], shots: dict[str, list[Path
         "<title>huandeng themes</title>\n<style>"
         + GALLERY_CSS
         + "\n<h1>The seven starting points</h1>\n"
-        '<p class="lede">Every theme, every slide of its own template deck. Read a row '
-        "for one theme end to end, or a column to compare the same slide across all "
-        "seven. The grid scrolls sideways for the rest of each deck, and any slide "
-        "opens full size if you click it.</p>\n"
+        '<p class="lede">Every theme, on the four slides of its own template deck that '
+        "show the most of it. Read a row for one theme, or a column to compare the same "
+        "slide across all seven. Any slide opens full size if you click it.</p>\n"
         '<p class="lede">Pick one, then either copy it — <code>cp -r themes/&lt;name&gt; '
         "talks/my-talk</code> — or put it on a deck you have already written with "
         "<code>make theme THEME=&lt;name&gt;</code>.</p>\n"
@@ -797,6 +809,8 @@ def build_gallery(deck: Deck) -> Path:
             written: list[Path] = []
 
             def shoot(i: int, m: dict, _name: str = name) -> None:
+                if i + 1 not in GALLERY_SLIDES:
+                    return
                 path = gallery / f"{_name}-{i + 1:02d}.png"
                 page.screenshot(path=str(path))
                 written.append(path)
