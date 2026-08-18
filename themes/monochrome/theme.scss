@@ -1,0 +1,940 @@
+/*-- scss:defaults --*/
+
+// monochrome — ivory ledger paper and black type, and no colour at all: the
+// only colour on a slide is the one inside your figure.
+//
+// Emphasis is weight, rule and space. The one sentence a slide is about is set
+// in the paper instead of the ink, which is the strongest move left.
+//
+// Everything from `.reveal {` down to the marked block at the end of this file
+// is byte-identical to themes/university/theme.scss, which is where the shared
+// body lives. To carry a fix across, replace that stretch; to change what makes
+// this theme this theme, edit the two ends.
+//
+// The one theme here that names no typeface it does not ship: every word is
+// Fira Sans, which travels in fonts/, so this renders the same on a machine
+// that has never heard of it. Only code falls back to the system monospace,
+// as it does everywhere.
+$font-family-sans-serif: "Fira Sans", "Helvetica Neue", Helvetica, Arial, sans-serif !default;
+$font-family-monospace: "SFMono-Regular", Menlo, Consolas, "Liberation Mono", monospace !default;
+
+// 1280x720 slide. 30px is ~4.2% of the slide height.
+$presentation-font-size-root: 30px !default;
+$presentation-line-height: 1.32 !default;
+
+$presentation-heading-font: $font-family-sans-serif !default;
+$presentation-heading-font-weight: 700 !default;
+
+// There is one colour and it is the ink. The three steps below are the same
+// black at three weights of grey, not three hues.
+$primary: #14140f !default;
+$secondary: #14140f !default;
+$tertiary: #56564e !default;
+
+$body-color: #14140f !default;
+$body-bg: #faf9f5 !default;
+$link-color: #14140f !default;
+$presentation-heading-color: #14140f !default;
+$code-block-bg: #f0eee6 !default;
+$selection-background-color: #e2dfd2 !default;
+
+/*-- scss:rules --*/
+
+// The @font-face rules are in fonts.html, not here — see the comment in that
+// file for why a relative font URL cannot work from a compiled Quarto theme.
+
+:root {
+  --deck-primary: #14140f;
+  --deck-secondary: #14140f;
+  --deck-tertiary: #56564e;
+  --deck-ink: #14140f;
+  --deck-muted: #56564e;
+  --deck-faint: #8c8c82;
+  --deck-soft: #f0eee6;
+  --deck-rule: #14140f;
+  // Not in themes/university/theme.scss: the two values every theme here needs
+  // to vary that the shared body writes as a literal. The accent is the ink,
+  // which is the whole idea.
+  --deck-accent: #14140f;
+  --deck-code-bg: #f0eee6;
+  // This theme's own: the paper, for type that has to sit on the ink.
+  --deck-paper: #faf9f5;
+}
+
+.reveal {
+  color: var(--deck-ink);
+}
+
+.reveal .slides {
+  text-align: left;
+}
+
+.reveal .slides section {
+  box-sizing: border-box;
+}
+
+/* Uncomment to see where a slide ends while you are fixing an overflow:
+.reveal { background: var(--deck-soft); }
+*/
+
+/* ---------------------------------------------------------------- chrome -- */
+
+/* The progress bar belongs at the top, as it does in the Typst deck, and it
+   reads as a gradient rather than a bar of flat colour. */
+.reveal .progress {
+  background: rgba(0, 0, 0, 0.06);
+  bottom: auto;
+  color: var(--deck-primary);
+  height: 4px;
+  top: 0;
+}
+
+.reveal .progress span {
+  background: linear-gradient(90deg, var(--deck-primary), var(--deck-tertiary));
+}
+
+/* Author, talk, date on the left; reveal's own slide number on the right.
+   Grey, no fill — quiet enough to ignore from the back of the room. */
+.reveal .footer {
+  bottom: 12px;
+  color: var(--deck-faint);
+  font-size: 0.55em;
+  left: 30px;
+  right: 30px;
+  text-align: left;
+}
+
+.reveal .footer p {
+  font-size: inherit;
+  margin: 0;
+}
+
+.reveal .slide-number {
+  background: none;
+  bottom: 12px;
+  color: var(--deck-faint);
+  font-size: 0.55em;
+  right: 30px;
+}
+
+/* --------------------------------------------------------------- headings -- */
+
+.reveal h1,
+.reveal h2,
+.reveal h3,
+.reveal h4 {
+  letter-spacing: 0;
+  line-height: 1.15;
+  text-transform: none;
+}
+
+/* The slide title, with its rule ending where the words end rather than running
+   the width of the slide.
+
+   `fit-content` is what shrinks the box to the text; `max-width` lets a title
+   too long for one line still wrap, and a wrapped title fills the measure, so
+   its rule goes back to running the whole way — the only thing it can sensibly
+   do. Nothing here reserves room for the logo any more: the slot moved to the
+   slide below, because a box anchored to a heading this narrow would sit
+   against the title instead of at the slide's right edge. */
+.reveal h2 {
+  border-bottom: 2px solid var(--deck-rule);
+  color: var(--deck-primary);
+  font-size: 1.3em;
+  font-weight: 600;
+  margin: 0 0 0.5em;
+  max-width: 100%;
+  padding-bottom: 0.12em;
+  position: relative;
+  width: fit-content;
+}
+
+/* The logo is Quarto's `logo:` in _quarto.yml, not CSS. A relative `url()`
+   written here resolves against the *compiled stylesheet*, which Quarto puts
+   five directories down in <deck>_files/libs/revealjs/dist/theme/ — the same
+   trap that keeps the @font-face rules in fonts.html, and it silently 404s.
+   `logo:` writes an <img class="slide-logo"> into the page instead, where the
+   path resolves against the document and simply works.
+
+   Quarto parks it bottom right, on top of the slide number. Top right instead,
+   lined up with the footer, and clear of a title that now ends wherever the
+   words do. */
+.reveal .slide-logo {
+  bottom: auto;
+  max-height: 2rem;
+  right: 30px;
+  top: 12px;
+}
+
+/* Quarto moves the slide number to the top right the moment a logo exists, to
+   keep the two apart — which is exactly where this deck puts the logo. Put the
+   number back where it sits on every deck without one: turning a logo on should
+   not move the page number.
+
+   `div.` is load-bearing. Quarto's rule is `.reveal.has-logo .slide-number`,
+   the same three classes as this one, and its stylesheet is a plugin that loads
+   after the theme — so an equal-specificity rule here loses on source order.
+   The element selector breaks the tie without reaching for `!important`. */
+div.reveal.has-logo .slide-number {
+  bottom: 12px;
+  right: 30px;
+  top: auto;
+}
+
+/* A title long enough to fill the measure would run under the logo. This is the
+   only thing the old `padding-right: 4.5rem` was for, and it charged every deck
+   for it whether or not a logo was ever set. */
+.reveal.has-logo h2 {
+  max-width: calc(100% - 5rem);
+}
+
+.reveal h3 {
+  color: var(--deck-ink);
+  font-size: 1em;
+  font-weight: 600;
+  margin: 0.5em 0 0.3em;
+}
+
+.reveal h4 {
+  color: var(--deck-muted);
+  font-size: 0.85em;
+  font-weight: 600;
+  margin: 0.4em 0 0.25em;
+}
+
+/* ------------------------------------------------------------------ body -- */
+
+.reveal p,
+.reveal li,
+.reveal dl,
+.reveal dd {
+  font-size: 0.85em;
+}
+
+.reveal ul,
+.reveal ol {
+  margin-bottom: 0.4em;
+}
+
+.reveal li + li {
+  margin-top: 0.2em;
+}
+
+.reveal li > ul,
+.reveal li > ol {
+  margin-top: 0.2em;
+}
+
+/* A nested bullet is a footnote to its parent, not a peer of it. */
+.reveal li li {
+  font-size: 0.92em;
+}
+
+.reveal strong {
+  font-weight: 600;
+}
+
+.reveal a {
+  text-decoration-color: var(--deck-tertiary);
+  text-underline-offset: 0.15em;
+}
+
+/* reveal caps every image at 95% of its container. When that container is
+   shrink-to-fit — a grid cell inside `.r-stack`, a flex item, a `.fig` — the
+   container is already exactly the image's own width, so the cap squeezes the
+   width by 5% while an explicit `height` holds firm, and the figure comes out
+   quietly stretched. Cap at 100% instead and let `make check` catch anything
+   that really is too big. */
+.reveal .slides img,
+.reveal .slides video {
+  max-height: 100%;
+  max-width: 100%;
+}
+
+.reveal blockquote {
+  border-left: 3px solid var(--deck-tertiary);
+  box-shadow: none;
+  color: var(--deck-primary);
+  font-style: normal;
+  margin: 0.6em 0;
+  padding: 0.2em 0 0.2em 0.9em;
+  width: auto;
+}
+
+.reveal blockquote p {
+  margin: 0.2em 0;
+}
+
+.reveal blockquote footer,
+.reveal blockquote cite {
+  color: var(--deck-muted);
+  display: block;
+  font-size: 0.8em;
+  font-style: normal;
+  text-align: right;
+}
+
+/* --------------------------------------------------------- code and math -- */
+
+.reveal pre {
+  box-shadow: none;
+  font-size: 0.5em;
+  margin: 0.5em 0;
+  width: 100%;
+}
+
+.reveal pre code {
+  background: #f5f5f5;
+  border-radius: 4px;
+  max-height: 560px;
+  padding: 0.7em 0.9em;
+}
+
+.reveal code:not(pre code) {
+  background: #f0f0f0;
+  border-radius: 3px;
+  color: inherit;
+  font-size: 0.92em;
+  padding: 0.05em 0.28em;
+}
+
+/* MathJax sets its own size; nudge it back towards the body text and keep an
+   inline equation from touching the word beside it. */
+.reveal .MathJax,
+.reveal mjx-container {
+  font-size: 0.9em !important;
+}
+
+.reveal mjx-container[display] {
+  margin: 0.55em 0 !important;
+}
+
+span.MathJax,
+mjx-container:not([display]) {
+  padding: 0 0.15em;
+}
+
+/* ---------------------------------------------------------------- tables -- */
+
+.reveal table {
+  border-collapse: collapse;
+  font-size: 0.62em;
+  margin: 0.3em 0;
+  width: 100%;
+}
+
+.reveal table th {
+  border-bottom: 1.5px solid var(--deck-ink);
+  font-weight: 600;
+}
+
+.reveal table td,
+.reveal table th {
+  border-bottom: 1px solid var(--deck-rule);
+  padding: 0.28em 0.4em;
+  vertical-align: middle;
+}
+
+.reveal table img {
+  max-height: 130px;
+}
+
+.no-header table thead {
+  display: none;
+}
+
+.no-header table td {
+  border-bottom: none;
+}
+
+/* --------------------------------------------------------------- columns -- */
+
+/* Prefer `.columns` for a 50/50 split: it is the one Pandoc recognises, so it
+   also becomes a real two-column "Two Content" slide in the PPTX export, where
+   `.columns-1-1` flattens into a single text box. They are identical here.
+
+   The `.reveal` prefix is load-bearing on `.columns` and only there. Quarto
+   ships `div.columns { display: initial }` for revealjs — it is neutralising
+   the `display: flex` its HTML formats use — and a bare `.columns` loses to it
+   on specificity, which lays both columns on top of each other at full width.
+   Two classes beat one class plus an element, so this wins. */
+.reveal .columns,
+.reveal .columns-1-1,
+.reveal .columns-2-1,
+.reveal .columns-1-2,
+.reveal .columns-3-2,
+.reveal .columns-2-3,
+.reveal .columns-1-1-1 {
+  align-items: start;
+  display: grid;
+  gap: 1.1rem;
+  width: 100%;
+}
+
+.reveal .columns,
+.reveal .columns-1-1 {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+.reveal .columns-2-1 {
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+}
+.reveal .columns-1-2 {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+}
+.reveal .columns-3-2 {
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+}
+.reveal .columns-2-3 {
+  grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+}
+.reveal .columns-1-1-1 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.reveal .columns > .column,
+.reveal .columns-1-1 > .column,
+.reveal .columns-2-1 > .column,
+.reveal .columns-1-2 > .column,
+.reveal .columns-3-2 > .column,
+.reveal .columns-2-3 > .column,
+.reveal .columns-1-1-1 > .column {
+  display: block;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  width: auto;
+}
+
+/* ------------------------------------------------------- figures + credit -- */
+
+/* `.fig` shrink-wraps its image, so the caption above and the source credit
+   below line up with the *figure's* edges rather than the slide's. That is why
+   images inside it take an absolute width (`{width="520px"}`) — a percentage
+   has nothing to resolve against inside a shrink-to-fit box.
+
+   `width: 0; min-width: 100%` on the labels keeps a long caption from widening
+   the box: a zero-width child contributes nothing to the parent's intrinsic
+   size, then stretches back out to the width the image settled on. */
+.fig {
+  margin: 0.2em auto;
+  width: fit-content;
+}
+
+.fig p {
+  margin: 0;
+}
+
+.fig img {
+  display: block;
+  margin: 0;
+}
+
+.fig .caption,
+.fig .below,
+.fig .credit {
+  color: var(--deck-muted);
+  display: block;
+  min-width: 100%;
+  width: 0;
+}
+
+.fig .caption,
+.fig .below {
+  font-size: 0.8em;
+  text-align: center;
+}
+
+.fig .caption {
+  margin-bottom: 0.35em;
+}
+
+.fig .below {
+  margin-top: 0.35em;
+}
+
+.fig .credit {
+  font-size: 0.6em;
+  line-height: 1.2;
+  margin-top: 0.15em;
+  text-align: right;
+}
+
+/* A caption for something `.fig` does not wrap — a table, a diagram. */
+.caption-line {
+  color: var(--deck-muted);
+  font-size: 0.8em;
+  margin: 0.35em 0 0;
+  text-align: center;
+}
+
+.reveal .caption-line p {
+  font-size: inherit;
+  margin: 0;
+}
+
+/* A strip of figures on one line, hanging from a common top edge, with an
+   optional label in the left column. Pandoc puts every image written on one
+   Markdown line into a single <p>, so that <p> has to be a flex row too or the
+   images wrap. */
+/* Each row sizes its own label column, so stacked rows only line up if they are
+   told to share a width. Set `--label-width` on anything that contains them —
+   custom properties inherit, so a plain wrapper div is enough:
+   `::: {style="--label-width: 220px"}`. */
+.media-row {
+  align-items: start;
+  column-gap: 0.7rem;
+  display: grid;
+  grid-template-columns: var(--label-width, max-content) minmax(0, 1fr);
+  margin: 0.35rem 0;
+}
+
+.media-row.no-label {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.media-label {
+  color: var(--deck-primary);
+  font-size: 0.7em;
+  font-weight: 600;
+  padding-top: 0.3em;
+}
+
+.reveal .media-label p {
+  font-size: inherit;
+  margin: 0;
+}
+
+.media-items,
+.media-items p {
+  align-items: start;
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 0.45rem;
+  margin: 0;
+}
+
+.media-items img {
+  flex-shrink: 0;
+  margin: 0;
+}
+
+/* ---------------------------------------------------------------- video -- */
+
+/* `r-stretch` is the first choice — reveal sizes the element to the height the
+   slide has left. For the cases it cannot cover — a video beside another
+   element, or one that must keep a fixed size — give the element an explicit
+   height, or use `.video-pair` below. */
+.video-center {
+  display: block;
+  margin: 0 auto;
+}
+
+/* Two clips that must stay at their true relative scale: give each one
+   `style="flex: <its pixel width>"`, and the row a width that keeps the taller
+   of the two on the slide. */
+.video-pair {
+  align-items: start;
+  display: flex;
+  gap: 0.8rem;
+  justify-content: center;
+  margin: 0 auto;
+  max-width: 100%;
+}
+
+.video-pair video,
+.video-pair img {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+/* -------------------------------------------------------------- emphasis -- */
+
+.alert {
+  color: var(--deck-primary);
+  font-weight: 600;
+}
+
+.highlight {
+  background: var(--deck-soft);
+  border-left: 4px solid var(--deck-secondary);
+  color: var(--deck-primary);
+  margin: 0.6em 0;
+  padding: 0.4em 0.7em;
+}
+
+.reveal .highlight p {
+  margin: 0;
+}
+
+/* A box that groups a few lines — three of them across a `.columns-1-1-1` is
+   the usual case. Not the same job as `.highlight`, which is the one sentence a
+   slide is about and says so in colour; a card carries no emphasis of its own,
+   it just draws a boundary. Every theme gives it a different edge, and that is
+   most of what tells two themes apart on a slide with no figure. */
+.card {
+  background: var(--deck-soft);
+  border: 1px solid var(--deck-rule);
+  border-radius: 4px;
+  padding: 0.45em 0.7em;
+}
+
+.reveal .card > :first-child {
+  margin-top: 0;
+}
+
+.reveal .card > :last-child {
+  margin-bottom: 0;
+}
+
+/* An inline tag: `[preprint]{.pill}`, `[N = 512]{.pill}`. */
+.pill {
+  background: var(--deck-soft);
+  border: 1px solid var(--deck-rule);
+  border-radius: 999px;
+  color: var(--deck-muted);
+  font-size: 0.7em;
+  padding: 0.1em 0.6em;
+  white-space: nowrap;
+}
+
+.muted {
+  color: var(--deck-muted);
+}
+
+.center {
+  text-align: center;
+}
+
+.small,
+.reveal .small p,
+.reveal .small li {
+  font-size: 0.78em;
+}
+
+.tiny,
+.reveal .tiny p,
+.reveal .tiny li {
+  font-size: 0.62em;
+}
+
+/* ---------------------------------------------------------- title slide -- */
+
+/* Quarto 1.9 builds the title slide as `section.quarto-title-block`. The
+   `.title-slide` class it used to carry now belongs to the *section divider*
+   slides, so do not reach for it here.
+
+   The title slide stands on the deck's own ground, like every other slide: the
+   type carries it, and a rule under the title does the work a field of colour
+   used to. For a coloured one, uncomment `title-slide-attributes` in
+   _quarto.yml — the note there says why that cannot be CSS — and set the four
+   colours below to something that reads on it. */
+.reveal .slides section.quarto-title-block {
+  box-sizing: border-box;
+  padding: 0 2rem;
+  text-align: center;
+}
+
+/* Kills the section-divider rule, which would otherwise land here too. The
+   title's own rule below is one class more specific, so it still wins. */
+.reveal .quarto-title-block h1::after {
+  content: none;
+}
+
+.reveal .quarto-title-block h1.title {
+  color: var(--deck-primary);
+  font-size: 1.55em;
+  font-weight: 600;
+  line-height: 1.15;
+  margin-bottom: 0.15em;
+}
+
+.reveal .quarto-title-block h1.title::after {
+  background: var(--deck-rule);
+  content: "";
+  display: block;
+  height: 1px;
+  margin: 0.45em auto 0;
+  width: 55%;
+}
+
+.reveal .quarto-title-block .subtitle {
+  color: var(--deck-muted);
+  font-size: 0.85em;
+  margin-bottom: 1.2em;
+}
+
+.reveal .quarto-title-block .quarto-title-authors,
+.reveal .quarto-title-block .quarto-title-author-name,
+.reveal .quarto-title-block .author,
+.reveal .quarto-title-block .institute,
+.reveal .quarto-title-block .quarto-title-affiliation,
+.reveal .quarto-title-block .date {
+  color: var(--deck-ink);
+  font-size: 0.7em;
+  line-height: 1.35;
+  margin: 0;
+}
+
+.reveal .quarto-title-block .institute,
+.reveal .quarto-title-block .quarto-title-affiliation,
+.reveal .quarto-title-block .date {
+  color: var(--deck-muted);
+}
+
+/* -------------------------------------------------------- section slides -- */
+
+/* A `#` heading under `slide-level: 2` becomes a divider slide, which Quarto
+   emits as `section.level1`. Big, centred, and ruled underneath, so a section
+   break is unmistakable from the back of the room. For a full-bleed coloured
+   divider instead, put the colour on the heading:
+   `# Results {background-color="#0a6ebd"}`. */
+.reveal .slides section.level1 h1 {
+  border: none;
+  color: var(--deck-primary);
+  font-size: 1.7em;
+  font-weight: 600;
+  margin: 0;
+  padding-bottom: 0.3em;
+  position: relative;
+  text-align: center;
+}
+
+.reveal .slides section.level1 h1::after {
+  background: linear-gradient(90deg, var(--deck-primary), var(--deck-tertiary));
+  bottom: 0;
+  content: "";
+  height: 3px;
+  left: 50%;
+  position: absolute;
+  transform: translateX(-50%);
+  width: 6em;
+}
+
+/* --------------------------------------------------- dark and focus slides -- */
+
+/* reveal adds `.has-dark-background` to any slide whose background colour it
+   judges dark, so a slide only has to say `{background-color="#0a6ebd"}` and
+   the type follows. */
+.reveal .has-dark-background h1,
+.reveal .has-dark-background h2,
+.reveal .has-dark-background h3,
+.reveal .has-dark-background h4,
+.reveal .has-dark-background p,
+.reveal .has-dark-background li,
+.reveal .has-dark-background a {
+  color: #ffffff;
+}
+
+.reveal .has-dark-background h2 {
+  border-bottom-color: rgba(255, 255, 255, 0.4);
+}
+
+.reveal .has-dark-background code:not(pre code) {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+/* One big statement. The analogue of Touying's `focus-slide`; write it as
+   `## Thanks! {.focus .center background-color="#0a6ebd"}` — `.focus` sets the
+   type, `.center` is reveal's own vertical centring, and the colour has to be
+   an attribute to reach outside the slide margin. */
+/* `width: auto` puts the full-width box back. A shrink-wrapped heading has
+   nothing for `text-align: center` to centre inside, so the one statement on
+   the slide would sit against the left edge. */
+.reveal .slides section.focus h2 {
+  border: none;
+  font-size: 1.9em;
+  text-align: center;
+  width: auto;
+}
+
+.reveal .slides section.focus p {
+  font-size: 0.8em;
+  text-align: center;
+}
+
+/* --------------------------------------------------------------- guides -- */
+
+/* Press X, or load the deck with ?guides in the URL. See guides.html.
+
+   The solid line is the hard boundary: the box every slide is laid out in, and
+   the edge past which content is cut by the window rather than shrunk. The
+   dashed line is a keep-clear inset — content that kisses the edge reads as a
+   mistake even when it technically fits. */
+[data-guides] .reveal .slides {
+  outline: 2px solid #ff2fd0;
+}
+
+[data-guides] .reveal .slides::after {
+  border: 1px dashed rgba(255, 47, 208, 0.5);
+  content: "";
+  inset: 24px;
+  pointer-events: none;
+  position: absolute;
+}
+
+/* Inside the box at the bottom, where there is almost always room — and where
+   a 16:9 window has no space outside it to put anything. */
+[data-guides] .reveal .slides::before {
+  background: rgba(255, 255, 255, 0.85);
+  bottom: 3px;
+  color: #ff2fd0;
+  content: var(--guide-label, "guides");
+  font-size: 11px;
+  font-weight: 600;
+  left: 4px;
+  letter-spacing: 0.03em;
+  padding: 1px 5px;
+  pointer-events: none;
+  position: absolute;
+  white-space: nowrap;
+  z-index: 60;
+}
+
+/* ----------------------------------------------------------- references -- */
+
+#refs {
+  font-size: 0.62em;
+}
+
+#refs .csl-entry {
+  margin-bottom: 0.5em;
+}
+
+/* ------------------------------------------------------------ small screen -- */
+
+@media (max-width: 760px) {
+  .reveal .columns,
+  .reveal .columns-1-1,
+  .reveal .columns-2-1,
+  .reveal .columns-1-2,
+  .reveal .columns-3-2,
+  .reveal .columns-2-3,
+  .reveal .columns-1-1-1 {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ================================================== monochrome -- */
+
+/* With no second colour to spend, the hierarchy is carried by weight and by
+   how much air a thing is given. Titles are set tight and heavy. */
+.reveal h1,
+.reveal h2,
+.reveal .slides section.level1 h1 {
+  letter-spacing: -0.018em;
+}
+
+.reveal h2 {
+  border-bottom: 2px solid var(--deck-rule);
+  font-size: 1.34em;
+  padding-bottom: 0.14em;
+}
+
+/* Subheads are tracked out rather than coloured — the only move left. */
+.reveal h4 {
+  color: var(--deck-muted);
+  font-size: 0.66em;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+/* Inverted, because in a deck with one colour the strongest thing you can do
+   with a sentence is set it in the paper instead of the ink. */
+.highlight {
+  background: var(--deck-ink);
+  border-left: none;
+  color: var(--deck-paper);
+  padding: 0.5em 0.8em;
+}
+
+.highlight a,
+.highlight strong {
+  color: var(--deck-paper);
+}
+
+/* Inline code inside that block has to invert with it, or the pale code field
+   set below carries paper-coloured type on a paper-coloured ground and the
+   words disappear. The `.reveal` is load-bearing: without it this ties with
+   `.reveal code:not(pre code)` on specificity and loses on source order.
+   Same treatment the shared body already gives code on a dark slide. */
+.reveal .highlight code:not(pre code) {
+  background: rgba(250, 249, 245, 0.18);
+  color: var(--deck-paper);
+}
+
+/* No red to reach for, so an alert is weight and a heavy underline. */
+.alert {
+  border-bottom: 2px solid var(--deck-ink);
+  color: var(--deck-ink);
+  font-weight: 700;
+}
+
+.reveal blockquote {
+  border-left: 3px solid var(--deck-ink);
+  color: var(--deck-ink);
+  font-style: italic;
+}
+
+/* An unfilled ruled box. A fill would be a second tone, and there are none. */
+.card {
+  background: none;
+  border: 1px solid var(--deck-ink);
+  border-radius: 0;
+  padding: 0.5em 0.75em;
+}
+
+.pill {
+  background: var(--deck-ink);
+  border: none;
+  border-radius: 0;
+  color: var(--deck-paper);
+  font-size: 0.72em;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* A plain black line. */
+.reveal .progress {
+  background: none;
+  height: 2px;
+}
+
+.reveal .progress span {
+  background: var(--deck-ink);
+}
+
+/* The divider gets the one gesture this theme allows itself: the heading over
+   a rule that runs the whole measure. */
+.reveal .slides section.level1 h1 {
+  font-size: 2.15em;
+  padding-bottom: 0.2em;
+  text-align: left;
+}
+
+.reveal .slides section.level1 h1::after {
+  background: var(--deck-ink);
+  height: 4px;
+  left: 0;
+  transform: none;
+  width: 100%;
+}
+
+.reveal table th {
+  border-bottom: 2px solid var(--deck-ink);
+  font-size: 0.82em;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.reveal pre code,
+.reveal code:not(pre code) {
+  background: var(--deck-code-bg);
+  border-radius: 0;
+}
+
+/* Links cannot be blue here, so they are underlined and nothing else. */
+.reveal a {
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}

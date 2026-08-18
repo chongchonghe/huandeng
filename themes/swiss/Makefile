@@ -8,7 +8,7 @@
 #   make standalone one self-contained .html you can email
 #   make theme      put another look on this deck: make theme THEME=nord
 #   make themes     list the ones there are
-#   make gallery    all seven themes side by side, as out/gallery.html
+#   make gallery    every theme side by side, as out/gallery.html
 #   make clean      delete out/
 #
 # `make` and `make preview` need nothing but Quarto, so they still work in a

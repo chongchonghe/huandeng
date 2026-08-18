@@ -650,7 +650,7 @@ def theme_blurb(name: str) -> str:
     """The theme's own opening sentence, read from the top of its theme.scss.
 
     Taken from the file rather than written out here, because a second copy of
-    the seven descriptions is a second thing that has to stay true.
+    every theme's description is a second thing that has to stay true.
     `themes/README.md` holds the long form; this is the line the theme leads
     with, and it moves when the theme does.
     """
@@ -673,7 +673,7 @@ def theme_blurb(name: str) -> str:
 
 
 # Which slides of a theme's template deck earn a column. Four is enough to tell
-# the seven apart, and a shorter row is a row you can take in at once: the title
+# them apart, and a shorter row is a row you can take in at once: the title
 # slide for the ground and the type, then the three that carry the most theme —
 # bullets and inline code, the type scale with a table and a highlighted code
 # block, and the cards. Numbered as the deck numbers them, so a file called
@@ -697,7 +697,7 @@ p.lede:last-of-type { margin-bottom: 1.8rem; }
 code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .92em; }
 
 /* The grid is the point: every theme deck holds the same slides, so a column
-   is one slide in seven themes and a row is one theme end to end. It scrolls
+   is one slide in every theme and a row is one theme end to end. It scrolls
    sideways rather than reflowing, because a row that wrapped would stop
    lining up with the row above it. */
 .sheet { overflow-x: auto; background: var(--card); border: 1px solid var(--line);
@@ -741,7 +741,7 @@ def gallery_html(names: list[str], titles: list[str], shots: dict[str, list[Path
     rows = []
     for name in names:
         # Each thumbnail links to its own PNG, which is the whole 1280x720
-        # slide: small enough to compare seven themes at a glance, one click
+        # slide: small enough to compare every theme at a glance, one click
         # from big enough to read.
         cells = "".join(
             f'<td class="shot"><a href="gallery/{p.name}">'
@@ -758,10 +758,10 @@ def gallery_html(names: list[str], titles: list[str], shots: dict[str, list[Path
         '<!doctype html><meta charset="utf-8">\n'
         "<title>huandeng themes</title>\n<style>"
         + GALLERY_CSS
-        + "\n<h1>The seven starting points</h1>\n"
+        + "\n<h1>The starting points</h1>\n"
         '<p class="lede">Every theme, on the four slides of its own template deck that '
         "show the most of it. Read a row for one theme, or a column to compare the same "
-        "slide across all seven. Any slide opens full size if you click it.</p>\n"
+        "slide across all of them. Any slide opens full size if you click it.</p>\n"
         '<p class="lede">Pick one, then either copy it — <code>cp -r themes/&lt;name&gt; '
         "talks/my-talk</code> — or put it on a deck you have already written with "
         "<code>make theme THEME=&lt;name&gt;</code>.</p>\n"
@@ -774,9 +774,9 @@ def gallery_html(names: list[str], titles: list[str], shots: dict[str, list[Path
 def build_gallery(deck: Deck) -> Path:
     """Every theme, side by side, so a person can point at one.
 
-    `make themes` prints seven names, and a name is not something anyone can
+    `make themes` prints a list of names, and a name is not something anyone can
     choose between. Showing them is cheap here because each `themes/<name>/` is
-    already a complete deck of the same slides — so rendering all seven gives a
+    already a complete deck of the same slides — so rendering them all gives a
     grid that lines up, and no deck has to be dressed or copied to build it.
 
     The gallery is written into whichever deck you run it from. Nothing is
@@ -805,7 +805,7 @@ def build_gallery(deck: Deck) -> Path:
             open_deck(page, theme_deck.html)
             # The progress bar stays. `make png` hides it as furniture in the
             # way of reading a slide; here it is one of the things being chosen
-            # between, since three of the seven themes do not draw one at all.
+            # between, since three of the themes do not draw one at all.
             written: list[Path] = []
 
             def shoot(i: int, m: dict, _name: str = name) -> None:

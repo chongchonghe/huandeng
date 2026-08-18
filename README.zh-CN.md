@@ -37,7 +37,7 @@ make preview
 | `make standalone` | 一个可以直接发邮件的单文件 `.html` |
 | `make png` | 每页一张 PNG，方便你逐页看 |
 | `make theme THEME=nord` | 给这份幻灯片换一套外观（`make themes` 列出全部） |
-| `make gallery` | 七套主题并排摆开，看一眼就能挑 |
+| `make gallery` | 每套主题并排摆开，看一眼就能挑 |
 
 `make` 和 `make preview` 只需要 Quarto。其余的需要 Python 和一个无头浏览器，见[需要装什么](#需要装什么)。
 
@@ -64,14 +64,14 @@ make preview
 | **看得见的页面边界** | 每页都在精确的 1280 × 720 里排版再整体缩放到屏幕；写稿时按 **X** 就能把这个框画出来 |
 | **带出处的插图** | `::: {.fig}` 让出处贴着图本身的边缘，而不是幻灯片的边缘 |
 | **和幻灯片长得一样的 PPTX** | 每页一张 4K 满幅图片。因为版式是 CSS，任何 PowerPoint 写出器都读不懂 CSS。不可编辑，但逐像素一致 |
-| **七套外观，都不锁死** | 默认的一套，加上 `paper`、`swiss`、`whiteprint`、`solarized`、`nord`、`blueprint` 六套。`make theme THEME=paper` 把其中一套复制到你已经写好的幻灯片上，复制完这份幻灯片依然自己拥有它。见 [`themes/README.md`](themes/README.md) |
+| **十套外观，都不锁死** | 默认的一套，加上 `paper`、`swiss`、`whiteprint`、`solarized`、`nord`、`blueprint`、`signal`、`monochrome`、`cobalt` 九套。`make gallery` 把它们全部并排渲染出来，看着挑。`make theme THEME=paper` 把其中一套复制到你已经写好的幻灯片上，复制完这份幻灯片依然自己拥有它。见 [`themes/README.md`](themes/README.md) |
 | **不会随时间烂掉的幻灯片** | 每份幻灯片自带主题、字体和素材的副本，几年后换台电脑、挪到别处，照样渲染成原样 |
 
 ## 目录结构
 
 ```
 tools/build-slides.py   工具链——所有幻灯片共用，但不会被复制进任何一份
-themes/                 七个起点。复制其中一个，不要直接改。
+themes/                 十个起点。复制其中一个，不要直接改。
 demo/                   所有功能的可运行参考
 talks/                  你自己的——已 gitignore，你的幻灯片不会进这个仓库
 trash/                  走不通的路，附一份说明为什么走不通
@@ -94,6 +94,9 @@ Makefile                make check 一次检查所有幻灯片
 | `solarized` | 低对比的米色配青色，适合亮房间或长报告 |
 | `nord` | 冷调深灰蓝，霜蓝色点缀 |
 | `blueprint` | 深蓝底、等宽标题、琥珀色点缀 |
+| `signal` | 像一份简报：暖米底、深藏青、一点古金；衬线标题，等宽标注 |
+| `monochrome` | 象牙白配黑，完全没有颜色——整页唯一的颜色来自你的图 |
+| `cobalt` | 方格纸：整页浅浅的网格，标题用钴蓝斜体衬线 |
 
 复制其中一套就可以开始——`cp -r themes/paper talks/my-talk`；要给已经写好的幻灯片换一套：
 
@@ -131,6 +134,6 @@ make check
 
 ## 致谢
 
-基于 [Quarto](https://quarto.org/) 和 [reveal.js](https://revealjs.com/)。字体为 [Fira Sans](https://github.com/mozilla/Fira)，SIL OFL 授权。`themes/` 里六套主题的配色和字体气质来自 lewis 的 [html-ppt-skill](https://github.com/lewislulu/html-ppt-skill)（MIT），在这里用 Quarto SCSS 重写。
+基于 [Quarto](https://quarto.org/) 和 [reveal.js](https://revealjs.com/)。字体为 [Fira Sans](https://github.com/mozilla/Fira)，SIL OFL 授权。`themes/` 里有六套主题的配色和字体气质来自 lewis 的 [html-ppt-skill](https://github.com/lewislulu/html-ppt-skill)（MIT）；`signal`、`monochrome`、`cobalt` 三套来自 zarazhangrui 的 [beautiful-html-templates](https://github.com/zarazhangrui/beautiful-html-templates)（MIT），经由 [frontend-slides](https://github.com/zarazhangrui/frontend-slides)。都没有直接搬用代码——借的是配色和想法，在这里用 Quarto SCSS 重写。
 
 MIT 授权，见 [LICENSE](LICENSE)。

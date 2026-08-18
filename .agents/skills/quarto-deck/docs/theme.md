@@ -105,13 +105,13 @@ navigation — `X` because `G` is already reveal's jump-to-slide.
 
 ## Changing the whole look
 
-`themes/` holds all seven starting points — `university` (the plain one, and the source of the
+`themes/` holds all ten starting points — `university` (the plain one, and the source of the
 shared body), `paper`, `swiss`, `whiteprint`, `solarized`, `nord`, `blueprint`. Each is a complete
 deck you can render and look at. `themes/README.md` says what each one is.
 
 ```bash
 cp -r themes/paper talks/2027-my-talk    # start a new talk in one
-cd talks/2027-my-talk && make gallery            # all seven, rendered, to choose by eye
+cd talks/2027-my-talk && make gallery            # every one, rendered, to choose by eye
 cd talks/2027-my-talk && make theme THEME=nord   # or re-dress one already written
 make check
 ```

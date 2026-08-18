@@ -28,7 +28,7 @@ make preview
 
 A browser opens on the deck and reloads every time you save. Edit `talk.qmd`, and it is your deck.
 
-Every talk starts by copying a folder out of [`themes/`](themes/). There are seven; `university` is the plain one to start from if you have no reason to pick another.
+Every talk starts by copying a folder out of [`themes/`](themes/). There are ten; `university` is the plain one to start from if you have no reason to pick another.
 
 | | |
 | --- | --- |
@@ -39,7 +39,7 @@ Every talk starts by copying a folder out of [`themes/`](themes/). There are sev
 | `make standalone` | one self-contained `.html` you can email |
 | `make png` | one PNG per slide, so you can read them |
 | `make theme THEME=nord` | put another look on this deck (`make themes` lists them) |
-| `make gallery` | all seven themes side by side, so you can pick one by looking |
+| `make gallery` | every theme side by side, so you can pick one by looking |
 
 `make` and `make preview` need nothing but Quarto. The rest need Python and a headless browser — see [Requirements](#requirements).
 
@@ -66,14 +66,14 @@ It runs `make check` on its own work, so a slide it accidentally overflowed come
 | **A visible slide boundary** | every slide is laid out in exactly 1280 &times; 720 and scaled to the screen; press **X** to draw that box while you write. See [Slide geometry](demo/README.md#slide-geometry) |
 | **Figures with academic credits** | `::: {.fig}` puts the credit against the figure's own edge, not the slide's |
 | **A PowerPoint that looks like the deck** | one full-bleed slide image per page at 4K, because the layout is CSS and no PowerPoint writer can read CSS. Not editable, and pixel-identical |
-| **Seven looks, none of them locked in** | the default plus six themes — `paper`, `swiss`, `whiteprint`, `solarized`, `nord`, `blueprint`. `make theme THEME=paper` copies one onto a deck you have already written, and the deck still owns it afterwards. [`themes/README.md`](themes/README.md) |
+| **Ten looks, none of them locked in** | the default plus nine — `paper`, `swiss`, `whiteprint`, `solarized`, `nord`, `blueprint`, `signal`, `monochrome`, `cobalt`. `make gallery` renders them all side by side so you can pick by looking. `make theme THEME=paper` copies one onto a deck you have already written, and the deck still owns it afterwards. [`themes/README.md`](themes/README.md) |
 | **Decks that do not rot** | every deck owns its copies of the theme, the fonts and the assets, so it still renders years later, moved anywhere |
 
 ## Layout
 
 ```
 tools/build-slides.py   the toolchain — shared by every deck, copied into none
-themes/                 the seven starting points. Copy one; never edit in place.
+themes/                 the ten starting points. Copy one; never edit in place.
 demo/                   every feature, working, as a reference deck
 talks/                  yours — gitignored, so your decks stay out of this repo
 trash/                  dead ends, with a README recording why they are dead
@@ -96,6 +96,9 @@ A talk starts as a copy of one of these. Each is a complete deck you can render 
 | `solarized` | low contrast, cream and teal, for a bright room or a long talk |
 | `nord` | dark blue-grey with frost accents |
 | `blueprint` | deep blue with monospace headings and amber accents |
+| `signal` | a briefing paper: warm cream, deep navy, one antique gold; serif titles, monospace labels |
+| `monochrome` | ivory and black, and no colour at all — the only colour on the slide is the one in your figure |
+| `cobalt` | squared paper: a faint grid over the whole sheet, italic cobalt serif titles |
 
 Copy one to start — `cp -r themes/paper talks/my-talk` — or change a deck you have already written:
 
@@ -135,6 +138,6 @@ The cost is real: improving a theme does not reach a talk you already copied, an
 
 ## Credits
 
-Built on [Quarto](https://quarto.org/) and [reveal.js](https://revealjs.com/). Fonts are [Fira Sans](https://github.com/mozilla/Fira), SIL OFL. The six themes in `themes/` take their palettes and typographic character from [html-ppt-skill](https://github.com/lewislulu/html-ppt-skill) by lewis, MIT, rebuilt here as Quarto SCSS.
+Built on [Quarto](https://quarto.org/) and [reveal.js](https://revealjs.com/). Fonts are [Fira Sans](https://github.com/mozilla/Fira), SIL OFL. Six of the themes in `themes/` take their palettes and typographic character from [html-ppt-skill](https://github.com/lewislulu/html-ppt-skill) by lewis, MIT; `signal`, `monochrome` and `cobalt` take theirs from [beautiful-html-templates](https://github.com/zarazhangrui/beautiful-html-templates) by zarazhangrui, MIT, by way of [frontend-slides](https://github.com/zarazhangrui/frontend-slides). Nothing is vendored — the palettes and the ideas are the borrowed part, rebuilt here as Quarto SCSS.
 
 MIT licensed. See [LICENSE](LICENSE).

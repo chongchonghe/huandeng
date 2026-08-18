@@ -5,7 +5,7 @@ Plain-text slide decks: **Quarto + reveal.js**, built by one shared Python tool.
 ```
 Makefile                repo-wide: make check verifies every deck
 tools/build-slides.py   the toolchain — shared, never copied into a deck
-themes/                 the seven starting points, each a complete deck of its own.
+themes/                 the ten starting points, each a complete deck of its own.
                         Copy one into talks/; never edit one in place. themes/README.md
 demo/                   every feature, working, as a reference deck
 talks/                  the user's own decks — gitignored, never commit anything here
@@ -27,7 +27,7 @@ make png        one PNG per slide, so you can read them
 make all        HTML, PDF and PPTX
 make standalone one self-contained .html to email
 make theme THEME=nord    another look on this deck; make themes lists them
-make gallery    all seven themes side by side, as out/gallery.html
+make gallery    every theme side by side, as out/gallery.html
 ```
 
 `make` and `make preview` need nothing but Quarto, which is why a deck copied anywhere still builds.
@@ -59,7 +59,7 @@ These fail without an error, so they cannot be left to a lookup:
    SCSS makes the deck fall back to another typeface and re-flow every line. Silently.
 3. **Edit `talk.qmd`.** `theme.scss` is shared API and `_quarto.yml` is configuration; changing
    either affects every slide.
-4. **Never edit a `themes/` directory to write a talk.** Copy it into `talks/` first — those seven
+4. **Never edit a `themes/` directory to write a talk.** Copy it into `talks/` first — those ten
    are what everybody starts from, and editing one in place changes every talk written after it.
 5. **Never change the aspect ratio of an image or a video.** These are scientific figures: the
    aspect ratio carries meaning. Stretch one and equal axes stop being square, a circle becomes an

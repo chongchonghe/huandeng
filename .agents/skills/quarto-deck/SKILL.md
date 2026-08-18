@@ -27,7 +27,7 @@ Read only the file the task needs; do not load the whole tree.
 | `docs/media.md` | adding video, a GIF, or an animation that survives the PDF |
 | `docs/math.md` | writing equations — the renderer's quirks, colour, multi-line, building up |
 | `docs/citations.md` | citing anything, and the References slide you must not forget |
-| `docs/theme.md` | changing the look — `theme.scss`, fonts, the title slide, adding a class, the six themes in `themes/` and what switching cannot reach |
+| `docs/theme.md` | changing the look — `theme.scss`, fonts, the title slide, adding a class, the themes in `themes/` and what switching cannot reach |
 | `docs/geometry.md` | something does not fit, or the deck looks small on screen |
 | `docs/exports.md` | producing HTML, PDF, PPTX — and why other routes were abandoned |
 
@@ -84,12 +84,12 @@ Reveal's own `.incremental`, `.fragment`, `. . .`, `.absolute`, `.r-stack`, `.r-
 ## Workflows
 
 **New talk** — `cp -r themes/<name> talks/2027-my-talk`, `mv template.qmd talk.qmd`, then write.
-There are seven starting points and `university` is the plain one; `themes/README.md` says what each
+There are ten starting points and `university` is the plain one; `themes/README.md` says what each
 looks like. Fill in the YAML block first: title, author, institute, and `footer`, the only place the
 short forms appear. `density:` is there too — `speaker-led` or `reading-first`; it decides what
 goes on every slide and **quarto-academic-style** owns it. To re-dress a deck already written,
 `make theme THEME=<name>`. When the
-choice is not obvious, `make gallery` renders all seven side by side as `out/gallery.html` —
+choice is not obvious, `make gallery` renders every one side by side as `out/gallery.html` —
 show that rather than describing the themes in words. `docs/theme.md`.
 
 **Write and look** — `make preview` from the deck; Quarto serves it and reloads on every save.
@@ -122,7 +122,7 @@ Each of these fails without an error message.
    source file whose extension collides, and verify with a fresh clone.
 8. **Edit `talk.qmd`.** `theme.scss` is shared API and `_quarto.yml` is configuration; changing
    either affects every slide.
-9. **Never edit a `themes/` directory to write a talk.** Copy it into `talks/` first. Those seven
+9. **Never edit a `themes/` directory to write a talk.** Copy it into `talks/` first. Those ten
    are what everybody starts from, and editing one in place changes every talk written after it.
 10. **Never start a fenced div with a heading.** Pandoc writes that div out as a `<section>`, and
     reveal's slide selector is `.slides section` — a *descendant* selector — so it silently becomes
