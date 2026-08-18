@@ -680,6 +680,29 @@ def theme_blurb(name: str) -> str:
 # swiss-05.png is slide 5 of swiss and nothing has to be counted back.
 GALLERY_SLIDES = (1, 3, 5, 6)
 
+# The order the gallery shows them in, grouped by what the slide is printed on.
+# Ground first, because it is the first thing that has to suit your figures: a
+# plot saved on a white canvas is a bright rectangle punched into a dark slide,
+# and no stylesheet fixes that. Inside a group the order is the author's, not
+# alphabetical — none of this can be derived from the files, which is why it is
+# written down rather than computed.
+#
+# A theme missing from this list still appears, at the end. The gallery never
+# silently drops one; `themes/README.md` and `make themes` stay alphabetical.
+GALLERY_GROUPS = (
+    ("white", ("swiss", "university", "whiteprint", "cobalt", "monochrome")),
+    ("light colour", ("paper", "signal", "solarized")),
+    ("dark", ("blueprint", "nord")),
+)
+
+
+def gallery_order() -> list[tuple[str, str]]:
+    """Every theme as (group, name), in the order the gallery lays them out."""
+    have = themes()
+    out = [(g, n) for g, names in GALLERY_GROUPS for n in names if n in have]
+    placed = {n for _, n in out}
+    return out + [("not yet placed", n) for n in have if n not in placed]
+
 
 GALLERY_CSS = """
 :root { color-scheme: light dark; --ink: #14161a; --dim: #5d6470;
@@ -723,6 +746,11 @@ th.theme .blurb { font-weight: 400; font-size: .8rem; color: var(--dim);
                   margin-top: .35rem; }
 th.theme .cmd { font-size: .74rem; color: var(--dim); margin-top: .6rem;
                 font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+/* The band that says what the next few rows are printed on. */
+th.group { background: var(--ground); border-top: 1px solid var(--line);
+           color: var(--dim); font-size: .72rem; font-weight: 600;
+           letter-spacing: .14em; padding: .5rem .9rem; text-align: left;
+           text-transform: uppercase; }
 td.shot { border-top: 1px solid var(--line); }
 /* Width only, never a height as well: these are 1280x720 screenshots and a
    second dimension would squash them off ratio. */
@@ -733,13 +761,22 @@ td.shot a:hover img { outline: 2px solid currentColor; outline-offset: -2px; }
 """
 
 
-def gallery_html(names: list[str], titles: list[str], shots: dict[str, list[Path]]) -> str:
+def gallery_html(
+    order: list[tuple[str, str]], titles: list[str], shots: dict[str, list[Path]]
+) -> str:
     head = "".join(
         f'<th class="slide-head"><b>{GALLERY_SLIDES[i]}</b> {escape(t)}</th>'
         for i, t in enumerate(titles)
     )
     rows = []
-    for name in names:
+    seen_group = None
+    for group, name in order:
+        if group != seen_group:
+            seen_group = group
+            rows.append(
+                f'<tr><th class="group" colspan="{len(titles) + 1}">'
+                f"{escape(group)}</th></tr>"
+            )
         # Each thumbnail links to its own PNG, which is the whole 1280x720
         # slide: small enough to compare every theme at a glance, one click
         # from big enough to read.
@@ -762,6 +799,10 @@ def gallery_html(names: list[str], titles: list[str], shots: dict[str, list[Path
         '<p class="lede">Every theme, on the four slides of its own template deck that '
         "show the most of it. Read a row for one theme, or a column to compare the same "
         "slide across all of them. Any slide opens full size if you click it.</p>\n"
+        '<p class="lede">They are grouped by what the slide is printed on, because that '
+        "is the first thing that has to suit your figures: a plot saved on a white "
+        "canvas is a bright rectangle punched into a dark slide, and no stylesheet "
+        "fixes that.</p>\n"
         '<p class="lede">Pick one, then either copy it — <code>cp -r themes/&lt;name&gt; '
         "talks/my-talk</code> — or put it on a deck you have already written with "
         "<code>make theme THEME=&lt;name&gt;</code>.</p>\n"
@@ -779,13 +820,18 @@ def build_gallery(deck: Deck) -> Path:
     already a complete deck of the same slides — so rendering them all gives a
     grid that lines up, and no deck has to be dressed or copied to build it.
 
+    They are laid out grouped by ground, in `GALLERY_GROUPS` — not
+    alphabetically, because the order is a judgement about what to look at
+    first and nothing in the files can tell you that.
+
     The gallery is written into whichever deck you run it from. Nothing is
     modified anywhere: each theme deck builds in its own `out/`, exactly as
     `make check` at the repository root already builds it.
     """
-    names = themes()
-    if not names:
+    order = gallery_order()
+    if not order:
         die(f"no themes in {THEMES_DIR}")
+    names = [n for _, n in order]
 
     gallery = deck.out / "gallery"
     gallery.mkdir(parents=True, exist_ok=True)
@@ -822,7 +868,7 @@ def build_gallery(deck: Deck) -> Path:
         browser.close()
 
     sheet = deck.out / "gallery.html"
-    sheet.write_text(gallery_html(names, titles, shots))
+    sheet.write_text(gallery_html(order, titles, shots))
     n = sum(len(v) for v in shots.values())
     print(f"\nwrote {sheet}")
     print(f"  {len(names)} themes, {n} slides. Open it and point at one.")
