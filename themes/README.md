@@ -23,7 +23,7 @@ mv template.qmd talk.qmd                  # one .qmd per deck; the name is yours
 make preview
 ```
 
-Fill in the YAML block at the top of the `.qmd` first: title, author, institute, and the `footer` line, which is the only place the short forms appear. Then write. **Never edit a `themes/` folder to write a talk** — copy it first, or you change what everybody starts from.
+Fill in the YAML block at the top of the `.qmd` first: title, author, institute, the `footer` line, which is the only place the short forms appear, and `density:` — `speaker-led` if you will talk over it, `reading-first` if it will be read alone. That last one decides what goes on every slide; the **quarto-academic-style** skill says how. Then write. **Never edit a `themes/` folder to write a talk** — copy it first, or you change what everybody starts from.
 
 ## What is in a deck
 

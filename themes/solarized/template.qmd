@@ -6,6 +6,9 @@ institute: "Your Institute"
 date: last-modified
 date-format: "D MMM YYYY"
 bibliography: ref.bib
+# Spoken over, or read alone? It decides where the narrative goes — see the
+# quarto-academic-style skill. Absent means speaker-led.
+density: speaker-led   # or: reading-first
 format:
   revealjs:
     footer: "Your Name (Your Institute) &nbsp;·&nbsp; Short talk title"
