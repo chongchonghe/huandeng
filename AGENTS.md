@@ -14,9 +14,25 @@ trash/                  dead ends, with a README recording why. Read it before
 .agents/skills/         the agent skills; .claude/skills symlinks here, as CLAUDE.md does to this file
 ```
 
-A talk starts as `cp -r themes/<name> talks/<my-talk>`. A deck is `talk.qmd` + `_quarto.yml` +
-`theme.scss` + `fonts.html` + `guides.html` + `attach/`,
-plus a `Makefile` that only wraps the commands below — it holds no build logic of its own.
+A talk starts as `cp -r themes/<name> talks/<my-talk>`, then `mv template.qmd talk.qmd` — the tool
+takes the deck's single `.qmd` and refuses to run if it finds two. A deck is `talk.qmd` +
+`_quarto.yml` + `theme.scss` + `fonts.html` + `guides.html` + `fonts/` + `ref.bib` + `attach/`,
+plus a `Makefile` that only wraps these — it holds no build logic of its own:
+
+```
+make            render out/talk.html
+make preview    the same, in a browser that reloads as you save
+make check      render, then look at every slide — after ANY slide edit
+make png        one PNG per slide, so you can read them
+make all        HTML, PDF and PPTX
+make standalone one self-contained .html to email
+make theme THEME=nord    another look on this deck; make themes lists them
+```
+
+`make` and `make preview` need nothing but Quarto, which is why a deck copied anywhere still builds.
+The rest drive a headless Chromium, so once per clone:
+`uv sync && uv run playwright install chromium`.
+
 Full detail lives in `README.md` and `demo/README.md`. Two skills, separate on purpose:
 **quarto-deck** for the machinery — the local classes, the build, the traps — with its reference
 docs bundled in `.agents/skills/quarto-deck/docs/`, so it needs no web lookup; and
@@ -44,8 +60,7 @@ These fail without an error, so they cannot be left to a lookup:
    either affects every slide.
 4. **Never edit a `themes/` directory to write a talk.** Copy it into `talks/` first — those seven
    are what everybody starts from, and editing one in place changes every talk written after it.
-5. **`out/` is not committed** and never needs to be.
-6. **Never change the aspect ratio of an image or a video.** These are scientific figures: the
+5. **Never change the aspect ratio of an image or a video.** These are scientific figures: the
    aspect ratio carries meaning. Stretch one and equal axes stop being square, a circle becomes an
    ellipse, an edge-on disk looks face-on — and it still looks like a plausible figure, so nobody
    catches it. Give an image a width *or* a height, never both. `--check` audits every drawn image
@@ -60,7 +75,7 @@ These fail without an error, so they cannot be left to a lookup:
    non-square sample aspect ratio (SAR) means the player stretches it back on the way out, and
    anything through a Keynote or PowerPoint round trip routinely carries one. If you extract frames
    by hand, `ffmpeg -vf scale=iw*sar:ih,setsar=1` is the correction.
-7. **A `.gitignore` glob can eat a source file.** `fonts.html`, `guides.html` and `reference.pptx`
+6. **A `.gitignore` glob can eat a source file.** `fonts.html`, `guides.html` and `reference.pptx`
    all share a suffix with something the ignore rules are meant to catch. `guides.html` was missing
    from the repository for several commits because of exactly this, invisible until someone cloned
    it fresh. Negations are in `.gitignore`; add one for any new source file whose extension
@@ -102,6 +117,8 @@ A deck must render correctly when copied anywhere, on its own, years later.
 - **`themes/` is not an exception.** `make theme THEME=nord` *copies* that theme's `theme.scss` in
   and rewrites the one line of `_quarto.yml` a theme owns; afterwards the deck owns its look and
   renders with `themes/` deleted. Nothing links, and no deck may start linking. `themes/README.md`.
+
+`out/` is not committed and never needs to be: it is rebuilt from the deck's own source.
 
 ## Only a browser can render this deck
 
