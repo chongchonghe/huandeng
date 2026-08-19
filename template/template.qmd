@@ -33,31 +33,52 @@ Speaker notes live in a `::: notes` block. Press **S** during the talk to open
 the presenter window, which shows them beside a timer and the next slide.
 :::
 
-## A slide with two columns
+## Outline
 
-:::: {.columns-3-2}
+1. **The question** — what we did not know, and why it mattered
+2. **The approach** — what we measured, and how
+3. **The result** — what changed, and by how much
+
+. . .
+
+Three parts is a safe default: a listener who loses the thread can find their
+way back to it.
+
+::: {.small}
+A bare `. . .` held this paragraph back until the click. Wrapping a list in
+`::: {.incremental}` steps through it one item at a time instead — but then the
+slide is empty until you click, and `make png` photographs it that way.
+:::
+
+## One idea, one slide
+
+:::: {.columns-2-3}
 
 ::: {.column}
-Text on the left, a figure on the right.
+The claim in words on the left, the evidence on the right.
 
 - A point worth making
 - One that needs an [emphasis]{.alert}
 - One that can be [quieter]{.muted}
 
-$$ \alpha_{\rm vir} \equiv 2E_{\rm kin} / |E_{\rm grav}| $$
+$$ \bar{x} = \frac{1}{n}\sum_{i=1}^{n} x_i $$
 :::
 
 ::: {.column}
 ::: {.fig}
-[What the panel shows]{.caption}
+[Planet sizes, drawn to one scale]{.caption}
 
-![](attach/placeholder.png){width="330px"}
+![](attach/solar-system.jpg){width="620px"}
 
-[Your Name 2026]{.credit}
+[Encyclopædia Britannica]{.credit}
 :::
 :::
 
 ::::
+
+::: {.highlight}
+Close a slide with the one sentence you want remembered.
+:::
 
 ## Type, tables and code
 
@@ -77,15 +98,15 @@ Body text at the size the theme sets, with `inline code`, a
 :::
 
 ::: {.column}
-| Run | $N$ | Outcome |
-|:----|----:|:--------|
-| A   | 128 | collapses |
-| B   | 256 | fragments |
-| C   | 512 | disperses |
+| Method | Samples | Accuracy |
+|:---------------|-------:|-----:|
+| Baseline       |  1,000 | 71% |
+| + new features |  1,000 | 84% |
+| + more data    | 10,000 | 89% |
 
 ```python
-def virial(ekin, egrav):
-    return 2 * ekin / abs(egrav)
+def accuracy(correct, total):
+    return correct / total
 ```
 :::
 
@@ -97,11 +118,21 @@ def virial(ekin, egrav):
 
 :::: {.column}
 ::: {.card}
-**Setup**
+**Question**
 
-Shear layer, two fluids
+What is not working, and for whom
 
-[N = 512]{.pill}
+[scope]{.pill}
+:::
+::::
+
+:::: {.column}
+::: {.card}
+**Approach**
+
+What we changed, and how we measured it
+
+[method]{.pill}
 :::
 ::::
 
@@ -109,19 +140,9 @@ Shear layer, two fluids
 ::: {.card}
 **Result**
 
-Billows by $t \sim 3\,t_{\rm cross}$
+What came out, and the number behind it
 
-[converged]{.pill}
-:::
-::::
-
-:::: {.column}
-::: {.card}
-**Caveat**
-
-Ideal MHD only
-
-[preprint]{.pill}
+[+18%]{.pill}
 :::
 ::::
 
@@ -137,4 +158,4 @@ Ideal MHD only
 
 Questions? Comments?
 
-your.email\@university.edu
+your.name\@example.org
