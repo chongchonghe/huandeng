@@ -1,10 +1,16 @@
 ---
-title: "Your talk title"
-subtitle: "A subtitle, or delete this line"
-author: "Your Name"
-institute: "Your Institute"
+# There is deliberately no `title:` or `author:` here. Either one makes Quarto
+# generate its own title slide, and that slide cannot be edited — you cannot put
+# an image on it, reveal it in steps, or place anything by hand, and the CSS
+# tricks that appear to work live stop working in the PDF, because reveal moves
+# every slide into a different wrapper when it prints. Leave both out and Quarto
+# builds no title slide at all, which makes slide 1 below yours.
+#
+# `pagetitle` still names the browser tab and the PDF. `date` reaches no slide
+# on its own; the cover asks for it with {{< meta date >}}.
+pagetitle: "Your talk title"
 date: last-modified
-date-format: "D MMM YYYY"
+date-format: "D MMMM YYYY"
 bibliography: ref.bib
 # Spoken over, or read alone? It decides how much belongs on a slide — the
 # quarto-academic-style skill has the rest. Absent means speaker-led.
@@ -13,6 +19,35 @@ format:
   revealjs:
     footer: "Your Name (Your Institute) &nbsp;·&nbsp; Short talk title"
 ---
+
+## {.cover}
+
+<!-- Slide 1, and an ordinary slide: anything the rest of the deck can do works
+     here too. The heading is empty because `## {.cover}` exists only to put the
+     class on the slide, and .cover hides the heading again.
+
+     .cover fills the slide and centres with flex, rather than letting reveal
+     centre a short slide by pushing it down the page. That is what lets
+     `.absolute` below measure from the slide's own corner and stay there
+     however long the title runs. -->
+
+![](attach/logo-lockup.png){.absolute top="24" left="0" width="244px"}
+
+:::: {.cover-inner}
+
+[Your talk title]{.cover-title}
+
+[A subtitle, or delete this line]{.cover-subtitle}
+
+::: {.cover-meta}
+**Your Name**
+
+Your Institute
+
+{{< meta date >}}
+:::
+
+::::
 
 ## Write here, build with `make`
 
