@@ -60,13 +60,25 @@ notes, a timer, the next slide — and **X** to draw the slide boundary.
 :::: {.columns-2-3}
 
 ::: {.column}
-Keep this side to a claim, not a narration.
+::: {.small}
+Spoken over, this side is a claim and nothing more; the narration goes in
+`::: notes`. Read alone, nobody is standing there to finish the sentence for
+you, so the argument has to arrive whole — which is what `density:` in the
+header decides.
 
-- A point worth making
-- One that needs an [emphasis]{.alert}
-- One that can stay [quieter]{.muted}
+- A point worth making, finished rather than left hanging
+- One that needs an [emphasis]{.alert} to carry over the rest
+- One that can stay [quieter]{.muted} without being cut
 
-Give an image a width **or** a height. Never both — the aspect ratio is data.
+When a column has more to say than fits, wrap it in `.small` and the figure
+keeps its size. At `0.78em` it still reads from the back of a room; `.tiny` at
+`0.62em` does not, so save that for a source line.
+
+Give an image a width **or** a height, never both. The aspect ratio is data —
+stretch a figure and equal axes stop being square, while the result still looks
+entirely plausible. Anything drawn more than 2% off the file's own shape fails
+`make check`.
+:::
 :::
 
 ::: {.column}
@@ -203,7 +215,12 @@ colours the code from its own palette, so the listing follows the theme.
 
 ::::
 
-## Thanks! {.focus .center background-color="#0a6ebd"}
+<!-- The background follows whichever stylesheet _quarto.yml names, rather than
+     pinning one theme's blue into every deck. reveal reads the colour back after
+     the browser has resolved it, so it still judges light from dark correctly and
+     sets the type to match. Any literal — `background-color="#0a6ebd"` — works too. -->
+
+## Thanks! {.focus .center background-color="var(--deck-primary)"}
 
 Questions? Comments?
 

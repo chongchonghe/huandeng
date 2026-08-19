@@ -10,9 +10,9 @@ That is the whole of it, code blocks included: each stylesheet colours Pandoc's 
 
 | theme | ground | reads as | good for |
 | --- | --- | --- | --- |
-| `university` | white | azure on white, Fira Sans, a rule under every title — the plain institutional look | the default. Start here if you have no reason not to |
+| `university` | white | azure on white, Fira Sans, a rule under every title — the plain institutional look | a department seminar, or anywhere the institution's own blue is expected |
 | `paper` | warm cream | a printed journal page: serif text, navy heads, crimson emphasis, hairline rules | a seminar where the slides should feel like the paper |
-| `swiss` | white | the international style: black, one red, heavy rules, tight headings, nothing decorative | a talk that wants to look deliberate and modern |
+| `swiss` | white | the international style: black, one red, heavy rules, tight headings, nothing decorative | the default. Start here if you have no reason not to |
 | `whiteprint` | white | an engineering drawing: navy ink, square corners, monospace on everything that labels rather than states | methods and instrument talks |
 | `solarized` | cream | Ethan Schoonover's light palette — nothing at full black or full white | a long talk, or a bright room where full contrast is tiring |
 | `nord` | dark blue-grey | arctic, muted, frost-blue accents | a dark room, if your figures suit it — read the note below |

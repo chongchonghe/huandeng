@@ -28,7 +28,7 @@ make preview
 
 A browser opens on the deck and reloads every time you save. Edit `talk.qmd`, and it is your deck.
 
-Every talk starts as a copy of [`template/`](template/). It arrives wearing `university`, the plain one; ten looks travel inside it in [`template/themes/`](template/themes/), and changing to another is two lines of `_quarto.yml`. `make gallery` renders all ten side by side so you can pick by looking.
+Every talk starts as a copy of [`template/`](template/). It arrives wearing `swiss` — white, black and one red; ten looks travel inside it in [`template/themes/`](template/themes/), and changing to another is two lines of `_quarto.yml`. `make gallery` renders all ten side by side so you can pick by looking.
 
 | | |
 | --- | --- |
