@@ -20,7 +20,7 @@ That last point is the design goal. **Every part of a deck here is text you can 
 brew install --cask quarto                  # or see quarto.org
 git clone <this repo>
 cd huandeng
-cp -r themes/university talks/my-talk       # or paper, swiss, nord … see below
+cp -r template talks/my-talk
 cd talks/my-talk
 mv template.qmd talk.qmd
 make preview
@@ -28,7 +28,7 @@ make preview
 
 A browser opens on the deck and reloads every time you save. Edit `talk.qmd`, and it is your deck.
 
-Every talk starts by copying a folder out of [`themes/`](themes/). There are ten; `university` is the plain one to start from if you have no reason to pick another.
+Every talk starts as a copy of [`template/`](template/). It arrives wearing `university`, the plain one; ten looks travel inside it in [`template/themes/`](template/themes/), and changing to another is two lines of `_quarto.yml`. `make gallery` renders all ten side by side so you can pick by looking.
 
 | | |
 | --- | --- |
@@ -38,7 +38,6 @@ Every talk starts by copying a folder out of [`themes/`](themes/). There are ten
 | `make all` | also write the PDFs and a PowerPoint of slide images |
 | `make standalone` | one self-contained `.html` you can email |
 | `make png` | one PNG per slide, so you can read them |
-| `make theme THEME=nord` | put another look on this deck (`make themes` lists them) |
 | `make gallery` | every theme side by side, so you can pick one by looking |
 
 `make` and `make preview` need nothing but Quarto. The rest need Python and a headless browser — see [Requirements](#requirements).
@@ -66,14 +65,15 @@ It runs `make check` on its own work, so a slide it accidentally overflowed come
 | **A visible slide boundary** | every slide is laid out in exactly 1280 &times; 720 and scaled to the screen; press **X** to draw that box while you write. See [Slide geometry](demo/README.md#slide-geometry) |
 | **Figures with academic credits** | `::: {.fig}` puts the credit against the figure's own edge, not the slide's |
 | **A PowerPoint that looks like the deck** | one full-bleed slide image per page at 4K, because the layout is CSS and no PowerPoint writer can read CSS. Not editable, and pixel-identical |
-| **Ten looks, none of them locked in** | the default plus nine — `paper`, `swiss`, `whiteprint`, `solarized`, `nord`, `blueprint`, `signal`, `monochrome`, `cobalt`. `make gallery` renders them all side by side so you can pick by looking. `make theme THEME=paper` copies one onto a deck you have already written, and the deck still owns it afterwards. [`themes/README.md`](themes/README.md) |
+| **Ten looks, none of them locked in** | the default plus nine — `paper`, `swiss`, `whiteprint`, `solarized`, `nord`, `blueprint`, `signal`, `monochrome`, `cobalt`. All ten travel inside every deck, so switching is one line of `_quarto.yml`; `make gallery` renders them side by side so you can pick by looking. [`template/themes/README.md`](template/themes/README.md) |
 | **Decks that do not rot** | every deck owns its copies of the theme, the fonts and the assets, so it still renders years later, moved anywhere |
 
 ## Layout
 
 ```
 tools/build-slides.py   the toolchain — shared by every deck, copied into none
-themes/                 the ten starting points. Copy one; never edit in place.
+template/               the deck you copy to start a talk. themes/ inside it
+                        holds ten looks; _quarto.yml picks one
 demo/                   every feature, working, as a reference deck
 talks/                  yours — gitignored, so your decks stay out of this repo
 trash/                  dead ends, with a README recording why they are dead
@@ -81,7 +81,7 @@ trash/                  dead ends, with a README recording why they are dead
 Makefile                make check verifies every deck at once
 ```
 
-A deck is `talk.qmd` + `_quarto.yml` + `theme.scss` + `fonts.html` + `guides.html` + `attach/`, plus a `Makefile` that wraps the commands above and holds no build logic of its own.
+A deck is `talk.qmd` + `_quarto.yml` + `themes/` + `fonts.html` + `guides.html` + `attach/`, plus a `Makefile` that wraps the commands above and holds no build logic of its own.
 
 ## Themes
 
@@ -100,18 +100,17 @@ A talk starts as a copy of one of these. Each is a complete deck you can render 
 | `monochrome` | ivory and black, and no colour at all — the only colour on the slide is the one in your figure |
 | `cobalt` | squared paper: a faint grid over the whole sheet, italic cobalt serif titles |
 
-Copy one to start — `cp -r themes/paper talks/my-talk` — or change a deck you have already written:
+All ten travel inside every deck, so switching is one line of `_quarto.yml` — no tool, no copying, and undo is undo:
 
-```bash
-cd talks/my-talk
-make themes                  # what there is
-make theme THEME=paper       # copies the look in; the deck still owns it afterwards
-make check
+```yaml
+    theme: [default, themes/paper.scss]
 ```
+
+Code blocks come with it: each stylesheet colours the syntax tokens from its own palette, so there is nothing else to set. `make gallery` renders all ten side by side into `out/gallery.html` with that line printed under each name. `make check` afterwards: a slide that fits in one theme can overflow in another.
 
 They differ in shape, not only in colour: `paper`, `whiteprint` and `solarized` carry no progress bar at all, line height runs from 1.28 to 1.42, and `::: {.card}` comes out as a ruled box, a hard offset shadow, a dashed construction line or a raised rounded surface depending on where you are.
 
-Two dark themes are in there because people ask for them, but a figure saved on a white canvas is a bright rectangle on a dark slide and no stylesheet can fix that. [`themes/README.md`](themes/README.md) has the detail.
+Two dark themes are in there because people ask for them, but a figure saved on a white canvas is a bright rectangle on a dark slide and no stylesheet can fix that. [`template/themes/README.md`](template/themes/README.md) has the detail.
 
 ## Requirements
 
@@ -130,7 +129,7 @@ There is no Node.js requirement and no LaTeX requirement. The usual way to get a
 
 ## Every deck is self-contained
 
-A deck must render correctly when copied anywhere, on its own, years later. `theme.scss`, `_quarto.yml`, `fonts.html`, `guides.html`, `fonts/` and every asset are **copies**, not imports, and no deck reads anything outside its own directory.
+A deck must render correctly when copied anywhere, on its own, years later. `themes/`, `_quarto.yml`, `fonts.html`, `guides.html`, `fonts/` and every asset are **copies**, not imports, and no deck reads anything outside its own directory. That is why every theme travels with every deck rather than being looked up in a shared folder: a talk that pointed at `../../themes/paper.scss` would stop rendering the day you emailed it to someone.
 
 The cost is real: improving a theme does not reach a talk you already copied, and carrying a fix across means copying it in by hand. What you buy is that a finished talk is frozen. A deck you gave in 2026 renders identically in 2030, on a different machine, after the template has moved on — because nothing it depends on can change underneath it. For conference talks and lecture notes that get reused and re-sent for years, that trade is worth making.
 
@@ -138,6 +137,6 @@ The cost is real: improving a theme does not reach a talk you already copied, an
 
 ## Credits
 
-Built on [Quarto](https://quarto.org/) and [reveal.js](https://revealjs.com/). Fonts are [Fira Sans](https://github.com/mozilla/Fira), SIL OFL. Six of the themes in `themes/` take their palettes and typographic character from [html-ppt-skill](https://github.com/lewislulu/html-ppt-skill) by lewis, MIT; `signal`, `monochrome` and `cobalt` take theirs from [beautiful-html-templates](https://github.com/zarazhangrui/beautiful-html-templates) by zarazhangrui, MIT, by way of [frontend-slides](https://github.com/zarazhangrui/frontend-slides). Nothing is vendored — the palettes and the ideas are the borrowed part, rebuilt here as Quarto SCSS.
+Built on [Quarto](https://quarto.org/) and [reveal.js](https://revealjs.com/). Fonts are [Fira Sans](https://github.com/mozilla/Fira), SIL OFL. Six of the themes in `template/themes/` take their palettes and typographic character from [html-ppt-skill](https://github.com/lewislulu/html-ppt-skill) by lewis, MIT; `signal`, `monochrome` and `cobalt` take theirs from [beautiful-html-templates](https://github.com/zarazhangrui/beautiful-html-templates) by zarazhangrui, MIT, by way of [frontend-slides](https://github.com/zarazhangrui/frontend-slides). Nothing is vendored — the palettes and the ideas are the borrowed part, rebuilt here as Quarto SCSS.
 
 MIT licensed. See [LICENSE](LICENSE).

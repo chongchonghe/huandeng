@@ -11,7 +11,7 @@ bullet should be, how to write an equation for a reader, what to verify before s
 invoke **quarto-academic-style**, which builds on this one. Skills do not load each other; ask for
 it by name.
 
-Authoritative source is always the code: the deck's own `theme.scss` defines every class, and
+Authoritative source is always the code: the deck's own `themes/*.scss` define every class, and
 `demo/demo.qmd` demonstrates every one of them under `make check`. Read those rather than trusting
 a summary if the two ever disagree.
 
@@ -27,11 +27,11 @@ Read only the file the task needs; do not load the whole tree.
 | `docs/media.md` | adding video, a GIF, or an animation that survives the PDF |
 | `docs/math.md` | writing equations — the renderer's quirks, colour, multi-line, building up |
 | `docs/citations.md` | citing anything, and the References slide you must not forget |
-| `docs/theme.md` | changing the look — `theme.scss`, fonts, the title slide, adding a class, the themes in `themes/` and what switching cannot reach |
+| `docs/theme.md` | changing the look — the stylesheets, fonts, the title slide, adding a class, the ten themes and what switching cannot reach |
 | `docs/geometry.md` | something does not fit, or the deck looks small on screen |
 | `docs/exports.md` | producing HTML, PDF, PPTX — and why other routes were abandoned |
 
-The worked examples are not vendored here: `demo/demo.qmd` and `demo/theme.scss` in this repository
+The worked examples are not vendored here: `demo/demo.qmd` and `demo/themes/` in this repository
 are the reference, and unlike a copy they are build-verified on every commit.
 
 ## Structure
@@ -42,13 +42,13 @@ A deck is six things and contains no build logic:
 | --- | --- |
 | `talk.qmd` | the slides — normally the only file you touch |
 | `_quarto.yml` | slide size, slide level, theme, title-slide background |
-| `theme.scss` | the look, and every local class |
+| `themes/` | ten stylesheets; `_quarto.yml` picks one. Every local class is in each |
 | `fonts.html` | the deck's own copy of Fira Sans, injected into `<head>` |
 | `guides.html` | the **X** key: draws the 1280×720 slide boundary while you write |
 | `attach/` | images and video, referenced as `attach/foo.png` |
 
 Plus `fonts/`, `ref.bib` and a `Makefile`. **Each deck owns its own copies** — a deck copied from an
-older starting point may lack a class you expect. Check that deck's `theme.scss` first.
+older starting point may lack a class you expect. Check that deck's own stylesheet first.
 
 ## The local classes
 
@@ -83,14 +83,16 @@ Reveal's own `.incremental`, `.fragment`, `. . .`, `.absolute`, `.r-stack`, `.r-
 
 ## Workflows
 
-**New talk** — `cp -r themes/<name> talks/2027-my-talk`, `mv template.qmd talk.qmd`, then write.
-There are ten starting points and `university` is the plain one; `themes/README.md` says what each
-looks like. Fill in the YAML block first: title, author, institute, and `footer`, the only place the
-short forms appear. `density:` is there too — `speaker-led` or `reading-first`; it decides what
-goes on every slide and **quarto-academic-style** owns it. To re-dress a deck already written,
-`make theme THEME=<name>`. When the
-choice is not obvious, `make gallery` renders every one side by side as `out/gallery.html` —
-show that rather than describing the themes in words. `docs/theme.md`.
+**New talk** — `cp -r template talks/2027-my-talk`, `mv template.qmd talk.qmd`, then write. Fill in
+the YAML block first: title, author, institute, and `footer`, the only place the short forms appear.
+`density:` is there too — `speaker-led` or `reading-first`; it decides what goes on every slide and
+**quarto-academic-style** owns it.
+
+**The look** is one line of the deck's own `_quarto.yml` — `theme: [default, themes/<name>.scss]` —
+because all ten stylesheets travel inside every deck. There is no command and nothing to copy, and
+nothing else to set: each stylesheet colours its own code tokens. When the choice is not obvious,
+`make gallery` renders every one side by side as `out/gallery.html`; show that rather than
+describing the themes in words. `docs/theme.md`.
 
 **Write and look** — `make preview` from the deck; Quarto serves it and reloads on every save.
 Press **X** to see the slide boundary.
@@ -108,8 +110,8 @@ Each of these fails without an error message.
    worse: a `.media-items` row runs off the right with no cue at all. `docs/geometry.md`.
 2. **Give an image a width *or* a height, never both.** A stretched scientific figure still looks
    plausible, which is why nobody catches it. `make check` fails past 2%. `docs/figures.md`.
-3. **`@font-face` lives in `fonts.html`, not `theme.scss`.** A relative font URL cannot work from a
-   compiled Quarto theme; the deck silently falls back to another typeface and re-flows every line.
+3. **`@font-face` lives in `fonts.html`, not the stylesheet.** A relative font URL cannot work from
+   a compiled Quarto theme; the deck silently falls back to another typeface and re-flows every line.
    `docs/theme.md`.
 4. **`\color{red}{..}`, never `\textcolor`.** The renderer here does not define the latter and
    prints it as literal red error text. `docs/math.md`.
@@ -120,10 +122,10 @@ Each of these fails without an error message.
 7. **A `.gitignore` glob can eat a source file.** `fonts.html` and `guides.html` share a suffix with
    build output. `guides.html` went missing for several commits this way. Add a negation for any new
    source file whose extension collides, and verify with a fresh clone.
-8. **Edit `talk.qmd`.** `theme.scss` is shared API and `_quarto.yml` is configuration; changing
+8. **Edit `talk.qmd`.** `themes/*.scss` is shared API and `_quarto.yml` is configuration; changing
    either affects every slide.
-9. **Never edit a `themes/` directory to write a talk.** Copy it into `talks/` first. Those ten
-   are what everybody starts from, and editing one in place changes every talk written after it.
+9. **Never edit `template/` to write a talk.** Copy it into `talks/` first. It is what everybody
+   starts from, and editing it in place changes every talk written after it.
 10. **Never start a fenced div with a heading.** Pandoc writes that div out as a `<section>`, and
     reveal's slide selector is `.slides section` — a *descendant* selector — so it silently becomes
     a slide of its own. `::: {.card}` then `#### Setup` costs you three phantom slides. Lead with

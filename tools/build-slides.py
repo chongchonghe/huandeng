@@ -8,7 +8,6 @@
     build-slides.py <deck> --pptx           one slide image per page, at 4K
     build-slides.py <deck> --check          render, then look at every slide
     build-slides.py <deck> --png            one PNG per slide, to read
-    build-slides.py <deck> --theme nord     copy themes/nord over this deck's look
     build-slides.py <deck> --gallery        every theme side by side, to choose one
 
 `--html` and `--standalone` are `quarto render` with the right flags, and you
@@ -87,83 +86,15 @@ def die(msg: str) -> None:
 # ------------------------------------------------------------------ themes --
 
 
-THEMES_DIR = Path(__file__).resolve().parent.parent / "themes"
-
-# The one line a theme owns outside theme.scss: code highlighting is a Pandoc
-# theme rather than a stylesheet, so it cannot live in the SCSS with the rest of
-# the look. The title slide used to be here too, back when it carried a colour
-# field; it now stands on the deck's own ground, so there is nothing to carry.
-THEME_KEYS = ("highlight-style",)
+# A theme is one stylesheet in the deck's own `themes/`, and every deck carries
+# all of them — so changing the look is one line of `_quarto.yml` and nothing
+# here has to run. The code-token colours are in the stylesheet too, which is
+# why there is no second setting to keep in step with the first.
 
 
-def themes() -> list[str]:
-    if not THEMES_DIR.is_dir():
-        return []
-    return sorted(d.name for d in THEMES_DIR.iterdir() if (d / "theme.scss").is_file())
-
-
-def apply_theme(deck: Deck, name: str) -> None:
-    """Dress the deck in themes/<name>.
-
-    A deck owns its look outright: nothing it renders reaches outside its own
-    directory, and themes/ does not have to exist for `make` to work. So putting
-    a theme on a deck means copying the theme's files in, which is all this
-    does. It touches three things and says so, and the diff is `git diff`.
-    """
-    have = themes()
-    if name not in have:
-        die(f"no theme {name!r} in {THEMES_DIR} — have: {', '.join(have) or '(none)'}")
-    src = THEMES_DIR / name
-
-    shutil.copyfile(src / "theme.scss", deck.dir / "theme.scss")
-    print(f"theme.scss  <- themes/{name}/theme.scss")
-
-    # Transplant only the lines the theme owns. Replacing the whole _quarto.yml
-    # would be simpler and would silently throw away anything this deck had
-    # changed about its own geometry — including a title-slide colour field it
-    # had deliberately turned back on.
-    yml = deck.dir / "_quarto.yml"
-    text = yml.read_text()
-    want = {}
-    for line in (src / "_quarto.yml").read_text().splitlines():
-        for key in THEME_KEYS:
-            if line.strip().startswith(key + ":"):
-                want[key] = line
-    for key in THEME_KEYS:
-        if key not in want:
-            die(f"themes/{name}/_quarto.yml has no {key}:")
-        old = [ln for ln in text.splitlines() if ln.strip().startswith(key + ":")]
-        if not old:
-            die(f"{yml} has no {key}: line to replace — apply the theme by hand")
-        # Keep this deck's indentation; take the theme's value.
-        indent = old[0][: len(old[0]) - len(old[0].lstrip())]
-        new = indent + want[key].strip()
-        if old[0] != new:
-            text = text.replace(old[0], new, 1)
-            print(f"_quarto.yml {key}: {want[key].split(':', 1)[1].strip()[:56]}")
-    yml.write_text(text)
-
-    # The one thing a copy cannot reach. A slide background has to be a reveal
-    # attribute rather than CSS, and reveal parses that attribute as a literal
-    # colour — a `var(--deck-primary)` there would work as a colour and then
-    # defeat the brightness test reveal uses to decide whether the type on that
-    # slide goes white. So a colour written into a slide belongs to the talk,
-    # and stays azure on a deck that has just gone dark green.
-    stale = sorted(
-        {
-            line.split('background-color="')[1].split('"')[0]
-            for line in deck.qmd.read_text().splitlines()
-            if 'background-color="#' in line
-        }
-    )
-    if stale:
-        print(
-            f"\nnote: {deck.qmd.name} sets a slide background by hand "
-            f"({', '.join(stale)}). That is the talk's, not the theme's — "
-            "change it there if it now clashes."
-        )
-
-    print(f"\n{deck.dir.name} is now the {name} theme. `make check` before you trust it.")
+def themes(deck: Deck) -> list[str]:
+    d = deck.dir / "themes"
+    return sorted(p.stem for p in d.glob("*.scss")) if d.is_dir() else []
 
 
 # ------------------------------------------------------------------ quarto --
@@ -646,8 +577,8 @@ def build_png(deck: Deck) -> Path:
 # ----------------------------------------------------------------- gallery --
 
 
-def theme_blurb(name: str) -> str:
-    """The theme's own opening sentence, read from the top of its theme.scss.
+def theme_blurb(deck: Deck, name: str) -> str:
+    """The theme's own opening sentence, read from the top of its stylesheet.
 
     Taken from the file rather than written out here, because a second copy of
     every theme's description is a second thing that has to stay true.
@@ -655,7 +586,7 @@ def theme_blurb(name: str) -> str:
     with, and it moves when the theme does.
     """
     blurb: list[str] = []
-    for line in (THEMES_DIR / name / "theme.scss").read_text().splitlines():
+    for line in (deck.dir / "themes" / f"{name}.scss").read_text().splitlines():
         text = line.strip()
         body = text[2:].strip() if text.startswith("//") else ""
         if not blurb:
@@ -688,7 +619,7 @@ GALLERY_SLIDES = (1, 3, 5, 6)
 # written down rather than computed.
 #
 # A theme missing from this list still appears, at the end. The gallery never
-# silently drops one; `themes/README.md` and `make themes` stay alphabetical.
+# silently drops one; the deck's own `themes/README.md` stays alphabetical.
 GALLERY_GROUPS = (
     ("white", ("swiss", "university", "whiteprint", "cobalt", "monochrome")),
     ("light colour", ("paper", "signal", "solarized")),
@@ -696,9 +627,9 @@ GALLERY_GROUPS = (
 )
 
 
-def gallery_order() -> list[tuple[str, str]]:
+def gallery_order(deck: Deck) -> list[tuple[str, str]]:
     """Every theme as (group, name), in the order the gallery lays them out."""
-    have = themes()
+    have = themes(deck)
     out = [(g, n) for g, names in GALLERY_GROUPS for n in names if n in have]
     placed = {n for _, n in out}
     return out + [("not yet placed", n) for n in have if n not in placed]
@@ -738,13 +669,14 @@ th.slide-head b { color: var(--ink); font-weight: 700; }
 /* Sticky, so the name stays with the pictures however far right you scroll. */
 th.theme, th.corner { position: sticky; left: 0; z-index: 2; background: var(--card);
                       border-right: 1px solid var(--line); text-align: left;
-                      padding: .8rem .9rem; width: 15rem; min-width: 15rem; }
+                      padding: .8rem .9rem; width: 17rem; min-width: 17rem; }
 th.theme { border-top: 1px solid var(--line); vertical-align: top; }
 th.theme .name { font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
                  font-size: .95rem; font-weight: 700; }
 th.theme .blurb { font-weight: 400; font-size: .8rem; color: var(--dim);
                   margin-top: .35rem; }
-th.theme .cmd { font-size: .74rem; color: var(--dim); margin-top: .6rem;
+th.theme .cmd { font-size: .62rem; color: var(--dim); margin-top: .6rem;
+                line-height: 1.5; overflow-wrap: break-word;
                 font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
 /* The band that says what the next few rows are printed on. */
 th.group { background: var(--ground); border-top: 1px solid var(--line);
@@ -762,7 +694,8 @@ td.shot a:hover img { outline: 2px solid currentColor; outline-offset: -2px; }
 
 
 def gallery_html(
-    order: list[tuple[str, str]], titles: list[str], shots: dict[str, list[Path]]
+    deck: Deck, order: list[tuple[str, str]], titles: list[str],
+    shots: dict[str, list[Path]]
 ) -> str:
     head = "".join(
         f'<th class="slide-head"><b>{GALLERY_SLIDES[i]}</b> {escape(t)}</th>'
@@ -788,49 +721,67 @@ def gallery_html(
         )
         rows.append(
             f'<tr><th class="theme"><div class="name">{escape(name)}</div>'
-            f'<div class="blurb">{escape(theme_blurb(name))}</div>'
-            f'<div class="cmd">make theme THEME={escape(name)}</div></th>{cells}</tr>'
+            f'<div class="blurb">{escape(theme_blurb(deck, name))}</div>'
+            f'<div class="cmd">theme: [default, themes/{escape(name)}.scss]</div>'
+            f"</th>{cells}</tr>"
         )
     return (
         '<!doctype html><meta charset="utf-8">\n'
         "<title>huandeng themes</title>\n<style>"
         + GALLERY_CSS
         + "\n<h1>The starting points</h1>\n"
-        '<p class="lede">Every theme, on the four slides of its own template deck that '
-        "show the most of it. Read a row for one theme, or a column to compare the same "
-        "slide across all of them. Any slide opens full size if you click it.</p>\n"
+        '<p class="lede">Every theme this deck can wear, on the four slides that show '
+        "the most of it. Read a row for one theme, or a column to compare the same slide "
+        "across all of them. Any slide opens full size if you click it.</p>\n"
         '<p class="lede">They are grouped by what the slide is printed on, because that '
         "is the first thing that has to suit your figures: a plot saved on a white "
         "canvas is a bright rectangle punched into a dark slide, and no stylesheet "
         "fixes that.</p>\n"
-        '<p class="lede">Pick one, then either copy it — <code>cp -r themes/&lt;name&gt; '
-        "talks/my-talk</code> — or put it on a deck you have already written with "
-        "<code>make theme THEME=&lt;name&gt;</code>.</p>\n"
+        '<p class="lede">Pick one and put its line into this deck\'s '
+        "<code>_quarto.yml</code> — it is printed under each name. Every stylesheet "
+        "already travels with the deck, so nothing is copied and undo is undo.</p>\n"
         f'<div class="sheet"><table><tr><th class="corner"></th>{head}</tr>\n'
         + "\n".join(rows)
         + "</table></div>\n"
     )
 
 
+def dress(work: Deck, name: str) -> None:
+    """Point a working copy's `_quarto.yml` at one of its own stylesheets.
+
+    The same one line a person edits by hand, edited by hand — there is no
+    theme machinery left for this to call, which is the point of the design.
+    """
+    yml = work.dir / "_quarto.yml"
+    out = []
+    for line in yml.read_text().splitlines(keepends=True):
+        head = line.lstrip()
+        if head.startswith("theme:"):
+            pad = line[: len(line) - len(head)]
+            line = f"{pad}theme: [default, themes/{name}.scss]\n"
+        out.append(line)
+    yml.write_text("".join(out))
+
+
 def build_gallery(deck: Deck) -> Path:
     """Every theme, side by side, so a person can point at one.
 
-    `make themes` prints a list of names, and a name is not something anyone can
-    choose between. Showing them is cheap here because each `themes/<name>/` is
-    already a complete deck of the same slides — so rendering them all gives a
-    grid that lines up, and no deck has to be dressed or copied to build it.
+    A name is not something anyone can choose between, and this deck carries
+    every theme it could wear — so the gallery is this deck rendered once per
+    stylesheet. Every row is the same slides in a different look, which is what
+    makes reading down a column mean anything.
 
     They are laid out grouped by ground, in `GALLERY_GROUPS` — not
     alphabetically, because the order is a judgement about what to look at
     first and nothing in the files can tell you that.
 
-    The gallery is written into whichever deck you run it from. Nothing is
-    modified anywhere: each theme deck builds in its own `out/`, exactly as
-    `make check` at the repository root already builds it.
+    Your deck is never touched: the dressing happens to a copy under /tmp, so
+    running this halfway through writing a talk cannot cost you the look you
+    already chose. The sheet lands in your deck's own `out/`.
     """
-    order = gallery_order()
+    order = gallery_order(deck)
     if not order:
-        die(f"no themes in {THEMES_DIR}")
+        die(f"no themes in {deck.dir / 'themes'}")
     names = [n for _, n in order]
 
     gallery = deck.out / "gallery"
@@ -841,34 +792,45 @@ def build_gallery(deck: Deck) -> Path:
     shots: dict[str, list[Path]] = {}
     titles: list[str] = []
 
-    with with_playwright() as pw:
-        browser = pw.chromium.launch()
-        page = browser.new_page(viewport={"width": 1280, "height": 720})
-        for name in names:
-            print(f"=== {name}", flush=True)
-            theme_deck = Deck(THEMES_DIR / name)
-            build_html(theme_deck)
-            open_deck(page, theme_deck.html)
-            # The progress bar stays. `make png` hides it as furniture in the
-            # way of reading a slide; here it is one of the things being chosen
-            # between, since three of the themes do not draw one at all.
-            written: list[Path] = []
+    with tempfile.TemporaryDirectory() as tmp:
+        work = Deck(
+            Path(
+                shutil.copytree(
+                    deck.dir,
+                    Path(tmp) / deck.dir.name,
+                    ignore=shutil.ignore_patterns("out", ".quarto"),
+                )
+            )
+        )
+        with with_playwright() as pw:
+            browser = pw.chromium.launch()
+            page = browser.new_page(viewport={"width": 1280, "height": 720})
+            for name in names:
+                print(f"=== {name}", flush=True)
+                dress(work, name)
+                work.fresh = False
+                build_html(work)
+                open_deck(page, work.html)
+                # The progress bar stays. `make png` hides it as furniture in
+                # the way of reading a slide; here it is one of the things
+                # being chosen between, since three themes do not draw one.
+                written: list[Path] = []
 
-            def shoot(i: int, m: dict, _name: str = name) -> None:
-                if i + 1 not in GALLERY_SLIDES:
-                    return
-                path = gallery / f"{_name}-{i + 1:02d}.png"
-                page.screenshot(path=str(path))
-                written.append(path)
-                if _name == names[0]:
-                    titles.append(m["title"])
+                def shoot(i: int, m: dict, _name: str = name) -> None:
+                    if i + 1 not in GALLERY_SLIDES:
+                        return
+                    path = gallery / f"{_name}-{i + 1:02d}.png"
+                    page.screenshot(path=str(path))
+                    written.append(path)
+                    if _name == names[0]:
+                        titles.append(m["title"])
 
-            visit_slides(page, shoot)
-            shots[name] = written
-        browser.close()
+                visit_slides(page, shoot)
+                shots[name] = written
+            browser.close()
 
     sheet = deck.out / "gallery.html"
-    sheet.write_text(gallery_html(order, titles, shots))
+    sheet.write_text(gallery_html(deck, order, titles, shots))
     n = sum(len(v) for v in shots.values())
     print(f"\nwrote {sheet}")
     print(f"  {len(names)} themes, {n} slides. Open it and point at one.")
@@ -899,12 +861,6 @@ def main(argv: list[str] | None = None) -> int:
     )
     ap.add_argument("--png", action="store_true", help="one PNG per slide")
     ap.add_argument(
-        "--theme",
-        metavar="NAME",
-        help="copy themes/NAME over this deck's look, then stop; "
-        "pass '?' to list what is there",
-    )
-    ap.add_argument(
         "--gallery",
         action="store_true",
         help="every theme, side by side, as out/gallery.html",
@@ -915,18 +871,7 @@ def main(argv: list[str] | None = None) -> int:
     )
     args = ap.parse_args(argv)
 
-    if args.theme in ("?", "list"):
-        print("\n".join(themes()) or f"no themes in {THEMES_DIR}")
-        return 0
-
     deck = Deck(args.deck)
-
-    # Changing the look and building in the same command would hide which of the
-    # two you meant, so --theme does the one thing and leaves the building to a
-    # second run you can read the output of.
-    if args.theme:
-        apply_theme(deck, args.theme)
-        return 0
 
     # The gallery is about themes/ rather than about this deck — the deck only
     # says where to put it — so it does the one thing and builds nothing else.

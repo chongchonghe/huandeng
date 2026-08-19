@@ -20,7 +20,7 @@ Keynote 和 PowerPoint 用起来很快，直到你想让大模型帮忙的那一
 brew install --cask quarto                  # 其他系统见 quarto.org
 git clone <这个仓库>
 cd huandeng
-cp -r themes/university talks/my-talk       # 也可以是 paper、swiss、nord……见下
+cp -r template talks/my-talk
 cd talks/my-talk
 mv template.qmd talk.qmd
 make preview
@@ -36,7 +36,6 @@ make preview
 | `make all` | 同时生成两份 PDF 和一份图片版 PowerPoint |
 | `make standalone` | 一个可以直接发邮件的单文件 `.html` |
 | `make png` | 每页一张 PNG，方便你逐页看 |
-| `make theme THEME=nord` | 给这份幻灯片换一套外观（`make themes` 列出全部） |
 | `make gallery` | 每套主题并排摆开，看一眼就能挑 |
 
 `make` 和 `make preview` 只需要 Quarto。其余的需要 Python 和一个无头浏览器，见[需要装什么](#需要装什么)。
@@ -64,14 +63,15 @@ make preview
 | **看得见的页面边界** | 每页都在精确的 1280 × 720 里排版再整体缩放到屏幕；写稿时按 **X** 就能把这个框画出来 |
 | **带出处的插图** | `::: {.fig}` 让出处贴着图本身的边缘，而不是幻灯片的边缘 |
 | **和幻灯片长得一样的 PPTX** | 每页一张 4K 满幅图片。因为版式是 CSS，任何 PowerPoint 写出器都读不懂 CSS。不可编辑，但逐像素一致 |
-| **十套外观，都不锁死** | 默认的一套，加上 `paper`、`swiss`、`whiteprint`、`solarized`、`nord`、`blueprint`、`signal`、`monochrome`、`cobalt` 九套。`make gallery` 把它们全部并排渲染出来，看着挑。`make theme THEME=paper` 把其中一套复制到你已经写好的幻灯片上，复制完这份幻灯片依然自己拥有它。见 [`themes/README.md`](themes/README.md) |
+| **十套外观，都不锁死** | 默认的一套，加上 `paper`、`swiss`、`whiteprint`、`solarized`、`nord`、`blueprint`、`signal`、`monochrome`、`cobalt` 九套。十套都装在每份幻灯片里，换一套就是改 `_quarto.yml` 的一行；`make gallery` 把它们并排渲染出来，看着挑。见 [`template/themes/README.md`](template/themes/README.md) |
 | **不会随时间烂掉的幻灯片** | 每份幻灯片自带主题、字体和素材的副本，几年后换台电脑、挪到别处，照样渲染成原样 |
 
 ## 目录结构
 
 ```
 tools/build-slides.py   工具链——所有幻灯片共用，但不会被复制进任何一份
-themes/                 十个起点。复制其中一个，不要直接改。
+template/               复制它来开始一份新报告。它里面的 themes/ 放着十套外观，
+                        由 _quarto.yml 挑一套
 demo/                   所有功能的可运行参考
 talks/                  你自己的——已 gitignore，你的幻灯片不会进这个仓库
 trash/                  走不通的路，附一份说明为什么走不通
@@ -79,7 +79,7 @@ trash/                  走不通的路，附一份说明为什么走不通
 Makefile                make check 一次检查所有幻灯片
 ```
 
-一份幻灯片就是 `talk.qmd` + `_quarto.yml` + `theme.scss` + `fonts.html` + `guides.html` + `attach/`，外加一个只是包装上述命令、本身不含构建逻辑的 `Makefile`。
+一份幻灯片就是 `talk.qmd` + `_quarto.yml` + `themes/` + `fonts.html` + `guides.html` + `attach/`，外加一个只是包装上述命令、本身不含构建逻辑的 `Makefile`。
 
 ## 主题
 
@@ -98,16 +98,15 @@ Makefile                make check 一次检查所有幻灯片
 | `monochrome` | 象牙白配黑，完全没有颜色——整页唯一的颜色来自你的图 |
 | `cobalt` | 方格纸：整页浅浅的网格，标题用钴蓝斜体衬线 |
 
-复制其中一套就可以开始——`cp -r themes/paper talks/my-talk`；要给已经写好的幻灯片换一套：
+十套外观都随每份幻灯片一起走，所以换一套就是改 `_quarto.yml` 的一行——不用命令，不用复制，撤销就是撤销：
 
-```bash
-cd talks/my-talk
-make themes                  # 有哪些
-make theme THEME=paper       # 把外观复制进来，复制完这份幻灯片依然自己拥有它
-make check
+```yaml
+    theme: [default, themes/paper.scss]
 ```
 
-里面放了两套深色主题，因为总有人要，但白底存下来的图放在深色页面上就是一块刺眼的白方块，这一点没有任何样式表能补救。细节见 [`themes/README.md`](themes/README.md)。
+代码块也一起换：每个样式表都用自己的配色给语法高亮上色，所以没有第二个设置要跟着改。`make gallery` 把十套并排渲染成 `out/gallery.html`，每个名字下面就印着这一行。换完记得 `make check`：在一套主题里放得下的一页，换一套可能就溢出了。
+
+里面放了两套深色主题，因为总有人要，但白底存下来的图放在深色页面上就是一块刺眼的白方块，这一点没有任何样式表能补救。细节见 [`template/themes/README.md`](template/themes/README.md)。
 
 ## 需要装什么
 
@@ -126,7 +125,7 @@ make check
 
 ## 每份幻灯片都是自包含的
 
-一份幻灯片被复制到任何地方，多年以后都应该还能正确渲染。`theme.scss`、`_quarto.yml`、`fonts.html`、`guides.html`、`fonts/` 和所有素材都是*副本*，不是 import，任何一份幻灯片都不读取自己目录以外的东西。
+一份幻灯片被复制到任何地方，多年以后都应该还能正确渲染。`themes/`、`_quarto.yml`、`fonts.html`、`guides.html`、`fonts/` 和所有素材都是*副本*，不是 import，任何一份幻灯片都不读取自己目录以外的东西。十套外观全都装在每份幻灯片里，正是为了这一点：一份指向 `../../themes/paper.scss` 的报告，发给别人的那天就不再能正常渲染了。
 
 代价是实实在在的：改进 改进主题不会自动惠及你已经复制出去的报告，要带过去只能手动复制。换来的是，讲完的报告就被冻结了。你 2026 年讲过的那份，到 2030 年在另一台电脑上、在模板早已改版之后，依然渲染成一模一样的样子——因为它依赖的东西没有一样能在它脚下变化。对于那些要反复使用、反复发出去的会议报告和讲义，这笔交易是划算的。
 
@@ -134,6 +133,6 @@ make check
 
 ## 致谢
 
-基于 [Quarto](https://quarto.org/) 和 [reveal.js](https://revealjs.com/)。字体为 [Fira Sans](https://github.com/mozilla/Fira)，SIL OFL 授权。`themes/` 里有六套主题的配色和字体气质来自 lewis 的 [html-ppt-skill](https://github.com/lewislulu/html-ppt-skill)（MIT）；`signal`、`monochrome`、`cobalt` 三套来自 zarazhangrui 的 [beautiful-html-templates](https://github.com/zarazhangrui/beautiful-html-templates)（MIT），经由 [frontend-slides](https://github.com/zarazhangrui/frontend-slides)。都没有直接搬用代码——借的是配色和想法，在这里用 Quarto SCSS 重写。
+基于 [Quarto](https://quarto.org/) 和 [reveal.js](https://revealjs.com/)。字体为 [Fira Sans](https://github.com/mozilla/Fira)，SIL OFL 授权。`template/themes/` 里有六套主题的配色和字体气质来自 lewis 的 [html-ppt-skill](https://github.com/lewislulu/html-ppt-skill)（MIT）；`signal`、`monochrome`、`cobalt` 三套来自 zarazhangrui 的 [beautiful-html-templates](https://github.com/zarazhangrui/beautiful-html-templates)（MIT），经由 [frontend-slides](https://github.com/zarazhangrui/frontend-slides)。都没有直接搬用代码——借的是配色和想法，在这里用 Quarto SCSS 重写。
 
 MIT 授权，见 [LICENSE](LICENSE)。

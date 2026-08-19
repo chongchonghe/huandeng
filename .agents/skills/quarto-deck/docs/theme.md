@@ -6,7 +6,7 @@
 | --- | --- |
 | `talk.qmd` | the slides, and this talk's title/author/date/footer |
 | `_quarto.yml` | every option that shapes the whole deck |
-| `theme.scss` | the look, and every layout class |
+| `themes/*.scss` | ten looks, one per file; `_quarto.yml` picks one. Every layout class is in each |
 | `fonts.html` | seven `@font-face` rules, injected into `<head>` |
 | `guides.html` | the **X** key overlay |
 | `fonts/`, `attach/`, `ref.bib` | the deck's own copies of everything it needs |
@@ -15,7 +15,7 @@ All of it is a **copy**. No deck imports anything from outside its own directory
 2026 still renders in 2030 after its theme has moved on. The cost is that a fix in `themes/` reaches
 an existing deck only if you carry it there by hand. That trade is deliberate.
 
-## theme.scss structure
+## Stylesheet structure
 
 Quarto's SCSS convention, two labelled regions in one file:
 
@@ -45,7 +45,7 @@ div.columns { display: initial; gap: initial }
 ```
 
 That is one class **plus an element**, which outranks a bare `.columns`. Every column rule in
-`theme.scss` is therefore prefixed `.reveal` — two classes beat one class and an element. Forget it
+Each stylesheet is therefore prefixed `.reveal` — two classes beat one class and an element. Forget it
 and both columns land on top of each other at full width.
 
 When adding a rule for anything Quarto also styles, check the compiled output rather than assuming:
@@ -54,9 +54,9 @@ When adding a rule for anything Quarto also styles, check the compiled output ra
 grep -o 'div\.columns[^}]*}' demo/out/demo_files/libs/revealjs/dist/theme/quarto-*.css
 ```
 
-## Fonts live in fonts.html, not theme.scss
+## Fonts live in fonts.html, not the stylesheet
 
-`@font-face` cannot go in `theme.scss`. Quarto compiles the theme into
+`@font-face` cannot go in a stylesheet. Quarto compiles the theme into
 `<deck>_files/libs/revealjs/dist/theme/` — five directories deep — and a relative `url()` inside a
 stylesheet resolves against *the stylesheet*, so `fonts/FiraSans-Regular.otf` written there is looked
 for beside reveal's own theme files and quietly 404s.
@@ -68,7 +68,7 @@ A `<style>` element in the document resolves against *the document*, which is `o
 The failure is silent: the deck still renders, in whatever sans-serif the machine has, at different
 metrics, with every line breaking somewhere else.
 
-**The same trap catches every other `url()` in `theme.scss`**, not just `@font-face`. A slide logo
+**The same trap catches every other `url()` in a stylesheet**, not just `@font-face`. A slide logo
 written as `background-image: url("attach/logo.png")` 404s for exactly this reason, and the deck
 renders perfectly with no logo on it. Use Quarto's own `logo:` in `_quarto.yml`, which writes an
 `<img class="slide-logo">` into the page — that path resolves against the document. `theme.scss`
@@ -105,24 +105,28 @@ navigation — `X` because `G` is already reveal's jump-to-slide.
 
 ## Changing the whole look
 
-`themes/` holds all ten starting points — `university` (the plain one, and the source of the
-shared body), `paper`, `swiss`, `whiteprint`, `solarized`, `nord`, `blueprint`. Each is a complete
-deck you can render and look at. `themes/README.md` says what each one is.
+Every deck carries all ten stylesheets in its own `themes/`, and `_quarto.yml` picks one.
+`university` is the plain one and the source of the shared body; `themes/README.md` inside the deck
+says what each of the ten is.
 
 ```bash
-cp -r themes/paper talks/2027-my-talk    # start a new talk in one
-cd talks/2027-my-talk && make gallery            # every one, rendered, to choose by eye
-cd talks/2027-my-talk && make theme THEME=nord   # or re-dress one already written
-make check
+cp -r template talks/2027-my-talk         # start a new talk
+cd talks/2027-my-talk && make gallery     # all ten, rendered, to choose by eye
 ```
 
-`make theme` **copies**: it overwrites `theme.scss` and rewrites one line of `_quarto.yml`, and
-afterwards the deck owns its look and renders with `themes/` deleted. It is the self-containment
-rule automated, not an exception to it. Tell the author to commit first — `git diff` is how the
-change is read and `git checkout` is how it is undone.
+Then switching is a text edit — two adjacent lines in the deck's own `_quarto.yml`, and `make check`
+afterwards because a slide that fits in one theme can overflow in another:
 
-One line of `_quarto.yml` rather than none, because `highlight-style` is a Pandoc theme rather than a
-stylesheet and cannot live in the SCSS. Nothing else: no theme here puts a colour field behind the
+```yaml
+    theme: [default, themes/nord.scss]
+```
+
+One line, and nothing else to set. Pandoc marks up code with `<span class="kw">` and friends
+whatever happens, and Quarto would normally colour them from a `highlight-style:` chosen in the
+YAML; here the shared body colours them from five `--deck-code-*` custom properties instead, so a
+theme owns its code block along with the rest of its look. There is no command for any of this and
+nothing is copied, so undo is undo. Nothing else changes: no theme here puts a colour field behind
+the
 title slide or the closing slide, so there is no background left to carry across.
 
 Three things switching cannot do, all worth saying out loud before an author is surprised by them:
@@ -139,16 +143,16 @@ Three things switching cannot do, all worth saying out loud before an author is 
   system monospace — fall back through a stack, so those decks render *close* on someone else's
   machine rather than identically.
 
-Each theme's `theme.scss` is a header (defaults and `:root`), then the shared body byte-identical to
-`themes/university/theme.scss` from `.reveal {` on, then an appendix under a marked banner. Carry a
-fix across by replacing the middle; change the theme by editing the two ends.
+Each stylesheet is a header (defaults and `:root`, including the five `--deck-code-*` values), then the shared
+body byte-identical to `university.scss` from `.reveal {` on, then an appendix under a marked
+banner. Carry a fix across by replacing the middle; change the theme by editing the two ends.
 
 ## Adding a class
 
-Add it to the deck's own `theme.scss` and rebuild. To give an *existing* deck a class its starting
-point gained later, copy the rule into that deck's `theme.scss`. Never by making one deck import
-another — that is the rule the whole layout rests on.
+Add it to the deck's own stylesheets and rebuild. To give an *existing* deck a class its starting
+point gained later, copy the rule in. Never by making one deck import another — that is the rule the
+whole layout rests on.
 
-A new class belongs in `themes/university/theme.scss`, which is the source of the shared body, and
-then in the other six and in `demo/theme.scss` — all separate files that happen to be identical
+A new class belongs in the shared body, so it goes into `template/themes/university.scss` first and
+then into the other nine and into `demo/themes/` — twenty separate files that happen to be identical
 through that stretch. Fix one and copy it across; do not symlink them.

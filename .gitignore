@@ -23,17 +23,17 @@ out/
 # new source file whose extension collides.
 .quarto/
 /demo/*.html
-/themes/*/*.html
+/template/*.html
 !/demo/fonts.html
-!/themes/*/fonts.html
+!/template/fonts.html
 !/demo/guides.html
-!/themes/*/guides.html
+!/template/guides.html
 /demo/*.pdf
-/themes/*/*.pdf
+/template/*.pdf
 /demo/*.pptx
-/themes/*/*.pptx
+/template/*.pptx
 /demo/*_files/
-/themes/*/*_files/
+/template/*_files/
 
 # Dead ends kept for reference. The README there says how to regenerate them,
 # which is worth committing; the artefacts themselves are not.

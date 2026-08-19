@@ -5,12 +5,11 @@
 #   make clean     delete every out/
 #
 # DECKS is every directory holding a _quarto.yml, so a talk you copy into
-# talks/ is picked up with no edit here. Each themes/<name>/ is a complete deck
-# in its own right — that is what makes it something you can copy and start
-# from — so `make check` covers every starting point as well as every talk.
+# talks/ is picked up with no edit here. template/ is the deck you copy to start
+# one, and it is checked like any other.
 
 DECKS := $(patsubst %/_quarto.yml,%,$(wildcard \
-             demo/_quarto.yml themes/*/_quarto.yml talks/*/_quarto.yml))
+             template/_quarto.yml demo/_quarto.yml talks/*/_quarto.yml))
 
 # Quarto and uv both install into ~/.local/bin, which a non-login shell does not
 # always inherit. Appended, not prepended, so anything already on PATH wins.
@@ -45,11 +44,11 @@ check:
 demo:
 	uv run python tools/build-slides.py demo
 
-# Every starting point, rendered and laid side by side, because a name is
-# not something anyone can choose between. Lands in demo/out/gallery.html; from
-# a deck of your own, `make gallery` there puts it in that deck's out/ instead.
+# Every theme a deck could wear, rendered and laid side by side, because a name
+# is not something anyone can choose between. Lands in template/out/gallery.html;
+# from a deck of your own, `make gallery` there puts it in that deck's out/.
 gallery:
-	uv run python tools/build-slides.py demo --gallery
+	uv run python tools/build-slides.py template --gallery
 
 clean:
 	rm -rf $(addsuffix /out,$(DECKS)) $(addsuffix /.quarto,$(DECKS))
