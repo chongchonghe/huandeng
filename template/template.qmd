@@ -57,14 +57,17 @@ notes, a timer, the next slide — and **X** to draw the slide boundary.
 
 ## A figure is the slide, not an illustration
 
-:::: {.columns-2-3}
+:::::: {.columns-2-3}
 
-::: {.column}
-::: {.small}
+::::: {.column}
+:::: {.small}
+
+::: {.fragment}
 Spoken over, this side is a claim and nothing more; the narration goes in
 `::: notes`. Read alone, nobody is standing there to finish the sentence for
 you, so the argument has to arrive whole — which is what `density:` in the
 header decides.
+:::
 
 ::: {.incremental}
 - A point worth making, finished rather than left hanging
@@ -72,19 +75,24 @@ header decides.
 - One that can stay [quieter]{.muted} without being cut
 :::
 
+::: {.fragment}
 When a column has more to say than fits, wrap it in `.small` and the figure
 keeps its size. At `0.78em` it still reads from the back of a room; `.tiny` at
 `0.62em` does not, so save that for a source line.
+:::
 
+::: {.fragment}
 Give an image a width **or** a height, never both. The aspect ratio is data —
 stretch a figure and equal axes stop being square, while the result still looks
 entirely plausible. Anything drawn more than 2% off the file's own shape fails
 `make check`.
 :::
-:::
 
-::: {.column}
-::: {.fig}
+::::
+:::::
+
+::::: {.column}
+:::: {.fig}
 [Planet sizes, drawn to one scale]{.caption}
 
 ![](attach/solar-system.jpg){width="680px"}
@@ -92,12 +100,12 @@ entirely plausible. Anything drawn more than 2% off the file's own shape fails
 [Encyclopædia Britannica]{.credit}
 
 [Distances are not to scale]{.below}
-:::
-:::
-
 ::::
+:::::
 
-::: {.highlight}
+::::::
+
+::: {.highlight .fragment}
 `.caption` names the panel above it; `.credit` sets the source at its edge.
 :::
 
