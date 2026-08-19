@@ -66,9 +66,11 @@ Spoken over, this side is a claim and nothing more; the narration goes in
 you, so the argument has to arrive whole — which is what `density:` in the
 header decides.
 
+::: {.incremental}
 - A point worth making, finished rather than left hanging
 - One that needs an [emphasis]{.alert} to carry over the rest
 - One that can stay [quieter]{.muted} without being cut
+:::
 
 When a column has more to say than fits, wrap it in `.small` and the figure
 keeps its size. At `0.78em` it still reads from the back of a room; `.tiny` at
@@ -108,7 +110,7 @@ entirely plausible. Anything drawn more than 2% off the file's own shape fails
 Baseline:
 :::
 ::: {.media-items}
-![](attach/placeholder.png){height="132px"} ![](attach/placeholder.png){height="132px"} ![](attach/placeholder.png){height="132px"}
+![](attach/solar-system.jpg){.fragment height="152px"} ![](attach/solar-system.jpg){.fragment height="152px"} ![](attach/solar-system.jpg){.fragment height="152px"}
 :::
 ::::
 
@@ -117,7 +119,7 @@ Baseline:
 With treatment:
 :::
 ::: {.media-items}
-![](attach/placeholder.png){height="132px"} ![](attach/placeholder.png){height="132px"} ![](attach/placeholder.png){height="132px"}
+![](attach/solar-system.jpg){.fragment height="152px"} ![](attach/solar-system.jpg){.fragment height="152px"} ![](attach/solar-system.jpg){.fragment height="152px"}
 :::
 ::::
 
@@ -129,7 +131,8 @@ Three time steps, one colour scale.
 
 ::: {.highlight}
 `.media-row` is a grid: label in one column, frames in the other. Set
-`--label-width` once on a wrapper and every row lines up.
+`--label-width` once on a wrapper and every row lines up; `.fragment` on each
+image walks the strip a frame at a time.
 :::
 
 ## Three things, side by side
@@ -175,8 +178,9 @@ What came out, and the number behind it
 . . .
 
 ::: {.center}
-[`. . .` held this line back until you clicked — which is also why it is missing
-from `make png` and the PDF.]{.small .muted}
+[`. . .` held this line back until you clicked. `make png` photographs every
+slide at its first step, so it never sees this — but `out/talk.pdf` spends a
+page on each step, so the PDF and the PPTX do.]{.small .muted}
 :::
 
 ## Text, numbers, code and maths
