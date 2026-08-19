@@ -47,6 +47,11 @@ $selection-background-color: #ffd9de !default;
   // to vary that the shared body writes as a literal.
   --deck-accent: #d6001c;
   --deck-code-bg: #f2f2f2;
+  // This theme's own: the accent taken down to about 70% brightness, for the
+  // progress bar. The bar is 6px at the very top of the frame, where a
+  // projector's overscan and a monitor's bezel both eat into it, so it wants a
+  // colour that is still unmistakably red at four visible pixels.
+  --deck-accent-deep: #960014;
   // Code tokens; the rules that use them are in the shared body.
   --deck-code-kw: #d6001c;
   --deck-code-fun: #111111;
@@ -872,8 +877,13 @@ mjx-container:not([display]) {
   letter-spacing: -0.02em;
 }
 
+/* The title in the accent, and its rule with it. The shared body sets both to
+   the near-black; here the one red the theme owns does the work, and the rule
+   under the words is the same colour as the words. */
 .reveal h2 {
+  border-bottom-color: var(--deck-accent);
   border-bottom-width: 3px;
+  color: var(--deck-accent);
   font-size: 1.4em;
 }
 
@@ -885,15 +895,17 @@ mjx-container:not([display]) {
   text-transform: uppercase;
 }
 
-/* A flat bar, not a gradient: this theme has one accent and does not blend it
-   into anything. */
+/* A flat bar, not a gradient, and a shade below the accent: the red is doing
+   the slide titles now, and the same red above and below the heading is one red
+   too many. Deep enough to separate from the title, red enough to survive being
+   clipped at the top of the frame — which black was not. */
 .reveal .progress {
   background: none;
   height: 6px;
 }
 
 .reveal .progress span {
-  background: var(--deck-accent);
+  background: var(--deck-accent-deep);
 }
 
 /* One accent, used sparingly, so that it means something when it appears. */
