@@ -872,8 +872,13 @@ mjx-container:not([display]) {
   letter-spacing: -0.02em;
 }
 
+/* The title in the accent, and its rule with it. The shared body sets both to
+   the near-black; here the one red the theme owns does the work, and the rule
+   under the words is the same colour as the words. */
 .reveal h2 {
+  border-bottom-color: var(--deck-accent);
   border-bottom-width: 3px;
+  color: var(--deck-accent);
   font-size: 1.4em;
 }
 
