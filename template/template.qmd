@@ -6,113 +6,121 @@ institute: "Your Institute"
 date: last-modified
 date-format: "D MMM YYYY"
 bibliography: ref.bib
-# Spoken over, or read alone? It decides where the narrative goes — see the
-# quarto-academic-style skill. Absent means speaker-led.
+# Spoken over, or read alone? It decides how much belongs on a slide — the
+# quarto-academic-style skill has the rest. Absent means speaker-led.
 density: speaker-led   # or: reading-first
 format:
   revealjs:
     footer: "Your Name (Your Institute) &nbsp;·&nbsp; Short talk title"
 ---
 
-# Getting started
+## Write here, build with `make`
 
-## The rules of the file
+:::: {.columns-1-1}
 
-- **New section** — a `#` heading, which becomes a divider slide
-- **New slide** — a `##` heading
-- **Another slide, same title** — a bare `---`
-- **Reveal step by step** — `. . .`, or a `::: {.fragment}` block
-- **Deck-wide options** — `_quarto.yml`; this talk's title and footer, the block above
+::: {.column}
+::: {.no-header}
+| | |
+|:-------------------|:-----------------------------------------------------------|
+| `##`        | a new slide                |
+| `#`         | a section divider slide    |
+| `---`       | another slide, same title  |
+| `. . .`     | reveal the rest on a click |
+| `::: notes` | speaker notes; press **S** |
+:::
+:::
+
+::: {.column}
+::: {.no-header}
+| | |
+|:-------------------|:-----------------------------------------------------------|
+| `make`         | render `out/talk.html`       |
+| `make preview` | reloads as you save          |
+| `make check`   | catches content off the edge |
+| `make png`     | one PNG per slide, to read   |
+| `make all`     | HTML, PDF and PPTX           |
+:::
+:::
+
+::::
 
 ::: {.highlight}
-Edit this file, run `make`, and it is your deck.
+The look is one line of `_quarto.yml` — `theme: [default, themes/nord.scss]`.
+All ten stylesheets travel inside this folder.
 :::
 
 ::: notes
-Speaker notes live in a `::: notes` block. Press **S** during the talk to open
-the presenter window, which shows them beside a timer and the next slide.
+Nothing load-bearing goes in a notes block: reveal hides it in print, so it
+reaches neither the PDF nor the PPTX. Press **S** for the presenter window —
+notes, a timer, the next slide — and **X** to draw the slide boundary.
 :::
 
-## Outline
-
-1. **The question** — what we did not know, and why it mattered
-2. **The approach** — what we measured, and how
-3. **The result** — what changed, and by how much
-
-. . .
-
-Three parts is a safe default: a listener who loses the thread can find their
-way back to it.
-
-::: {.small}
-A bare `. . .` held this paragraph back until the click. Wrapping a list in
-`::: {.incremental}` steps through it one item at a time instead — but then the
-slide is empty until you click, and `make png` photographs it that way.
-:::
-
-## One idea, one slide
+## A figure is the slide, not an illustration
 
 :::: {.columns-2-3}
 
 ::: {.column}
-The claim in words on the left, the evidence on the right.
+Keep this side to a claim, not a narration.
 
 - A point worth making
 - One that needs an [emphasis]{.alert}
-- One that can be [quieter]{.muted}
+- One that can stay [quieter]{.muted}
 
-$$ \bar{x} = \frac{1}{n}\sum_{i=1}^{n} x_i $$
+Give an image a width **or** a height. Never both — the aspect ratio is data.
 :::
 
 ::: {.column}
 ::: {.fig}
 [Planet sizes, drawn to one scale]{.caption}
 
-![](attach/solar-system.jpg){width="620px"}
+![](attach/solar-system.jpg){width="680px"}
 
 [Encyclopædia Britannica]{.credit}
+
+[Distances are not to scale]{.below}
 :::
 :::
 
 ::::
 
 ::: {.highlight}
-Close a slide with the one sentence you want remembered.
+`.caption` names the panel above it; `.credit` sets the source at its edge.
 :::
 
-## Type, tables and code
+## A labelled strip of frames
 
-:::: {.columns-2-3}
+:::::: {style="--label-width: 170px"}
 
-::: {.column}
-#### A subheading
-
-Body text at the size the theme sets, with `inline code`, a
-[link](https://quarto.org) and **bold** where a claim needs it.
-
-> A sentence somebody else wrote, set as a blockquote.
-
-::: {.small}
-`.small` for a block that has to give way.
+::::: {.media-row}
+::: {.media-label}
+Baseline:
 :::
+::: {.media-items}
+![](attach/placeholder.png){height="132px"} ![](attach/placeholder.png){height="132px"} ![](attach/placeholder.png){height="132px"}
 :::
-
-::: {.column}
-| Method | Samples | Accuracy |
-|:---------------|-------:|-----:|
-| Baseline       |  1,000 | 71% |
-| + new features |  1,000 | 84% |
-| + more data    | 10,000 | 89% |
-
-```python
-def accuracy(correct, total):
-    return correct / total
-```
-:::
-
 ::::
 
-## Grouping things
+::::: {.media-row}
+::: {.media-label}
+With treatment:
+:::
+::: {.media-items}
+![](attach/placeholder.png){height="132px"} ![](attach/placeholder.png){height="132px"} ![](attach/placeholder.png){height="132px"}
+:::
+::::
+
+::::::
+
+::: {.caption-line}
+Three time steps, one colour scale.
+:::
+
+::: {.highlight}
+`.media-row` is a grid: label in one column, frames in the other. Set
+`--label-width` once on a wrapper and every row lines up.
+:::
+
+## Three things, side by side
 
 ::::: {.columns-1-1-1}
 
@@ -149,12 +157,53 @@ What came out, and the number behind it
 :::::
 
 ::: {.highlight}
-`.card` groups, `.pill` tags, `.highlight` is the one sentence the slide is about.
+`.card` boxes a group; `.pill` tags it inline.
 :::
 
-# Wrapping up
+. . .
 
-## Thanks! {.focus .center}
+::: {.center}
+[`. . .` held this line back until you clicked — which is also why it is missing
+from `make png` and the PDF.]{.small .muted}
+:::
+
+## Text, numbers, code and maths
+
+:::: {.columns-1-1}
+
+::: {.column}
+#### Subheadings start at `####`
+
+Body text with `inline code`, a [link](https://quarto.org) and **bold** where a
+claim needs it. Maths is sized to the body, so $\bar{x} = n^{-1}\sum_i x_i$ sits
+inside a sentence and a result gets its own line:
+
+$$ \sigma^2 = \frac{1}{n}\sum_i (x_i - \bar{x})^2 $$
+
+> A sentence somebody else wrote, set as a blockquote.
+:::
+
+::: {.column}
+| Method | Samples | Accuracy |
+|:---------------|-------:|--------:|
+| Baseline       |  1,000 |     71% |
+| + new features |  1,000 |     84% |
+| + more data    | 10,000 |     89% |
+
+```python
+def accuracy(correct, total):
+    return correct / total
+```
+
+::: {.small}
+`.small` for a block that has to give way, `.tiny` below that. The stylesheet
+colours the code from its own palette, so the listing follows the theme.
+:::
+:::
+
+::::
+
+## Thanks! {.focus .center background-color="#0a6ebd"}
 
 Questions? Comments?
 
