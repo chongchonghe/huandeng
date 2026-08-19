@@ -11,8 +11,7 @@ Built on [Quarto](https://quarto.org/) and [reveal.js](https://revealjs.com/).
 | `_quarto.yml` | Every deck-wide option: slide size, theme, slide level, the title slide's background. |
 | `demo.qmd` | The slides. This is the file you edit day to day. |
 | `theme.scss` | The look, and every layout class the slides use. Quarto compiles it on top of reveal's default theme. |
-| `fonts.html` | Seven `@font-face` rules, injected into `<head>`. They cannot live in `theme.scss` — see [Fonts](#fonts-are-shipped-with-the-deck). |
-| `guides.html` | The **X** key: draws the 1280 × 720 slide boundary while you write. |
+| `head.html` | Everything injected into `<head>`: seven `@font-face` rules, which cannot live in a stylesheet — see [Fonts](#fonts-are-shipped-with-the-deck) — and the **X** key that draws the 1280 × 720 slide boundary while you write. |
 | `attach/` | Images and video. Reference them as `attach/foo.png`. |
 | `fonts/` | Fira Sans, so the deck renders identically off this machine. |
 | `ref.bib` | Two references, for the citations slide. |
@@ -235,7 +234,7 @@ The PDF page is 997.92 × 561.12 pt — 16:9 to within a rounding error, one pag
 
 - **Run `make check`.** It is the only one of these that does not depend on you noticing.
 - **Write with the guides on** (`X`). The boundary is the thing you cannot otherwise see.
-- **Fonts ship with the deck**, so the metrics that decide where every line breaks cannot change on another machine. That is what `fonts.html` and `fonts/` are for.
+- **Fonts ship with the deck**, so the metrics that decide where every line breaks cannot change on another machine. That is what `head.html` and `fonts/` are for.
 - **Present fullscreen (`F`) on a 16:9 display** and the box maps to the screen exactly. On a 16:10 or 4:3 display reveal letterboxes rather than re-flowing — the slide is smaller, never different.
 - **If you want no browser in the loop at all, present `out/<deck>.pdf`.** It is one page per slide at 16:9, and `--pdf` has already confirmed no slide split.
 
@@ -262,7 +261,7 @@ Quarto serves the deck and reloads the browser on every save. There is no editor
 
 The theme is set in **Fira Sans**, which is not installed on most machines. Rather than depend on that, every deck carries its own copy: `fonts/` holds seven weights, about 1.6 MB, [OFL](https://openfontlicense.org/) and redistributable.
 
-The `@font-face` rules are in `fonts.html`, not in `theme.scss`, and that is not a stylistic choice. Quarto compiles the theme into `<deck>_files/libs/revealjs/dist/theme/`, five directories deep, and a relative `url()` inside a stylesheet resolves against *the stylesheet's* location — so `fonts/FiraSans-Regular.otf` written in `theme.scss` is looked for next to reveal's own theme files and quietly 404s. A `<style>` element in the document resolves against *the document*, which is `out/demo.html`, and `out/fonts/` is exactly where `_quarto.yml`'s `resources:` puts them.
+The `@font-face` rules are in `head.html`, not in a stylesheet, and that is not a stylistic choice. Quarto compiles the theme into `<deck>_files/libs/revealjs/dist/theme/`, five directories deep, and a relative `url()` inside a stylesheet resolves against *the stylesheet's* location — so `fonts/FiraSans-Regular.otf` written in `theme.scss` is looked for next to reveal's own theme files and quietly 404s. A `<style>` element in the document resolves against *the document*, which is `out/demo.html`, and `out/fonts/` is exactly where `_quarto.yml`'s `resources:` puts them.
 
 Without the fonts the deck still renders, in whatever sans-serif the machine happens to have, at different metrics, with every line breaking somewhere else. It is a silent failure, which is why it is worth this much explanation.
 
@@ -274,4 +273,4 @@ Without the fonts the deck still renders, in whatever sans-serif the machine hap
 - **`\class{fragment}{..}` builds an equation up** one term per keypress, and the whole equation stays one slide.
 - **`\color{red}{..}`, never `\textcolor`.** The web maths renderer does not define the latter and prints it as literal red error text.
 - **Maths comes from a CDN** in a normal render. `make standalone` inlines it along with everything else, which is the version to hand to someone who may be offline.
-- **`.gitignore` can eat a source file that happens to share a suffix with an output.** `guides.html` and `reference.pptx` are source; `*.html` and `*.pptx` in a deck folder are otherwise build products. The glob swallowed both, nobody noticed for several commits because the working tree still had them, and a fresh clone died with `unable to open file guides.html` before rendering a single slide. The negations are in `.gitignore` now — and the lesson is that a deck is only really self-contained once you have cloned it somewhere else and built it.
+- **`.gitignore` can eat a source file that happens to share a suffix with an output.** `head.html` and `reference.pptx` are source; `*.html` and `*.pptx` in a deck folder are otherwise build products. The glob swallowed both, nobody noticed for several commits because the working tree still had them, and a fresh clone died with `unable to open file guides.html` — the file that is now the second half of `head.html` — before rendering a single slide. The negations are in `.gitignore` now — and the lesson is that a deck is only really self-contained once you have cloned it somewhere else and built it.

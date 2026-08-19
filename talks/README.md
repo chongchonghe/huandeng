@@ -25,6 +25,6 @@ They should be, eventually — but not in this repository, because a `git pull` 
 - **A second repository, with huandeng as a submodule.** Your talks are the repository; huandeng is a pinned dependency you update deliberately. This is how the author uses it.
 - **A second repository, and copy what you need.** Copy one of `themes/` into it once and forget about huandeng until you want a newer version. Slower to update, but there is nothing to go wrong.
 
-Either way, remember the rule the rest of this repo is built on: **a deck is self-contained.** `themes/` — all ten of them — `_quarto.yml`, `fonts.html`, `guides.html`, the fonts and every asset are copies that live inside the deck folder. Nothing imports from outside it. That is what lets a talk you gave in 2026 still render in 2030, after huandeng has moved on without it.
+Either way, remember the rule the rest of this repo is built on: **a deck is self-contained.** `themes/` — all ten of them — `_quarto.yml`, `head.html`, the fonts and every asset are copies that live inside the deck folder. Nothing imports from outside it. That is what lets a talk you gave in 2026 still render in 2030, after huandeng has moved on without it.
 
 A deck copied out of here keeps `make` and `make preview`, which need only Quarto. The targets that need the shared tool — `check`, `pdf`, `png`, `pptx`, `standalone` — look for it up the directory tree and say so plainly when it is not there.

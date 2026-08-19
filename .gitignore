@@ -16,18 +16,16 @@ out/
 # Quarto's own cache, and a stray in-place render: `quarto render <file>` writes
 # beside the source and ignores output-dir, where a bare `quarto render` does not.
 #
-# fonts.html, guides.html and theme.scss are SOURCE, not output. The globs below
-# exist for stray renders and will happily eat a source file that shares their
-# suffix — which is exactly what happened to guides.html once, unnoticed for
-# several commits, because the working tree still had it. Add a negation for any
-# new source file whose extension collides.
+# head.html is SOURCE, not output. The globs below exist for stray renders and
+# will happily eat a source file that shares their suffix — which is exactly what
+# happened to guides.html once, before it became the second half of head.html:
+# unnoticed for several commits, because the working tree still had it. Add a
+# negation for any new source file whose extension collides.
 .quarto/
 /demo/*.html
 /template/*.html
-!/demo/fonts.html
-!/template/fonts.html
-!/demo/guides.html
-!/template/guides.html
+!/demo/head.html
+!/template/head.html
 /demo/*.pdf
 /template/*.pdf
 /demo/*.pptx

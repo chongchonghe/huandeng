@@ -36,15 +36,14 @@ are the reference, and unlike a copy they are build-verified on every commit.
 
 ## Structure
 
-A deck is six things and contains no build logic:
+A deck is five things and contains no build logic:
 
 | | |
 | --- | --- |
 | `talk.qmd` | the slides — normally the only file you touch |
 | `_quarto.yml` | slide size, slide level, theme, title-slide background |
 | `themes/` | ten stylesheets; `_quarto.yml` picks one. Every local class is in each |
-| `fonts.html` | the deck's own copy of Fira Sans, injected into `<head>` |
-| `guides.html` | the **X** key: draws the 1280×720 slide boundary while you write |
+| `head.html` | injected into `<head>`: the deck's own Fira Sans, and the **X** key that draws the 1280×720 slide boundary while you write |
 | `attach/` | images and video, referenced as `attach/foo.png` |
 
 Plus `fonts/`, `ref.bib` and a `Makefile`. **Each deck owns its own copies** — a deck copied from an
@@ -110,7 +109,7 @@ Each of these fails without an error message.
    worse: a `.media-items` row runs off the right with no cue at all. `docs/geometry.md`.
 2. **Give an image a width *or* a height, never both.** A stretched scientific figure still looks
    plausible, which is why nobody catches it. `make check` fails past 2%. `docs/figures.md`.
-3. **`@font-face` lives in `fonts.html`, not the stylesheet.** A relative font URL cannot work from
+3. **`@font-face` lives in `head.html`, not the stylesheet.** A relative font URL cannot work from
    a compiled Quarto theme; the deck silently falls back to another typeface and re-flows every line.
    `docs/theme.md`.
 4. **`\color{red}{..}`, never `\textcolor`.** The renderer here does not define the latter and
@@ -119,8 +118,9 @@ Each of these fails without an error message.
    outside every section and reveal paints it over every slide. `docs/citations.md`.
 6. **Never `--to pdf`, `--to typst`, or Pandoc's PPTX writer.** They do not fail; they quietly
    produce a document that is not your deck. `docs/exports.md` and `trash/README.md`.
-7. **A `.gitignore` glob can eat a source file.** `fonts.html` and `guides.html` share a suffix with
-   build output. `guides.html` went missing for several commits this way. Add a negation for any new
+7. **A `.gitignore` glob can eat a source file.** `head.html` shares a suffix with build output.
+   `guides.html`, before it became the second half of `head.html`, went missing for several
+   commits this way. Add a negation for any new
    source file whose extension collides, and verify with a fresh clone.
 8. **Edit `talk.qmd`.** `themes/*.scss` is shared API and `_quarto.yml` is configuration; changing
    either affects every slide.

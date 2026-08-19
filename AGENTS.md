@@ -17,8 +17,8 @@ trash/                  dead ends, with a README recording why. Read it before
 
 A talk starts as `cp -r template talks/<my-talk>`, then `mv template.qmd talk.qmd` — the tool takes
 the deck's single `.qmd` and refuses to run if it finds two. A deck is `talk.qmd` + `_quarto.yml` +
-`themes/` + `fonts.html` + `guides.html` + `fonts/` + `ref.bib` + `attach/`, plus a `Makefile` that
-only wraps these — it holds no build logic of its own:
+`themes/` + `head.html` + `fonts/` + `ref.bib` + `attach/`, plus a `Makefile` that only wraps
+these — it holds no build logic of its own:
 
 ```
 make            render out/talk.html
@@ -59,7 +59,7 @@ These fail without an error, so they cannot be left to a lookup:
    see the boundary. Exit 1 means look. `make check` from inside the deck, or `make check` at the
    repository root to verify every deck at once. From the root:
    `uv run python tools/build-slides.py <deck> --check`.
-2. **The `@font-face` rules live in `fonts.html`, not the stylesheet.** Quarto compiles the theme five
+2. **The `@font-face` rules live in `head.html`, not the stylesheet.** Quarto compiles the theme five
    directories deep and a relative `url()` resolves against the stylesheet, so moving them into the
    SCSS makes the deck fall back to another typeface and re-flow every line. Silently.
 3. **Edit `talk.qmd`.** `themes/*.scss` is shared API and `_quarto.yml` is configuration; changing
@@ -81,10 +81,10 @@ These fail without an error, so they cannot be left to a lookup:
    non-square sample aspect ratio (SAR) means the player stretches it back on the way out, and
    anything through a Keynote or PowerPoint round trip routinely carries one. If you extract frames
    by hand, `ffmpeg -vf scale=iw*sar:ih,setsar=1` is the correction.
-6. **A `.gitignore` glob can eat a source file.** `fonts.html`, `guides.html` and `reference.pptx`
-   all share a suffix with something the ignore rules are meant to catch. `guides.html` was missing
-   from the repository for several commits because of exactly this, invisible until someone cloned
-   it fresh. Negations are in `.gitignore`; add one for any new source file whose extension
+6. **A `.gitignore` glob can eat a source file.** `head.html` and `reference.pptx` both share a
+   suffix with something the ignore rules are meant to catch. `guides.html` — now the second half
+   of `head.html` — was missing from the repository for several commits because of exactly this,
+   invisible until someone cloned it fresh. Negations are in `.gitignore`; add one for any new source file whose extension
    collides, and verify with a clone before believing a deck is portable.
 
 ## Fix fitting problems in the slide, not the theme
@@ -110,7 +110,7 @@ over-full slide, and `auto-stretch` is off, so what does not fit simply hangs of
 A deck must render correctly when copied anywhere, on its own, years later.
 
 - **Never factor shared code out into a library at the repo root.** No deck may import from outside
-  its own directory. `themes/`, `_quarto.yml`, `fonts.html`, `guides.html`, `fonts/` and every asset
+  its own directory. `themes/`, `_quarto.yml`, `head.html`, `fonts/` and every asset
   are *copies*, and that duplication is the point. Every theme travels inside every deck for exactly
   this reason: a talk pointing at `../../themes/paper.scss` would stop rendering the day it moved.
 - **A finished talk is frozen.** Improving a theme must not change a single page of a talk already

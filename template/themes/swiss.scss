@@ -31,7 +31,7 @@ $selection-background-color: #ffd9de !default;
 
 /*-- scss:rules --*/
 
-// The @font-face rules are in fonts.html, not here — see the comment in that
+// The @font-face rules are in head.html, not here — see the comment in that
 // file for why a relative font URL cannot work from a compiled Quarto theme.
 
 :root {
@@ -146,7 +146,7 @@ $selection-background-color: #ffd9de !default;
 /* The logo is Quarto's `logo:` in _quarto.yml, not CSS. A relative `url()`
    written here resolves against the *compiled stylesheet*, which Quarto puts
    five directories down in <deck>_files/libs/revealjs/dist/theme/ — the same
-   trap that keeps the @font-face rules in fonts.html, and it silently 404s.
+   trap that keeps the @font-face rules in head.html, and it silently 404s.
    `logo:` writes an <img class="slide-logo"> into the page instead, where the
    path resolves against the document and simply works.
 
@@ -802,7 +802,7 @@ mjx-container:not([display]) {
 
 /* --------------------------------------------------------------- guides -- */
 
-/* Press X, or load the deck with ?guides in the URL. See guides.html.
+/* Press X, or load the deck with ?guides in the URL. See head.html.
 
    The solid line is the hard boundary: the box every slide is laid out in, and
    the edge past which content is cut by the window rather than shrunk. The

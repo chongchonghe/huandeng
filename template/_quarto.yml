@@ -42,15 +42,14 @@ format:
     theme: [default, themes/university.scss]
     include-in-header:
       # The deck's own copy of Fira Sans, and the layout guides on X.
-      # See the comment at the top of each file.
-      - fonts.html
-      - guides.html
+      # See the comments in that file.
+      - head.html
     # A logo on every slide, top right. Quarto copies the file next to the
     # HTML and writes an <img class="slide-logo">; theme.scss positions it.
     # It has to be set here rather than as a background in theme.scss — a
     # relative url() there resolves against the compiled stylesheet, five
     # directories down, and quietly 404s. Same reason the fonts are in
-    # fonts.html.
+    # head.html.
     # logo: attach/logo.png
     width: 1280
     height: 720

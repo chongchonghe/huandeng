@@ -1,4 +1,75 @@
-<!-- Layout guides, injected into <head> by `include-in-header` in _quarto.yml.
+<!-- Everything Quarto injects into the deck's <head>, listed by
+     `include-in-header` in _quarto.yml. Two unrelated things, each explained
+     above its own block. -->
+
+<!-- 1. The deck's own copy of Fira Sans.
+
+     These rules cannot live in a stylesheet. Quarto compiles the theme into
+     <deck>_files/libs/revealjs/dist/theme/, five directories deep, and a
+     relative url() inside a stylesheet resolves against the stylesheet's own
+     location — so "fonts/FiraSans-Regular.otf" written there would be looked
+     for next to reveal's own theme files and quietly 404.
+
+     A <style> element in the document resolves url() against the *document*,
+     which is out/<deck>.html, and out/fonts/ is exactly where _quarto.yml's
+     `resources:` puts these files. Hence this file.
+
+     The failure this prevents is silent: the deck still renders, in whatever
+     sans-serif the machine happens to have, at different metrics, and every
+     line breaks somewhere else. -->
+<style>
+  @font-face {
+    font-family: "Fira Sans";
+    font-style: normal;
+    font-weight: 400;
+    font-display: block;
+    src: url("fonts/FiraSans-Regular.otf") format("opentype");
+  }
+  @font-face {
+    font-family: "Fira Sans";
+    font-style: italic;
+    font-weight: 400;
+    font-display: block;
+    src: url("fonts/FiraSans-Italic.otf") format("opentype");
+  }
+  @font-face {
+    font-family: "Fira Sans";
+    font-style: normal;
+    font-weight: 500;
+    font-display: block;
+    src: url("fonts/FiraSans-Medium.otf") format("opentype");
+  }
+  @font-face {
+    font-family: "Fira Sans";
+    font-style: italic;
+    font-weight: 500;
+    font-display: block;
+    src: url("fonts/FiraSans-MediumItalic.otf") format("opentype");
+  }
+  @font-face {
+    font-family: "Fira Sans";
+    font-style: normal;
+    font-weight: 600;
+    font-display: block;
+    src: url("fonts/FiraSans-SemiBold.otf") format("opentype");
+  }
+  @font-face {
+    font-family: "Fira Sans";
+    font-style: normal;
+    font-weight: 700;
+    font-display: block;
+    src: url("fonts/FiraSans-Bold.otf") format("opentype");
+  }
+  @font-face {
+    font-family: "Fira Sans";
+    font-style: italic;
+    font-weight: 700;
+    font-display: block;
+    src: url("fonts/FiraSans-BoldItalic.otf") format("opentype");
+  }
+</style>
+
+<!-- 2. Layout guides, on the X key.
 
      Press X while the deck is open, or load it with ?guides in the URL.
 

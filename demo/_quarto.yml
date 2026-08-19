@@ -42,9 +42,8 @@ format:
     theme: [default, themes/university.scss]
     include-in-header:
       # The deck's own copy of Fira Sans, and the layout guides on X.
-      # See the comment at the top of each file.
-      - fonts.html
-      - guides.html
+      # See the comments in that file.
+      - head.html
     width: 1280
     height: 720
     # The fraction of the window left empty around the slide, in total — half

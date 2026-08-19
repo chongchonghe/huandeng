@@ -7,8 +7,7 @@
 | `talk.qmd` | the slides, and this talk's title/author/date/footer |
 | `_quarto.yml` | every option that shapes the whole deck |
 | `themes/*.scss` | ten looks, one per file; `_quarto.yml` picks one. Every layout class is in each |
-| `fonts.html` | seven `@font-face` rules, injected into `<head>` |
-| `guides.html` | the **X** key overlay |
+| `head.html` | injected into `<head>`: seven `@font-face` rules, and the **X** key overlay |
 | `fonts/`, `attach/`, `ref.bib` | the deck's own copies of everything it needs |
 
 All of it is a **copy**. No deck imports anything from outside its own directory, so a talk given in
@@ -34,7 +33,7 @@ Variables in `defaults` must carry `!default` so Quarto can override them. Anyth
 CSS goes in `rules`.
 
 The palette is declared twice on purpose: as SCSS variables for Quarto's own machinery, and as
-`--deck-*` custom properties on `:root` so the rules and `guides.html` can read them at runtime.
+`--deck-*` custom properties on `:root` so the rules and the guides script in `head.html` can read them at runtime.
 
 ## Specificity: Quarto fights back
 
@@ -54,7 +53,7 @@ When adding a rule for anything Quarto also styles, check the compiled output ra
 grep -o 'div\.columns[^}]*}' demo/out/demo_files/libs/revealjs/dist/theme/quarto-*.css
 ```
 
-## Fonts live in fonts.html, not the stylesheet
+## Fonts live in head.html, not the stylesheet
 
 `@font-face` cannot go in a stylesheet. Quarto compiles the theme into
 `<deck>_files/libs/revealjs/dist/theme/` — five directories deep — and a relative `url()` inside a
@@ -62,7 +61,7 @@ stylesheet resolves against *the stylesheet*, so `fonts/FiraSans-Regular.otf` wr
 for beside reveal's own theme files and quietly 404s.
 
 A `<style>` element in the document resolves against *the document*, which is `out/<deck>.html`, and
-`out/fonts/` is exactly where `_quarto.yml`'s `resources:` puts them. Hence `fonts.html` and
+`out/fonts/` is exactly where `_quarto.yml`'s `resources:` puts them. Hence `head.html` and
 `include-in-header`.
 
 The failure is silent: the deck still renders, in whatever sans-serif the machine has, at different
@@ -96,7 +95,7 @@ a hairline under it does the work a colour field used to. To put a field back, u
 be set there rather than in CSS, because reveal paints backgrounds on a layer outside the slide
 margin. See `geometry.md`.
 
-## guides.html
+## The layout guides, also in head.html
 
 Press **X**, or load the deck with `?guides`, to draw the 1280 × 720 boundary, a 24 px keep-clear
 inset, and a live readout of window size, aspect ratio, scale and how full the slide is. Bound

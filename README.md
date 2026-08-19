@@ -81,7 +81,7 @@ trash/                  dead ends, with a README recording why they are dead
 Makefile                make check verifies every deck at once
 ```
 
-A deck is `talk.qmd` + `_quarto.yml` + `themes/` + `fonts.html` + `guides.html` + `attach/`, plus a `Makefile` that wraps the commands above and holds no build logic of its own.
+A deck is `talk.qmd` + `_quarto.yml` + `themes/` + `head.html` + `attach/`, plus a `Makefile` that wraps the commands above and holds no build logic of its own.
 
 ## Themes
 
@@ -129,7 +129,7 @@ There is no Node.js requirement and no LaTeX requirement. The usual way to get a
 
 ## Every deck is self-contained
 
-A deck must render correctly when copied anywhere, on its own, years later. `themes/`, `_quarto.yml`, `fonts.html`, `guides.html`, `fonts/` and every asset are **copies**, not imports, and no deck reads anything outside its own directory. That is why every theme travels with every deck rather than being looked up in a shared folder: a talk that pointed at `../../themes/paper.scss` would stop rendering the day you emailed it to someone.
+A deck must render correctly when copied anywhere, on its own, years later. `themes/`, `_quarto.yml`, `head.html`, `fonts/` and every asset are **copies**, not imports, and no deck reads anything outside its own directory. That is why every theme travels with every deck rather than being looked up in a shared folder: a talk that pointed at `../../themes/paper.scss` would stop rendering the day you emailed it to someone.
 
 The cost is real: improving a theme does not reach a talk you already copied, and carrying a fix across means copying it in by hand. What you buy is that a finished talk is frozen. A deck you gave in 2026 renders identically in 2030, on a different machine, after the template has moved on — because nothing it depends on can change underneath it. For conference talks and lecture notes that get reused and re-sent for years, that trade is worth making.
 

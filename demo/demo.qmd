@@ -58,7 +58,7 @@ Everything below, at a glance. The rest of the deck is these, one at a time.
 ## Quick start
 
 This deck is four files. `_quarto.yml` holds every option that shapes the whole
-deck, `theme.scss` holds the look, `fonts.html` ships the typeface, and
+deck, `theme.scss` holds the look, `head.html` ships the typeface, and
 `demo.qmd` — this file — holds the slides.
 
 #### Live preview
