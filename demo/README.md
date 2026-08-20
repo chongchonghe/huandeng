@@ -1,6 +1,6 @@
 # Demo deck
 
-Every feature of this toolchain, working, with commentary. **Read it; do not start from it** — start by copying one of [`../themes/`](../themes/), which is the same machinery with the sample assets stripped out and a look already chosen.
+Every feature of this toolchain, working, with commentary. **Read it; do not start from it** — start by copying [`../template/`](../template/), which is the same machinery with the sample assets stripped out.
 
 Built on [Quarto](https://quarto.org/) and [reveal.js](https://revealjs.com/).
 
@@ -8,15 +8,41 @@ Built on [Quarto](https://quarto.org/) and [reveal.js](https://revealjs.com/).
 
 | File | Purpose |
 | --- | --- |
-| `_quarto.yml` | Every deck-wide option: slide size, theme, slide level, the title slide's background. |
+| `_quarto.yml` | Every deck-wide option: slide size, theme, slide level, footer. |
 | `demo.qmd` | The slides. This is the file you edit day to day. |
-| `theme.scss` | The look, and every layout class the slides use. Quarto compiles it on top of reveal's default theme. |
+| `themes/` | Ten stylesheets, one of which `_quarto.yml` names. Each carries the whole look and every layout class the slides use, so switching is one line and nothing is fetched. |
 | `head.html` | Everything injected into `<head>`: seven `@font-face` rules, which cannot live in a stylesheet — see [Fonts](#fonts-are-shipped-with-the-deck) — and the **X** key that draws the 1280 × 720 slide boundary while you write. |
 | `attach/` | Images and video. Reference them as `attach/foo.png`. |
 | `fonts/` | Fira Sans, so the deck renders identically off this machine. |
-| `ref.bib` | Two references, for the citations slide. |
+| `ref.bib` | Three references, for the citations slide. |
 
 The deck holds no build logic: `make` is `quarto render`, and everything that needs a browser comes from the shared `../tools/build-slides.py`.
+
+## The first slide is yours
+
+There is no `title:` or `author:` in the YAML, on purpose. Either one makes
+Quarto generate its own title slide, and that slide cannot be edited: no image
+on it, no fragment, nothing placed by hand. Worse, CSS hung off it works in the
+browser and silently stops working in the PDF, because reveal re-parents every
+slide into a `.pdf-page` wrapper when it prints.
+
+Leave both out and Quarto builds no title slide at all, so the first `##` in the
+file is the first slide:
+
+```markdown
+## {.cover}
+
+![](attach/logo-lockup.png){.absolute top="24" left="0" width="244px"}
+
+:::: {.cover-inner}
+[Your talk title]{.cover-title}
+[A subtitle]{.cover-subtitle}
+::::
+```
+
+`pagetitle:` still names the browser tab and the PDF, and `{{< meta date >}}`
+still pulls `date: last-modified` onto the slide, so nothing has become a thing
+to remember to change.
 
 ## Writing slides
 
@@ -69,7 +95,7 @@ FLD:
 ::::
 ```
 
-Pandoc puts every image written on one Markdown line into a single `<p>`, so that `<p>` has to be a flex row too or the images line-wrap. That is why `theme.scss` styles `.media-items p` as well as `.media-items`.
+Pandoc puts every image written on one Markdown line into a single `<p>`, so that `<p>` has to be a flex row too or the images line-wrap. That is why the stylesheet styles `.media-items p` as well as `.media-items`.
 
 Stacked rows each size their own label column, so they only line up if you tell them to share a width. Custom properties inherit, so a plain wrapper is enough:
 
@@ -157,7 +183,7 @@ Three different things look identical — a small deck in a wide empty border �
 1280 × 720 · window 1512 × 982 · ar 1.54 · scale 1.13 · fill 41%
 ```
 
-1. **`fill` is low.** The slide box fills the screen; the *slide* is half empty. This is by far the commonest case — across this demo the median slide uses 61% of the box height, and the emptiest uses 22%. No reveal setting touches it: put more on the slide, make the figures bigger, or raise `$presentation-font-size-root` in `theme.scss` (30 px here, against a 720 px box).
+1. **`fill` is low.** The slide box fills the screen; the *slide* is half empty. This is by far the commonest case — across this demo the median slide uses 61% of the box height, and the emptiest uses 22%. No reveal setting touches it: put more on the slide, make the figures bigger, or raise `$presentation-font-size-root` in the deck's stylesheet (30 px here, against a 720 px box).
 2. **`ar` is not 1.78.** A 16:9 deck on a 16:10 or 3:2 laptop letterboxes — the box is as large as it can be and the leftover is unavoidable. It is not visible on a white slide, because the page behind is white too; it *is* visible while presenting on a display that is not 16:9. Nothing to fix: the deck is built for the projector, not the laptop.
 3. **`CAPPED by max-scale` appears.** Reveal refuses to scale past 2× by default, so past about 2560 CSS px wide the deck stops growing and sits in a border that no `margin` will close — at 3200 × 1800 that is a 320 px border left and right. `max-scale: 5` in `_quarto.yml` removes the ceiling; nothing in the deck is a bitmap, so there is no reason to keep it.
 
@@ -174,7 +200,7 @@ Reveal reads config overrides off the query string, so this costs one browser pa
 
 ### PPTX is pictures
 
-`make pptx` rasterises that per-step PDF and puts one full-bleed image on each slide, because the layout is CSS and no PowerPoint writer can read CSS. Sharpness is a pixel width rather than a print resolution, because these are pictures of a screen: the default 3840 puts a source pixel behind every pixel of a 4K projector, which works out to 277 dpi on this page size and 11.6 MB for the demo's 55 slides. `--width 5120` for a 5K panel, `--width 1920` if the file has to go by email.
+`make pptx` rasterises that per-step PDF and puts one full-bleed image on each slide, because the layout is CSS and no PowerPoint writer can read CSS. Sharpness is a pixel width rather than a print resolution, because these are pictures of a screen: the default 3840 puts a source pixel behind every pixel of a 4K projector, which works out to 277 dpi on this page size and a few megabytes for a deck this size. `--width 5120` for a 5K panel, `--width 1920` if the file has to go by email.
 
 It is worth being clear about why, because Pandoc *does* have a native PowerPoint writer and it looks like the obvious answer. It re-flows the Markdown into PowerPoint's own layouts, and every single thing that gives a slide its shape here — the column grids, `.fig` and its credits, `.media-row`, `.highlight`, `.absolute`, the footer, fragments — is CSS. Styling it through a reference document reaches the theme fonts and colours and stops there; the result is a bulleted outline wearing none of the deck's design. Both attempts are in [`../trash/`](../trash/) with the reasoning.
 
@@ -209,7 +235,7 @@ What it is **not** is a PDF of *this* deck. Run on this demo, **34 slides came o
 | **silently lost** | **video** — `<video>` produces nothing at all, leaving a caption under blank space |
 | **silently broken** | **`\class{fragment}{..}` maths** — the whole `$$…$$` prints as raw LaTeX source on the slide |
 | re-flowed | every `.columns-*` collapses and the slide then splits across 2–4 pages, stranding `.credit` lines and captions on pages of their own under a repeated title |
-| dropped | `.highlight`, `.fig`, `.media-row`, `.absolute`, `.r-stack` (each fragment becomes its own page), the footer, and `theme.scss` entirely — the output wears the extension's Clean theme |
+| dropped | `.highlight`, `.fig`, `.media-row`, `.absolute`, `.r-stack` (each fragment becomes its own page), the footer, and the stylesheet entirely — the output wears the extension's Clean theme |
 | leaked | `::: notes` printed into the body, where an audience reads it |
 
 None of that is a bug in the extension. Every layout class here is CSS, and Touying cannot read CSS; the video and fragment cases are simply things a PDF cannot do.
@@ -261,15 +287,15 @@ Quarto serves the deck and reloads the browser on every save. There is no editor
 
 The theme is set in **Fira Sans**, which is not installed on most machines. Rather than depend on that, every deck carries its own copy: `fonts/` holds seven weights, about 1.6 MB, [OFL](https://openfontlicense.org/) and redistributable.
 
-The `@font-face` rules are in `head.html`, not in a stylesheet, and that is not a stylistic choice. Quarto compiles the theme into `<deck>_files/libs/revealjs/dist/theme/`, five directories deep, and a relative `url()` inside a stylesheet resolves against *the stylesheet's* location — so `fonts/FiraSans-Regular.otf` written in `theme.scss` is looked for next to reveal's own theme files and quietly 404s. A `<style>` element in the document resolves against *the document*, which is `out/demo.html`, and `out/fonts/` is exactly where `_quarto.yml`'s `resources:` puts them.
+The `@font-face` rules are in `head.html`, not in a stylesheet, and that is not a stylistic choice. Quarto compiles the theme into `<deck>_files/libs/revealjs/dist/theme/`, five directories deep, and a relative `url()` inside a stylesheet resolves against *the stylesheet's* location — so `fonts/FiraSans-Regular.otf` written in `themes/<name>.scss` is looked for next to reveal's own theme files and quietly 404s. A `<style>` element in the document resolves against *the document*, which is `out/demo.html`, and `out/fonts/` is exactly where `_quarto.yml`'s `resources:` puts them.
 
 Without the fonts the deck still renders, in whatever sans-serif the machine happens to have, at different metrics, with every line breaking somewhere else. It is a silent failure, which is why it is worth this much explanation.
 
 ## Things that surprised us
 
 - **`quarto render` renders nothing** in a project unless `project.render` lists the inputs. `render: ["*.qmd"]` in `_quarto.yml` is what makes `output-dir: out` take effect at all; rendering a single file by name ignores `output-dir` and writes beside the source.
-- **reveal caps every image at 95% of its container.** Inside a shrink-to-fit container — an `.r-stack` grid cell, a flex item, a `.fig` — that container is already the image's own width, so the cap squeezes the width by 5% while an explicit `height` holds firm, and the figure comes out stretched. `theme.scss` raises the cap to 100% and leaves the overflow question to `make check`.
-- **Slide backgrounds have to be attributes, not CSS.** reveal paints them on a layer of its own, behind and outside the 4% margin, so a `background` in `theme.scss` stops at the margin. `{background-color="#0a6ebd"}` on the heading, or the commented-out `title-slide-attributes:` in `_quarto.yml` for the title slide, which this deck leaves off.
+- **reveal caps every image at 95% of its container.** Inside a shrink-to-fit container — an `.r-stack` grid cell, a flex item, a `.fig` — that container is already the image's own width, so the cap squeezes the width by 5% while an explicit `height` holds firm, and the figure comes out stretched. The stylesheets raise the cap to 100% and leave the overflow question to `make check`.
+- **Slide backgrounds have to be attributes, not CSS.** reveal paints them on a layer of its own, behind and outside the 4% margin, so a `background` in the stylesheet stops at the margin. Write `{background-color="#0a6ebd"}` on the heading instead — including on `## {.cover}`, since this deck has no generated title slide for `title-slide-attributes:` to reach.
 - **`\class{fragment}{..}` builds an equation up** one term per keypress, and the whole equation stays one slide.
 - **`\color{red}{..}`, never `\textcolor`.** The web maths renderer does not define the latter and prints it as literal red error text.
 - **Maths comes from a CDN** in a normal render. `make standalone` inlines it along with everything else, which is the version to hand to someone who may be offline.

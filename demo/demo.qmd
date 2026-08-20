@@ -1,15 +1,35 @@
 ---
-title: "Huandeng: a Quarto + reveal.js deck, feature by feature"
-subtitle: "Every helper in this flavour, working"
-author: "Your Name"
-institute: "Your Institute"
+# No `title:` or `author:`. Either one makes Quarto generate its own title
+# slide, and that slide cannot be edited — no image, no fragment, nothing placed
+# by hand. Leaving both out means slide 1 is yours; see `## {.cover}` below.
+pagetitle: "Huandeng — every feature, working"
 date: last-modified
-date-format: "D MMM YYYY"
+date-format: "D MMMM YYYY"
 bibliography: ref.bib
 format:
   revealjs:
-    footer: "Your Name (Your Institute) &nbsp;·&nbsp; Huandeng demo"
+    footer: "Huandeng &nbsp;·&nbsp; the demo deck"
 ---
+
+## {.cover}
+
+![](attach/logo-lockup.png){.absolute top="24" left="0" width="244px"}
+
+:::: {.cover-inner}
+
+[Every feature, working]{.cover-title}
+
+[A deck that is also the manual for writing one]{.cover-subtitle}
+
+::: {.cover-meta}
+**Press → to start, or O for the overview**
+
+Press **X** at any time to see where the slide ends
+
+{{< meta date >}}
+:::
+
+::::
 
 ## Reference
 
@@ -27,6 +47,7 @@ format:
 - `.columns` (50/50), `.columns-2-1`, `.columns-3-2`, `.columns-1-1-1`
 - `.fig` + `.caption` / `.credit` / `.below`
 - `.media-row` + `.media-label` / `.media-items`
+- `.cover` + `.cover-inner` / `-title` / `-subtitle` / `-meta`
 - `.card`, `.pill`, `.highlight`, `.alert`
 - `.small`, `.tiny`, `.center`, `.muted`
 :::
@@ -49,27 +70,143 @@ format:
 
 ::::
 
-::: {.caption-line}
-Everything below, at a glance. The rest of the deck is these, one at a time.
-:::
-
 # Getting started
 
-## Quick start
+## What this is
 
-This deck is four files. `_quarto.yml` holds every option that shapes the whole
-deck, `theme.scss` holds the look, `head.html` ships the typeface, and
-`demo.qmd` — this file — holds the slides.
+**Quarto** renders Markdown to a [reveal.js](https://revealjs.com/)
+presentation: a real web page, driven by the arrow keys.
 
-#### Live preview
+- Version-controls as cleanly as any text file, because it *is* a text file
+- The look is SCSS, so anything CSS can do, a slide can do
+- Video, animation and live web content work, because it *is* a browser
+- Speaker view, a timer and a slide menu come for free
 
+. . .
+
+- …and `. . .` reveals the rest of a slide on the next keypress
+
+::: notes
+Speaker notes live in a `::: notes` block beside the slide they belong to. Press
+**S** during the talk for the presenter window: notes, a timer, and the next
+slide. Nothing load-bearing goes here — reveal hides notes when it prints, so
+they reach neither the PDF nor the PPTX.
+:::
+
+## A deck is five things
+
+:::: {.columns-2-3}
+
+::: {.column}
+::: {.no-header}
+| | |
+|:-----------------------|:-----------------------------------------------------|
+| `talk.qmd` | the slides — normally the only file you touch |
+| `_quarto.yml` | size, slide level, theme, footer |
+| `themes/` | ten stylesheets; one line picks one |
+| `head.html` | the fonts, and the **X** key |
+| `attach/` | images and video |
+:::
+:::
+
+::: {.column}
 ```bash
-make preview          # a browser that reloads as you save
-make                  # render once to out/demo.html
+cp -r template talks/my-talk
+cd talks/my-talk
+mv template.qmd talk.qmd
+make preview
 ```
 
-`make preview` needs nothing but Quarto, so it still works in a deck copied
-anywhere, years from now.
+::: {.small .muted}
+A browser opens and reloads every time you save. `make preview` needs nothing
+but Quarto, so a deck copied anywhere still builds — years from now, on a
+machine that has never heard of this repository.
+:::
+:::
+
+::::
+
+::: {.highlight}
+Every deck owns its copies. Nothing is imported from outside its own folder, so
+a finished talk never changes under you.
+:::
+
+## Ten looks, one line
+
+The theme is one line of `_quarto.yml`, and all ten stylesheets travel inside
+every deck — so switching is a text edit, and undo is undo.
+
+```yaml
+theme: [default, themes/swiss.scss]
+```
+
+:::: {.columns}
+
+::: {.column}
+::: {.no-header}
+| | |
+|:--------------|:--------------------------------|
+| `swiss` | black, white, one red — the default |
+| `university` | azure on white, the plain one |
+| `paper` | a printed journal page |
+| `whiteprint` | an engineering drawing |
+| `solarized` | low contrast, for a bright room |
+:::
+:::
+
+::: {.column}
+::: {.no-header}
+| | |
+|:--------------|:--------------------------------|
+| `nord` | dark blue-grey, frost accents |
+| `blueprint` | deep blue, amber, monospace |
+| `signal` | a briefing paper, navy and gold |
+| `monochrome` | ivory and black, no colour |
+| `cobalt` | squared paper, italic serif |
+:::
+:::
+
+::::
+
+::: {.caption-line}
+`make gallery` renders all ten side by side into `out/gallery.html`, with that
+line printed under each — the easy way to choose is to look.
+:::
+
+## The one command that matters
+
+An over-full reveal.js slide does not error and does not shrink. The surplus
+hangs into the margin and is cut by the window edge, so a slide can look merely
+tight on a 16:10 laptop and be cut on a 16:9 projector.
+
+:::: {.columns}
+
+::: {.column}
+```bash
+make check     # after ANY slide edit
+make png       # one PNG per slide, to read
+```
+
+- `--check` walks the built deck in a headless browser and reports content past
+  any edge
+- it also audits every drawn image against its own pixel size and fails a
+  figure stretched more than 2%
+- exit 1 means look
+:::
+
+::: {.column}
+::: {.highlight}
+Press **X** in any deck to draw the 1280 &times; 720 boundary while you write.
+:::
+
+::: {.small .muted}
+The boundary is the hard edge: content past it is cut by the window rather than
+scaled down. Reveal offers no rescue here — `auto-stretch` is off, and an
+over-full slide simply hangs off the side.
+:::
+:::
+
+::::
 
 ## Exporting
 
@@ -78,11 +215,11 @@ anywhere, years from now.
 ::: {.column}
 **What you get**
 
-- `out/demo.html` — the deck, plus its assets beside it
-- `out/demo-standalone.html` — the same, in one file you can email
+- `out/demo.html` — the deck, assets beside it
+- `out/demo-standalone.html` — one file you can email
 - `out/demo.pdf` — **one page per step**: the deck as presented
 - `out/demo-one-page-per-slide.pdf` — fully built, for reading
-- `out/demo.pptx` — PowerPoint, re-flowed by Pandoc
+- `out/demo.pptx` — one full-bleed image per slide
 :::
 
 ::: {.column}
@@ -92,50 +229,39 @@ anywhere, years from now.
 make            # html
 make all        # html + pdf + pptx
 make standalone
-make check      # look at every slide
-make png        # one PNG per slide
+make check
+make png
 ```
+
+::: {.small .muted}
+The layout is CSS, so only a browser can render it. The PDF is printed through
+reveal's own print layout in headless Chromium, and the PPTX is that PDF
+rasterised — a PowerPoint writer cannot read CSS.
+:::
 :::
 
 ::::
-
-PowerPoint gets the Markdown, not the reveal.js layout — treat PPTX as a
-delivery format, not a source format.
 
 ## The rules of the file
 
 - **New section** — a `#` heading, which becomes a divider slide
 - **New slide** — a `##` heading, set by `slide-level: 2`
 - **Another slide, same title** — a bare `---`
-- **Global options** — `_quarto.yml`; this talk's title and footer, the YAML at
-  the top of this file
+- **Deck-wide options** — `_quarto.yml`; this deck's own date and footer, the
+  YAML at the top of this file
 - **Custom layout** — a class on the heading, or a fenced div in the body
 
 ```markdown
-## A slide with no chrome {.no-chrome}
+## {.cover}
 ## One big statement {.focus .center background-color="#0a6ebd"}
 ::: {.columns-2-1} ::: {.column} … ::: ::: {.column} … ::: :::
 ```
 
-## What is Quarto?
+## One big statement {.focus .center background-color="var(--deck-primary)"}
 
-**Quarto** renders Markdown to a [reveal.js](https://revealjs.com/)
-presentation: a real web page, driven by the arrow keys.
+A slide with one thing on it
 
-- Version-controls as cleanly as any text file, and the markup is plain Markdown
-- The theme is SCSS, so anything CSS can do, the deck can do
-- Video, GIFs and live web content work because it *is* a browser
-- Speaker view, a timer and a slide menu come for free
-
-. . .
-
-- ...and `. . .` reveals the rest of a slide on the next keypress
-
-::: notes
-Speaker notes live in a `::: notes` block beside the slide they belong to. Press
-**S** during the talk for the presenter window: notes, a timer, and the next
-slide.
-:::
+# Building a slide
 
 ## Reveals, one step at a time
 
@@ -169,10 +295,11 @@ slide.
 
 ::::
 
-Unlike the Typst deck, a reveal costs no extra page: fragments live inside one
-slide and only the PDF spends paper on them.
-
-# Text, code and tables
+::: {.caption-line}
+A fragment costs a keypress and nothing else: it lives inside one slide. Only
+the per-step PDF spends a page on it, which is what makes the flip-book later on
+survive printing.
+:::
 
 ## Lists and formatting
 
@@ -183,8 +310,8 @@ slide and only the PDF spends paper on them.
   - `**Bold text**` for emphasis
   - `*Italic text*` for subtle emphasis
   - `` `Inline code` `` for technical terms
-- `[..]{.alert}` paints text in the theme's accent colour, like
-  [this]{.alert}
+- `[..]{.alert}` paints text in the theme's accent, like [this]{.alert}
+- `[..]{.muted}` steps it back, like [this]{.muted}
 :::
 
 ::: {.column}
@@ -210,11 +337,21 @@ slide and only the PDF spends paper on them.
 
 :::: {.column}
 ::: {.card}
-**Setup**
+**Question**
 
-Shear layer, two fluids
+Does the signal spread at a constant rate?
 
-[N = 512]{.pill}
+[scope]{.pill}
+:::
+::::
+
+:::: {.column}
+::: {.card}
+**Approach**
+
+Track its width over twelve steps, three ways
+
+[method]{.pill}
 :::
 ::::
 
@@ -222,33 +359,17 @@ Shear layer, two fluids
 ::: {.card}
 **Result**
 
-Billows by $t \sim 3\,t_{\rm cross}$
+Two methods agree; the third drifts low
 
-[converged]{.pill}
-:::
-::::
-
-:::: {.column}
-::: {.card}
-**Caveat**
-
-Ideal MHD only
-
-[preprint]{.pill}
+[+18%]{.pill}
 :::
 ::::
 
 :::::
 
 `.card` draws a boundary round a group and carries no emphasis of its own;
-`.highlight` is the one sentence a slide is about and says so in colour.
+`.highlight` is the one sentence a slide is about, and says so in colour.
 `[..]{.pill}` is an inline tag. Every theme gives all three a different edge.
-
-::: {.highlight}
-Do not start a fenced div with a heading. Pandoc writes that div out as a
-`<section>`, and reveal's slide selector is `.slides section` — a descendant
-selector — so it silently becomes a slide of its own. `make check` catches it.
-:::
 
 ::: notes
 The three cards are a `.columns-1-1-1` of `.card` blocks. Note the fence
@@ -256,19 +377,90 @@ lengths: five colons round the row, four round each column, three round each
 card. Same-length fences do not nest.
 :::
 
+## Do not start a fenced div with a heading
+
+::: {.highlight}
+Pandoc writes a div that opens with a heading out as a `<section>`, and reveal's
+slide selector is `.slides section` — a descendant selector — so it silently
+becomes a slide of its own.
+:::
+
+:::: {.columns}
+
+::: {.column}
+**Wrong** — three phantom slides
+
+````markdown
+::: {.card}
+#### Setup
+…
+:::
+````
+:::
+
+::: {.column}
+**Right** — lead with bold text
+
+````markdown
+::: {.card}
+**Setup**
+…
+:::
+````
+:::
+
+::::
+
+::: {.caption-line}
+`.column` is safe, because Quarto rewrites those itself. `make check` catches
+the rest — the slide count comes out higher than the number of `##` you wrote.
+:::
+
+## Tables
+
+:::: {.columns}
+
+::: {.column}
+**With a header row**
+
+| Method | Bias | Cost |
+|:-------|:-----|:-----|
+| A | none | high |
+| B | low | medium |
+| C | high | low |
+:::
+
+::: {.column}
+**Headerless**
+
+::: {.no-header}
+| | | |
+|---|---|---|
+| Step | Width | Error |
+| 4 | 2.41 | 0.09 |
+| 8 | 4.06 | 0.12 |
+| 12 | 5.98 | 0.07 |
+:::
+:::
+
+::::
+
+`::: {.no-header}` hides the header row, for a table that is really a grid.
+Pandoc only assigns column widths when the delimiter row is longer than its
+column limit — pad it, and the dash counts become the proportions.
+
 ## Code highlighting
 
 ```python
-def hello_world():
-    print("Hello, Quarto!")
-    return True
-
-if __name__ == "__main__":
-    hello_world()
+def spread_width(field, threshold=0.5):
+    """Width of the region above a threshold, in grid units."""
+    above = field > threshold
+    return above.sum() ** 0.5
 ```
 
 Fenced blocks are highlighted by Quarto at render time, with no JavaScript
-involved. `highlight-style: github` in `_quarto.yml` picks the palette.
+involved. Each stylesheet colours the syntax tokens from its own palette, so
+there is no second setting to keep in step with the theme.
 
 ## Code that walks itself
 
@@ -298,37 +490,6 @@ def compute(x, y):
 - [Quarto reveal.js presentations](https://quarto.org/docs/presentations/revealjs/)
 - [reveal.js](https://revealjs.com/)
 
-## Tables
-
-:::: {.columns}
-
-::: {.column}
-**With a header row**
-
-| Method | Advantages | Disadvantages |
-|---|---|---|
-| Method A | Fast, simple | Less accurate |
-| Method B | Accurate | Slow, complex |
-| Method C | Balanced | Moderate |
-:::
-
-::: {.column}
-**Headerless**
-
-::: {.no-header}
-| | | |
-|---|---|---|
-| Data A | Data B | Data C |
-| 1.23 | 4.56 | 7.89 |
-| 2.34 | 5.67 | 8.90 |
-| 3.45 | 6.78 | 9.01 |
-:::
-:::
-
-::::
-
-`::: {.no-header}` hides the header row, for a table that is really a grid.
-
 # Figures
 
 ## One figure with a source credit
@@ -342,9 +503,9 @@ rather than the slide's.
 ::: {.column}
 ````markdown
 ::: {.fig}
-![](attach/x.png){width="300px"}
+![](attach/growth.png){width="300px"}
 
-[He et al. 2025]{.credit}
+[Author 2026]{.credit}
 :::
 ````
 
@@ -354,9 +515,9 @@ against inside a box that is sizing itself to its contents.]{.small .muted}
 
 ::: {.column}
 ::: {.fig}
-![](attach/placeholder-image.png){width="270px"}
+![](attach/growth.png){width="440px"}
 
-[He et al. 2025]{.credit}
+[Author 2026]{.credit}
 :::
 :::
 
@@ -374,17 +535,17 @@ Both are optional, and so is the credit.
 ::: {.fig}
 [Above the figure]{.caption}
 
-![](attach/placeholder-image.png){width="230px"}
+![](attach/error.png){width="230px"}
 
-[Smith 2024]{.credit}
+[Author 2026]{.credit}
 :::
 :::
 
 ::: {.column}
 ::: {.fig}
-![](attach/placeholder-image.png){width="230px"}
+![](attach/calibration.png){width="230px"}
 
-[Lee & Park 2023]{.credit}
+[Author 2026]{.credit}
 
 [Below the figure]{.below}
 :::
@@ -392,13 +553,13 @@ Both are optional, and so is the credit.
 
 ::: {.column}
 ::: {.fig}
-[Setup]{.caption}
+[Step 4]{.caption}
 
-![](attach/placeholder-image.png){width="230px"}
+![](attach/spread/frame-04.png){width="230px"}
 
-[He et al. 2025]{.credit}
+[Author 2026]{.credit}
 
-[Result]{.below}
+[Step 12]{.below}
 :::
 :::
 
@@ -408,22 +569,22 @@ Both are optional, and so is the credit.
 
 :::: {.media-row}
 ::: {.media-label}
-Image 1:
+Early:
 :::
 ::: {.media-items}
-![](attach/placeholder-image.png){width="385px"} ![](attach/placeholder-image.png){width="385px"} ![](attach/placeholder-image.png){width="385px"}
+![](attach/spread/frame-01.png){width="215px"} ![](attach/spread/frame-02.png){width="215px"} ![](attach/spread/frame-03.png){width="215px"}
 :::
 ::::
 
-<!-- 371 and 810 are 820 and 1788 — the two files' own pixel widths — at one
+<!-- 300 and 379 are 644 and 814 — the two files' own pixel widths — at one
      common scale factor, so the pair fills the row and still shows the two
      figures at their true size relative to each other. -->
 :::: {.media-row}
 ::: {.media-label}
-Image 2:
+Two sizes:
 :::
 ::: {.media-items}
-![](attach/slide-fld/shadow-labeled.png){width="371px"} ![](attach/slide-m1-quokka/shadow-quokka.png){width="810px"}
+![](attach/spread/frame-06.png){width="230px"} ![](attach/growth.png){width="290px"}
 :::
 ::::
 
@@ -437,8 +598,8 @@ A width or a height, never both — `make check` fails any figure drawn more tha
 :::: {.columns-3-2}
 
 ::: {.column}
-Marp docks a background image with `![bg right:40%](..)`. Here you compose the
-slide instead:
+Other tools dock a background image and let text float over it. Here you compose
+the slide instead:
 
 - `::: {.columns-3-2}` splits the page
 - the image is an ordinary Markdown image in the right column
@@ -449,48 +610,38 @@ never collides with it.
 :::
 
 ::: {.column}
-![](attach/placeholder-image.png){width="330px"}
+![](attach/calibration.png){width="330px"}
 :::
 
 ::::
 
 ## A grid of figures
 
-::::::: {style="--label-width: 250px"}
+::::::: {style="--label-width: 170px"}
 
 :::: {.media-row}
 ::: {.media-label}
-Exact Eddington tensor:
+Method A:
 :::
 ::: {.media-items}
-![](attach/slide-fld/shadow-labeled.png){width="334px"} ![](attach/slide-fld/shadow-labeled.png){width="334px"} ![](attach/slide-fld/shadow-labeled.png){width="334px"}
+![](attach/spread/frame-02.png){width="215px"} ![](attach/spread/frame-05.png){width="215px"} ![](attach/spread/frame-08.png){width="215px"}
 :::
 ::::
 
 :::: {.media-row}
 ::: {.media-label}
-M1 closure:
+Method B:
 :::
 ::: {.media-items}
-![](attach/slide-fld/shadow-labeled.png){width="334px"} ![](attach/slide-fld/shadow-labeled.png){width="334px"} ![](attach/slide-fld/shadow-labeled.png){width="334px"}
+![](attach/spread/frame-03.png){width="215px"} ![](attach/spread/frame-06.png){width="215px"} ![](attach/spread/frame-09.png){width="215px"}
 :::
 ::::
 
-:::: {.media-row}
-::: {.media-label}
-FLD:
-:::
-::: {.media-items}
-![](attach/slide-fld/shadow-labeled.png){width="334px"} ![](attach/slide-fld/shadow-labeled.png){width="334px"} ![](attach/slide-fld/shadow-labeled.png){width="334px"}
-:::
-::::
-
-:::::::
+::::::
 
 ::: {.caption-line}
-Time evolution under three radiation transport methods. Three `.media-row`s, not
-a table: every panel keeps its own aspect ratio, and the wrapper sets
-`--label-width` once to line the labels up.
+Two `.media-row`s, not a table: every panel keeps its own aspect ratio, and the
+wrapper sets `--label-width` once so the labels line up whatever they say.
 :::
 
 ## Anywhere on the slide
@@ -499,11 +650,11 @@ a table: every panel keeps its own aspect ratio, and the wrapper sets
 in the 1280 &times; 720 coordinate space — for an inset, a callout, or a label
 that has to land on a particular feature.
 
-![](attach/placeholder-image.png){.absolute bottom="90" left="120" width="200"}
+![](attach/spread/frame-03.png){.absolute bottom="70" left="120" width="180"}
 
-![](attach/placeholder-image.png){.absolute top="220" right="120" width="150"}
+![](attach/spread/frame-11.png){.absolute top="200" right="120" width="180"}
 
-::: {.absolute .center style="left:50%; top:62%; transform:translate(-50%,-50%); width:360px; background:#eef5fa; border-left:4px solid #2e97db; padding:0.5em;"}
+::: {.absolute .center style="left:50%; top:58%; transform:translate(-50%,-50%); width:360px;"}
 [`left:50%` with `translate(-50%,-50%)` centres a box at any width, with no
 arithmetic.]{.small}
 :::
@@ -512,43 +663,42 @@ arithmetic.]{.small}
 
 `.r-stack` piles its children on one spot; wrap each in a fragment and they
 advance one at a time, in the same frame, with nothing else on the slide moving.
-Twelve frames of the clip two slides on, as a sequence of images.
 
 ::: {.r-stack}
-![](attach/zoom-frames/frame-01.jpg){height="320px"}
+![](attach/spread/frame-01.png){height="300px"}
 
 ::: {.fragment .fade-in-then-out}
-![](attach/zoom-frames/frame-02.jpg){height="320px"}
+![](attach/spread/frame-02.png){height="300px"}
 :::
 ::: {.fragment .fade-in-then-out}
-![](attach/zoom-frames/frame-03.jpg){height="320px"}
+![](attach/spread/frame-03.png){height="300px"}
 :::
 ::: {.fragment .fade-in-then-out}
-![](attach/zoom-frames/frame-04.jpg){height="320px"}
+![](attach/spread/frame-04.png){height="300px"}
 :::
 ::: {.fragment .fade-in-then-out}
-![](attach/zoom-frames/frame-05.jpg){height="320px"}
+![](attach/spread/frame-05.png){height="300px"}
 :::
 ::: {.fragment .fade-in-then-out}
-![](attach/zoom-frames/frame-06.jpg){height="320px"}
+![](attach/spread/frame-06.png){height="300px"}
 :::
 ::: {.fragment .fade-in-then-out}
-![](attach/zoom-frames/frame-07.jpg){height="320px"}
+![](attach/spread/frame-07.png){height="300px"}
 :::
 ::: {.fragment .fade-in-then-out}
-![](attach/zoom-frames/frame-08.jpg){height="320px"}
+![](attach/spread/frame-08.png){height="300px"}
 :::
 ::: {.fragment .fade-in-then-out}
-![](attach/zoom-frames/frame-09.jpg){height="320px"}
+![](attach/spread/frame-09.png){height="300px"}
 :::
 ::: {.fragment .fade-in-then-out}
-![](attach/zoom-frames/frame-10.jpg){height="320px"}
+![](attach/spread/frame-10.png){height="300px"}
 :::
 ::: {.fragment .fade-in-then-out}
-![](attach/zoom-frames/frame-11.jpg){height="320px"}
+![](attach/spread/frame-11.png){height="300px"}
 :::
 ::: {.fragment .fade-in-then-out}
-![](attach/zoom-frames/frame-12.jpg){height="320px"}
+![](attach/spread/frame-12.png){height="300px"}
 :::
 :::
 
@@ -558,19 +708,19 @@ its own page, so the twelve frames come out as twelve pages you can hold an
 arrow key down through. A `<video>` on the next slide prints as one still.
 :::
 
-# Video
+# Motion
 
 ## Video
 
-The Typst deck samples a folder of frames into a PDF flip-book because PDF
-cannot do better. Here the deck *is* a browser, so a video is a video.
+The deck *is* a browser, so a video is a video — no frame extraction, no
+flip-book, no player to install.
 
 :::: {.columns-3-2}
 
 ::: {.column}
 ```html
 <video class="r-stretch video-center"
-       src="attach/bh-zoom.mp4"
+       src="attach/spread.mp4"
        controls data-autoplay muted loop>
 </video>
 ```
@@ -587,10 +737,10 @@ the animation has to survive on paper too, use the flip-book instead.
 :::
 
 ::: {.column}
-<video src="attach/bh-zoom.mp4" style="height: 330px; display: block; margin: 0 auto;" controls data-autoplay muted loop></video>
+<video src="attach/spread.mp4" style="height: 300px; display: block; margin: 0 auto;" controls data-autoplay muted loop></video>
 
 ::: {.caption-line}
-Gas density around an accreting black hole
+The signal spreading, twelve steps
 :::
 :::
 
@@ -598,13 +748,13 @@ Gas density around an accreting black hole
 
 ## Two clips on one timeline
 
-::: {.video-pair style="width: 800px"}
-<video src="attach/bh-zoom.mp4" style="flex: 1080" controls data-autoplay muted loop></video>
-<video src="attach/bh-mdot.mp4" style="flex: 720" controls data-autoplay muted loop></video>
+::: {.video-pair style="width: 900px"}
+<video src="attach/spread.mp4" style="flex: 644" controls data-autoplay muted loop></video>
+<video src="attach/curve.mp4" style="flex: 814" controls data-autoplay muted loop></video>
 :::
 
 ::: {.caption-line}
-`flex: 1080` and `flex: 720` are the two clips' pixel widths, so the pair keeps
+`flex: 644` and `flex: 814` are the two clips' pixel widths, so the pair keeps
 its native relative scale. The row's own `width` is what stops the taller clip
 from running off the bottom — set it, then let `make check` confirm.
 :::
@@ -612,13 +762,13 @@ from running off the bottom — set it, then let `make check` confirm.
 ## A GIF
 
 A GIF is an image, so it needs no player and no attributes — but it also cannot
-be paused, scrubbed or muted. Prefer mp4 for anything you might want to stop
-and talk over.
+be paused, scrubbed or muted. Prefer mp4 for anything you might want to stop and
+talk over.
 
 ::: {.fig}
-![](attach/bh-mdot.gif){height="330px"}
+![](attach/spread.gif){height="300px"}
 
-[He et al. 2025]{.credit}
+[Author 2026]{.credit}
 :::
 
 ## Auto-animate {auto-animate="true" auto-animate-easing="ease-in-out"}
@@ -626,7 +776,7 @@ and talk over.
 Two consecutive slides with `{auto-animate="true"}`. Reveal matches elements by
 `data-id` and tweens whatever differs between them — size, position, margin.
 
-![](attach/placeholder-image.png){data-id="anim" width="180px"}
+![](attach/growth.png){data-id="anim" width="260px"}
 
 Useful for growing a figure you have just discussed, or moving it aside to make
 room for the next thing.
@@ -636,7 +786,7 @@ room for the next thing.
 :::: {.columns}
 
 ::: {.column}
-![](attach/placeholder-image.png){data-id="anim" width="420px"}
+![](attach/growth.png){data-id="anim" width="500px"}
 :::
 
 ::: {.column}
@@ -653,42 +803,39 @@ survive on paper.
 
 ::::
 
-# Math and diagrams
+# Maths and diagrams
 
-## Math
+## Maths
 
 Inline: the equation $E = mc^2$ sets in the surrounding text.
 
 Display:
 
 $$
-\frac{\partial E}{\partial t} + \nabla \cdot \boldsymbol{F}
-  = \color{red}{4\pi \rho j} - \rho \kappa c E
+\sigma^2(t) = \frac{1}{N}\sum_{i=1}^{N}\left(x_i(t) - \bar{x}(t)\right)^2
 $$
 
 Aligned:
 
 $$
 \begin{aligned}
-\frac{\partial E_\nu}{\partial t} + \nabla \cdot \boldsymbol{F}_\nu
-  &= 4\pi \rho j_\nu - \rho \kappa_{\nu,a} c E_\nu \\
-\frac{1}{c}\frac{\partial \boldsymbol{F}_\nu}{\partial t} + c \nabla \cdot \mathbb{P}_\nu
-  &= -\rho \kappa_{\nu,a} \boldsymbol{F}_\nu
+\frac{\partial u}{\partial t} &= D\,\nabla^2 u \\
+w(t) &= \sqrt{2 D t} \;\approx\; \color{red}{0.42\,t} + w_0
 \end{aligned}
 $$
 
 [Colour part of an equation with `\color{red}{..}` — never `\textcolor`, which
 the web maths renderer does not define.]{.small .muted}
 
-## Math that builds up
+## Maths that builds up
 
 `\class{fragment}{..}` inside the maths makes a term arrive on its own
 keypress, so an equation can be read one piece at a time.
 
 $$
-\underbrace{\frac{1}{c}\frac{\partial \boldsymbol{F}}{\partial t}}_{\text{time dependence}}
-\class{fragment}{+ \underbrace{c \nabla \cdot \mathbb{P}}_{\text{transport}}}
-\class{fragment}{= \underbrace{-\rho \kappa_a \boldsymbol{F}}_{\text{absorption}}}
+\underbrace{\frac{\partial u}{\partial t}}_{\text{change in time}}
+\class{fragment}{= \underbrace{D\,\nabla^2 u}_{\text{spreading}}}
+\class{fragment}{\;+\; \underbrace{s(x,t)}_{\text{source}}}
 $$
 
 . . .
@@ -698,8 +845,8 @@ is still one slide.
 
 ## Diagrams
 
-Typst draws diagrams with `fletcher`. Quarto has
-[Mermaid](https://mermaid.js.org/) built in: write the graph, get an SVG.
+[Mermaid](https://mermaid.js.org/) is built in: write the graph, get an SVG that
+scales with the slide and prints sharp.
 
 :::: {.columns}
 
@@ -707,10 +854,11 @@ Typst draws diagrams with `fletcher`. Quarto has
 ````markdown
 ```{{mermaid}}
 flowchart TD
-  A[Start] --> B{Decision?}
-  B -->|Yes| C[Process 1]
-  B -->|No| D[Process 2]
-  C --> E[End]
+  A[Collect] --> B{Above
+                  threshold?}
+  B -->|Yes| C[Measure width]
+  B -->|No| D[Discard]
+  C --> E[Report]
   D --> E
 ```
 ````
@@ -720,27 +868,27 @@ flowchart TD
 ```{mermaid}
 %%| fig-height: 3.2
 flowchart TD
-  A[Start] --> B{Decision?}
-  B -->|Yes| C[Process 1]
-  B -->|No| D[Process 2]
-  C --> E[End]
+  A[Collect] --> B{Above threshold?}
+  B -->|Yes| C[Measure width]
+  B -->|No| D[Discard]
+  C --> E[Report]
   D --> E
 ```
 :::
 
 ::::
 
-# Wrapping up
+# Finishing
 
 ## Citations
 
 Declare `bibliography: ref.bib` in the YAML, then cite in Pandoc's syntax:
 
-- Narrative — `@Rosdahl2013 implemented RAMSES-RT` → @Rosdahl2013 implemented
-  RAMSES-RT
-- Parenthetical — `[e.g., @Rosdahl2013; @Kannan2019]` → M1 closure methods
-  [e.g., @Rosdahl2013; @Kannan2019]
-- `csl: mnras.csl` in the YAML switches to a journal's own style
+- Narrative — `@Knuth1984 argued that` → @Knuth1984 argued that a program should
+  be written for a person to read
+- Parenthetical — `[e.g., @Wilson2014; @Tufte1983]` → the same applies to the
+  code behind a figure [e.g., @Wilson2014; @Tufte1983]
+- `csl: some-journal.csl` in the YAML switches to a journal's own style
 
 ::: {.highlight}
 If you cite anything, add a References slide. Without one Pandoc drops the
@@ -753,8 +901,8 @@ slide in the deck.
 ::: {#refs}
 :::
 
-## Thanks! {.focus .center}
+## Thanks! {.focus .center background-color="var(--deck-primary)"}
 
-Questions? Comments? Feedback welcome!
+Now go and write one
 
-your.email\@university.edu
+`cp -r template talks/my-talk`

@@ -860,3 +860,114 @@ mjx-container:not([display]) {
     grid-template-columns: 1fr;
   }
 }
+
+/* ------------------------------------------------------- the cover slide -- */
+
+/* Quarto builds a title slide of its own from `title:` and `author:`, and that
+   slide cannot be edited: no image on it, no fragment, no absolute placement,
+   and its markup is re-parented into a `.pdf-page` wrapper when the deck
+   prints, so any CSS hung off it works live and vanishes in the PDF. Leave
+   both keys out of the YAML and Quarto builds no title slide at all, which
+   frees slide 1 to be an ordinary slide that happens to carry the title. These
+   classes dress it.
+
+   Called `.cover` rather than `.title-slide` on purpose: that name already
+   belongs to the section divider slides above.
+
+   `height: 100%` is the part that matters. Reveal centres a short slide by
+   pushing it down the page, which leaves the section only as tall as the words
+   inside it — and then `.absolute` on the slide measures from the top of the
+   *text*, so a logo pinned to the corner would move the day a title wrapped to
+   two lines. Filling the slide and centring with flex instead means `.absolute`
+   measures from the slide edge, which is what anyone writing it expects. */
+/* The slide fills its page; .cover-inner does the centring. Reveal owns
+   `display` on a section — it sets it live to show the current slide and again,
+   with !important, in the print layout — so a section that tries to be a flex
+   container centres on screen and silently stops centring in the PDF. A wrapper
+   one level in is not a thing reveal touches, so it behaves the same in both. */
+.reveal .slides section.cover {
+  box-sizing: border-box;
+  height: 100%;
+  padding: 0 2rem;
+  text-align: center;
+}
+
+/* Pinned to the slide's four edges rather than given `height: 100%`. The
+   section is a block box, so the first paragraph's top margin pushes a
+   percentage-height child down the page while the child stays a full slide
+   tall — 720px of content starting 12px down, which `--check` reports as a
+   12px overflow and a projector would simply crop. Filling by inset cannot
+   drift that way. */
+.reveal .cover-inner {
+  display: flex;
+  flex-direction: column;
+  inset: 0;
+  justify-content: center;
+  position: absolute;
+}
+
+/* `## {.cover}` carries the classes onto the section and leaves an empty
+   heading behind, which would otherwise draw the rule every h2 gets. */
+.reveal .slides section.cover > h2 {
+  display: none;
+}
+
+.reveal .cover-title {
+  color: var(--deck-accent);
+  display: block;
+  font-size: 1.9em;
+  font-weight: 600;
+  line-height: 1.15;
+}
+
+.reveal .cover-title::after {
+  background: var(--deck-rule);
+  content: "";
+  display: block;
+  height: 1px;
+  margin: 0.4em auto 0;
+  width: 55%;
+}
+
+.reveal .cover-subtitle {
+  color: var(--deck-muted);
+  display: block;
+  font-size: 1.05em;
+  margin-top: 0.2em;
+}
+
+.reveal .cover-meta {
+  color: var(--deck-muted);
+  font-size: 0.85em;
+  line-height: 1.5;
+  margin-top: 1.8em;
+}
+
+.reveal .cover-meta p {
+  font-size: inherit;
+  margin: 0;
+}
+
+/* The name, so it reads first without needing a class of its own. */
+.reveal .cover-meta strong {
+  color: var(--deck-ink);
+  font-weight: 600;
+}
+
+/* ------------------------------------------------------ mermaid in print -- */
+
+/* Mermaid emits an <svg> with no height of its own. On screen it is held inside
+   the slide by the cap reveal puts on media; the print layout lifts that cap,
+   the diagram expands to its natural size and pushes the slide onto a second
+   PDF page — so the deck looks right in the browser and comes out of `make pdf`
+   broken. `fig-height` does not reach it: that sizes the cell around the
+   drawing, not the drawing.
+
+   Capping the SVG itself is what makes screen and paper agree. 430px is a
+   little over half the 720px slide, which leaves room for a heading and a line
+   of text above it. */
+.reveal .slides section svg[id^="mermaid-"] {
+  height: auto;
+  max-height: 430px;
+  max-width: 100%;
+}
