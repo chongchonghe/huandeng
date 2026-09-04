@@ -902,23 +902,15 @@ mjx-container:not([display]) {
   letter-spacing: -0.005em;
 }
 
-/* A hairline the width of the title, and a short gold bar riding on it. The
-   bar is the theme's signature and the only place gold appears on most
-   slides. `h2` is already `position: relative` in the shared body. */
+/* One rule under the title, the width of the title, like every other theme —
+   but in the gold, so the theme's one colour still reaches every slide. This
+   used to be a neutral hairline with a short gold bar riding on top of it, and
+   two lines of different weight and length under one heading read as a mistake
+   rather than as a signature. */
 .reveal h2 {
-  border-bottom: 1px solid var(--deck-rule);
+  border-bottom: 2px solid var(--deck-accent);
   font-size: 1.32em;
   padding-bottom: 0.16em;
-}
-
-.reveal h2::after {
-  background: var(--deck-accent);
-  bottom: -2px;
-  content: "";
-  height: 3px;
-  left: 0;
-  position: absolute;
-  width: 2.4em;
 }
 
 /* Subheads are metadata, so they are set as metadata: monospace, tracked out,
