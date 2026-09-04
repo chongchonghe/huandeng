@@ -519,6 +519,18 @@ mjx-container:not([display]) {
   text-align: right;
 }
 
+/* A figure that bleeds to the slide's own edges instead of being boxed by
+   `.fig` -- a full-height hero image beside ordinary in-flow content. Put the
+   class on the image directly, no `.fig` wrapper, no caption/credit (there is
+   no room for them): ![](x.png){.fig-bleed-right}. */
+.reveal .slides section img.fig-bleed-right {
+  height: 708px;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: auto;
+}
+
 /* A caption for something `.fig` does not wrap — a table, a diagram. */
 .caption-line {
   color: var(--deck-muted);

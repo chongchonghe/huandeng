@@ -1,7 +1,7 @@
 /*-- scss:defaults --*/
 
-// paper — a printed journal page: warm stock, serif text, navy heads, crimson
-// for emphasis. Hairlines, no fills, no progress bar.
+// paper — a printed journal page: warm stock, serif text, royal-blue heads and
+// bold, crimson for emphasis. Hairlines, no fills, no progress bar.
 //
 // Everything from `.reveal {` down to the marked block at the end of this file
 // is byte-identical to themes/university/theme.scss, which is where the shared
@@ -18,7 +18,7 @@ $presentation-line-height: 1.4 !default;
 $presentation-heading-font: $font-family-sans-serif !default;
 $presentation-heading-font-weight: 600 !default;
 
-$primary: #1a3a7a !default;
+$primary: #1546b8 !default;
 $secondary: #2f5aa8 !default;
 $tertiary: #93a8cf !default;
 
@@ -35,7 +35,7 @@ $selection-background-color: #e2e8f5 !default;
 // file for why a relative font URL cannot work from a compiled Quarto theme.
 
 :root {
-  --deck-primary: #1a3a7a;
+  --deck-primary: #1546b8;
   --deck-secondary: #2f5aa8;
   --deck-tertiary: #93a8cf;
   --deck-ink: #111111;
@@ -48,7 +48,7 @@ $selection-background-color: #e2e8f5 !default;
   --deck-accent: #8a1a1a;
   --deck-code-bg: #f3efe2;
   // Code tokens; the rules that use them are in the shared body.
-  --deck-code-kw: #1a3a7a;
+  --deck-code-kw: #1546b8;
   --deck-code-fun: #111111;
   --deck-code-num: #8a1a1a;
   --deck-code-str: #2f5aa8;
@@ -507,6 +507,18 @@ mjx-container:not([display]) {
   text-align: right;
 }
 
+/* A figure that bleeds to the slide's own edges instead of being boxed by
+   `.fig` -- a full-height hero image beside ordinary in-flow content. Put the
+   class on the image directly, no `.fig` wrapper, no caption/credit (there is
+   no room for them): ![](x.png){.fig-bleed-right}. */
+.reveal .slides section img.fig-bleed-right {
+  height: 708px;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: auto;
+}
+
 /* A caption for something `.fig` does not wrap — a table, a diagram. */
 .caption-line {
   color: var(--deck-muted);
@@ -903,6 +915,15 @@ mjx-container:not([display]) {
   font-size: 0.9em;
   font-style: italic;
   font-weight: 400;
+}
+
+/* Bold carries the blue. A serif page has no other way to make a phrase stand
+   out at a glance — weight alone barely registers from the back of a room —
+   and it leaves crimson free to mean something rarer. Two levels, then: blue
+   for the phrase you would have bolded anyway, crimson for the one that
+   matters. 7.9:1 and 9.1:1 on this stock. */
+.reveal strong {
+  color: var(--deck-primary);
 }
 
 /* Emphasis is crimson here, the way a proof mark is. */

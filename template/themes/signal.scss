@@ -3,8 +3,8 @@
 // signal — a briefing paper: warm cream, a saturated navy, one antique gold.
 // Serif titles over a sans body, navy bold, monospace on every label.
 //
-// The section dividers invert to a navy band with the heading knocked out of
-// it, which is as close to a dark slide as a stylesheet can get here.
+// One gold rule under each slide title, the width of the words. Section
+// dividers are the heading alone, flush left, with nothing under it.
 //
 // Everything from `.reveal {` down to the marked block at the end of this file
 // is byte-identical to themes/university/theme.scss, which is where the shared
@@ -29,7 +29,7 @@ $presentation-heading-font-weight: 600 !default;
 // Navy carries every heading and every bold phrase; the gold is spent on rules
 // and the one emphasis colour. Three golds, because a value that reads on
 // cream disappears on navy, and a rule can be lighter than text is allowed to
-// be: #9c7b34 draws, #d5b573 sits on navy, #7f6122 is the one you can read.
+// be: #9c7b34 draws the rules, #7f6122 is the one you can read.
 $primary: #1e3a8c !default;
 $secondary: #9c7b34 !default;
 $tertiary: #6b7590 !default;
@@ -63,7 +63,6 @@ $selection-background-color: #e4d9be !default;
   --deck-code-bg: #ebe6db;
   // This theme's own: the gold that reads on navy rather than on cream, and
   // the navy surface the section dividers and pills are cut from.
-  --deck-gold-light: #d5b573;
   --deck-gold-ink: #7f6122;
   --deck-surface: #1e3a8c;
   // Code tokens; the rules that use them are in the shared body.
@@ -924,32 +923,24 @@ mjx-container:not([display]) {
   text-transform: uppercase;
 }
 
-/* The dividers invert. A slide background has to be an attribute rather than
-   CSS — reveal paints it outside the slide's own margin — so the band is the
-   heading itself, run out to the full measure and cut from the navy surface.
-   It is the dual-surface idea this theme is adapted from, as far as a
-   stylesheet can reach. */
+/* The divider is the heading and nothing else: large, flush left, on the same
+   stock as every other slide.
+
+   It used to invert — a full-measure navy band with the heading knocked out of
+   it. On a cream deck that reads as a slab dropped onto the page rather than as
+   a section break, and it was the only place in the theme where the ground
+   changed underfoot. */
 .reveal .slides section.level1 h1 {
-  background: var(--deck-surface);
-  /* Without this the padding is added to the 100% and the band hangs 57px off
-     the right — which is what `make check` said, to the pixel, the first time
-     this was written. */
-  box-sizing: border-box;
-  color: #f4f0e8;
   font-size: 1.9em;
-  padding: 0.34em 0.6em 0.44em;
+  max-width: 100%;
   text-align: left;
-  width: 100%;
 }
 
-/* The gold sits inside the band, under the first letters. */
+/* No rule under a divider. The slide titles carry one because they sit above
+   content and need separating from it; a divider is alone on the page and has
+   nothing to be separated from. */
 .reveal .slides section.level1 h1::after {
-  background: var(--deck-gold-light);
-  bottom: 0.22em;
-  height: 3px;
-  left: 0.6em;
-  transform: none;
-  width: 2.2em;
+  content: none;
 }
 
 /* A thin gold line, because a briefing paper does not have a progress bar and

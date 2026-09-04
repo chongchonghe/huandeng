@@ -120,6 +120,12 @@ A deck must render correctly when copied anywhere, on its own, years later.
 - `template/themes/university.scss` is where the shared body lives, and the other nine each carry a
   byte-identical copy of it from `.reveal {` on. `demo/themes/` is another copy of all ten. Fix one
   and carry it across; do not symlink them.
+- **Editing a theme means editing both copies, in the same change.** `cp template/themes/*.scss
+  demo/themes/` after any theme edit, and check both decks. This is not optional and it is not a
+  judgement call: the two are meant to be identical, so a change to one is a bug in the other until
+  it is carried across. `.fig-bleed-right` sat in `template/themes/` for two commits without ever
+  reaching `demo/`, and the demo — the deck people actually look at — silently lacked a class the
+  template documented.
 - The cost is real — a fix in a theme reaches old decks only if you carry it there — and it is
   accepted knowingly, in exchange for talks that never rot.
 - **Switching look is a text edit, not a command.** One `theme:` line in the deck's own

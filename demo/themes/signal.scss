@@ -1,10 +1,10 @@
 /*-- scss:defaults --*/
 
-// signal — a briefing paper: warm cream, deep navy, one antique gold. Serif
-// titles over a sans body, monospace on every label.
+// signal — a briefing paper: warm cream, a saturated navy, one antique gold.
+// Serif titles over a sans body, navy bold, monospace on every label.
 //
-// The section dividers invert to a navy band with the heading knocked out of
-// it, which is as close to a dark slide as a stylesheet can get here.
+// One gold rule under each slide title, the width of the words. Section
+// dividers are the heading alone, flush left, with nothing under it.
 //
 // Everything from `.reveal {` down to the marked block at the end of this file
 // is byte-identical to themes/university/theme.scss, which is where the shared
@@ -26,16 +26,19 @@ $presentation-heading-font: "Iowan Old Style", "Palatino Linotype", Palatino,
   Charter, Georgia, serif !default;
 $presentation-heading-font-weight: 600 !default;
 
-// Navy carries every heading; the gold is spent only on rules, the one
-// emphasis colour, and the marks that count. Two golds, because a value that
-// reads on cream disappears on navy and the other way round.
-$primary: #1b2440 !default;
+// Navy carries every heading and every bold phrase; the gold is spent on rules
+// and the one emphasis colour. Three golds, because a value that reads on
+// cream disappears on navy, and a rule can be lighter than text is allowed to
+// be: #9c7b34 draws the rules, #7f6122 is the one you can read.
+$primary: #1e3a8c !default;
 $secondary: #9c7b34 !default;
 $tertiary: #6b7590 !default;
 
 $body-color: #1f2530 !default;
 $body-bg: #f4f0e8 !default;
-$link-color: $secondary !default;
+// The deeper gold, for the same reason `.alert` uses it: a link is text, and
+// #9c7b34 on this cream is 3.5:1, under the 4.5:1 text wants.
+$link-color: #7f6122 !default;
 $presentation-heading-color: $primary !default;
 $code-block-bg: #ebe6db !default;
 $selection-background-color: #e4d9be !default;
@@ -46,7 +49,7 @@ $selection-background-color: #e4d9be !default;
 // file for why a relative font URL cannot work from a compiled Quarto theme.
 
 :root {
-  --deck-primary: #1b2440;
+  --deck-primary: #1e3a8c;
   --deck-secondary: #9c7b34;
   --deck-tertiary: #6b7590;
   --deck-ink: #1f2530;
@@ -60,10 +63,10 @@ $selection-background-color: #e4d9be !default;
   --deck-code-bg: #ebe6db;
   // This theme's own: the gold that reads on navy rather than on cream, and
   // the navy surface the section dividers and pills are cut from.
-  --deck-gold-light: #d5b573;
-  --deck-surface: #1b2440;
+  --deck-gold-ink: #7f6122;
+  --deck-surface: #1e3a8c;
   // Code tokens; the rules that use them are in the shared body.
-  --deck-code-kw: #1b2440;
+  --deck-code-kw: #1e3a8c;
   --deck-code-fun: #1f2530;
   --deck-code-num: #9c7b34;
   --deck-code-str: #6b7590;
@@ -522,6 +525,18 @@ mjx-container:not([display]) {
   text-align: right;
 }
 
+/* A figure that bleeds to the slide's own edges instead of being boxed by
+   `.fig` -- a full-height hero image beside ordinary in-flow content. Put the
+   class on the image directly, no `.fig` wrapper, no caption/credit (there is
+   no room for them): ![](x.png){.fig-bleed-right}. */
+.reveal .slides section img.fig-bleed-right {
+  height: 708px;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: auto;
+}
+
 /* A caption for something `.fig` does not wrap — a table, a diagram. */
 .caption-line {
   color: var(--deck-muted);
@@ -886,23 +901,15 @@ mjx-container:not([display]) {
   letter-spacing: -0.005em;
 }
 
-/* A hairline the width of the title, and a short gold bar riding on it. The
-   bar is the theme's signature and the only place gold appears on most
-   slides. `h2` is already `position: relative` in the shared body. */
+/* One rule under the title, the width of the title, like every other theme —
+   but in the gold, so the theme's one colour still reaches every slide. This
+   used to be a neutral hairline with a short gold bar riding on top of it, and
+   two lines of different weight and length under one heading read as a mistake
+   rather than as a signature. */
 .reveal h2 {
-  border-bottom: 1px solid var(--deck-rule);
+  border-bottom: 2px solid var(--deck-accent);
   font-size: 1.32em;
   padding-bottom: 0.16em;
-}
-
-.reveal h2::after {
-  background: var(--deck-accent);
-  bottom: -2px;
-  content: "";
-  height: 3px;
-  left: 0;
-  position: absolute;
-  width: 2.4em;
 }
 
 /* Subheads are metadata, so they are set as metadata: monospace, tracked out,
@@ -916,32 +923,24 @@ mjx-container:not([display]) {
   text-transform: uppercase;
 }
 
-/* The dividers invert. A slide background has to be an attribute rather than
-   CSS — reveal paints it outside the slide's own margin — so the band is the
-   heading itself, run out to the full measure and cut from the navy surface.
-   It is the dual-surface idea this theme is adapted from, as far as a
-   stylesheet can reach. */
+/* The divider is the heading and nothing else: large, flush left, on the same
+   stock as every other slide.
+
+   It used to invert — a full-measure navy band with the heading knocked out of
+   it. On a cream deck that reads as a slab dropped onto the page rather than as
+   a section break, and it was the only place in the theme where the ground
+   changed underfoot. */
 .reveal .slides section.level1 h1 {
-  background: var(--deck-surface);
-  /* Without this the padding is added to the 100% and the band hangs 57px off
-     the right — which is what `make check` said, to the pixel, the first time
-     this was written. */
-  box-sizing: border-box;
-  color: #f4f0e8;
   font-size: 1.9em;
-  padding: 0.34em 0.6em 0.44em;
+  max-width: 100%;
   text-align: left;
-  width: 100%;
 }
 
-/* The gold sits inside the band, under the first letters. */
+/* No rule under a divider. The slide titles carry one because they sit above
+   content and need separating from it; a divider is alone on the page and has
+   nothing to be separated from. */
 .reveal .slides section.level1 h1::after {
-  background: var(--deck-gold-light);
-  bottom: 0.22em;
-  height: 3px;
-  left: 0.6em;
-  transform: none;
-  width: 2.2em;
+  content: none;
 }
 
 /* A thin gold line, because a briefing paper does not have a progress bar and
@@ -955,9 +954,27 @@ mjx-container:not([display]) {
   background: var(--deck-accent);
 }
 
+/* Bold carries the navy, which is the whole point of having one: a sans body
+   on cream has nothing else to lift a phrase with, and weight alone does not
+   survive a projector. Gold stays for `.alert`, so the two levels stay
+   distinct by hue rather than by degree. */
+.reveal strong {
+  color: var(--deck-primary);
+}
+
+/* The gold that draws rules is too light to read as type — 3.5:1 on this
+   stock, under the 4.5:1 that text wants. `.alert` gets a deeper one; the
+   rules keep `--deck-accent`, where a lighter value is exactly right. */
 .alert {
-  color: var(--deck-accent);
+  color: var(--deck-gold-ink);
   font-weight: 600;
+}
+
+/* Anything knocked out of the navy surface sets its own colour, and bold
+   inside it must not fall back to navy-on-navy. */
+.pill strong,
+.reveal .slides section.level1 h1 strong {
+  color: inherit;
 }
 
 /* The one sentence the slide is about, set against a warmer stock with the
