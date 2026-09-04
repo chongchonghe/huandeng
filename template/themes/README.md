@@ -11,13 +11,13 @@ That is the whole of it, code blocks included: each stylesheet colours Pandoc's 
 | theme | ground | reads as | good for |
 | --- | --- | --- | --- |
 | `university` | white | azure on white, Fira Sans, a rule under every title — the plain institutional look | the default. Start here if you have no reason not to |
-| `paper` | warm cream | a printed journal page: serif text, navy heads, crimson emphasis, hairline rules | a seminar where the slides should feel like the paper |
+| `paper` | warm cream | a printed journal page: serif text, royal-blue heads and bold, crimson emphasis, hairline rules | a seminar where the slides should feel like the paper |
 | `swiss` | white | the international style: black, one red, heavy rules, tight headings, nothing decorative | a talk that wants to look deliberate and modern |
 | `whiteprint` | white | an engineering drawing: navy ink, square corners, monospace on everything that labels rather than states | methods and instrument talks |
 | `solarized` | cream | Ethan Schoonover's light palette — nothing at full black or full white | a long talk, or a bright room where full contrast is tiring |
 | `nord` | dark blue-grey | arctic, muted, frost-blue accents | a dark room, if your figures suit it — read the note below |
 | `blueprint` | deep blue | a drawing sheet in reverse: monospace headings, amber for anything that matters | the same, with more of a statement |
-| `signal` | warm cream | a briefing paper: serif titles in deep navy, one antique gold, monospace on every label, section dividers inverted to a navy band | a talk that should read as considered and institutional rather than loud |
+| `signal` | warm cream | a briefing paper: serif titles and bold in a saturated navy, one antique gold, monospace on every label, section dividers inverted to a navy band | a talk that should read as considered and institutional rather than loud |
 | `monochrome` | ivory | ledger paper and black type, and no colour at all: emphasis is weight, rule and space | any deck whose figures carry the colour, and any room where you cannot predict the projector |
 | `cobalt` | near-white | squared paper — a faint 40px grid over the whole sheet, italic cobalt serif titles, hairlines everywhere else | working notes, methods, anything that suits a physicist's pad |
 
@@ -33,6 +33,7 @@ A theme that only recoloured the default would not be worth switching to, so the
 | **Slide title** | a hairline in `paper`, a 3px rule in `swiss`, capitals under a hairline in `whiteprint`, a dashed construction line in `blueprint`. |
 | **Subhead (`####`)** | italic serif in `paper`; tracked-out capitals in `swiss`, `solarized` and `nord`; monospace capitals in `whiteprint` and `blueprint`. |
 | **`.card`** | a ruled box in `paper`, a hard 6px offset shadow in `swiss`, a square navy outline in `whiteprint`, a soft rounded surface in `solarized`, a raised rounded one in `nord`, dashed in `blueprint`, a gold-topped clipping in `signal`, an unfilled ruled box in `monochrome`, and in `cobalt` an opaque white sheet laid on the grid so the ruling does not read through the text. |
+| **Bold** | plain weight in most; `paper` and `signal` colour it in the theme's own blue, which is the only thing that lifts a phrase on a serif page from the back of a room. Both keep a second colour — crimson, gold — for `.alert`, so the two levels stay apart by hue. |
 | **Line height** | 1.28 in `swiss` up to 1.42 in `solarized`, the theme for a long talk in a bright room. |
 | **Section divider** | centred in most, flush left under a full-measure red bar in `swiss`, capitals in `whiteprint`, and in `signal` a full-measure navy band with the heading knocked out of it — as close to a dark slide as a stylesheet can get, since a real slide background has to be an attribute. |
 

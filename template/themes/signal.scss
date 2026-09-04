@@ -1,7 +1,7 @@
 /*-- scss:defaults --*/
 
-// signal — a briefing paper: warm cream, deep navy, one antique gold. Serif
-// titles over a sans body, monospace on every label.
+// signal — a briefing paper: warm cream, a saturated navy, one antique gold.
+// Serif titles over a sans body, navy bold, monospace on every label.
 //
 // The section dividers invert to a navy band with the heading knocked out of
 // it, which is as close to a dark slide as a stylesheet can get here.
@@ -26,16 +26,19 @@ $presentation-heading-font: "Iowan Old Style", "Palatino Linotype", Palatino,
   Charter, Georgia, serif !default;
 $presentation-heading-font-weight: 600 !default;
 
-// Navy carries every heading; the gold is spent only on rules, the one
-// emphasis colour, and the marks that count. Two golds, because a value that
-// reads on cream disappears on navy and the other way round.
-$primary: #1b2440 !default;
+// Navy carries every heading and every bold phrase; the gold is spent on rules
+// and the one emphasis colour. Three golds, because a value that reads on
+// cream disappears on navy, and a rule can be lighter than text is allowed to
+// be: #9c7b34 draws, #d5b573 sits on navy, #7f6122 is the one you can read.
+$primary: #1e3a8c !default;
 $secondary: #9c7b34 !default;
 $tertiary: #6b7590 !default;
 
 $body-color: #1f2530 !default;
 $body-bg: #f4f0e8 !default;
-$link-color: $secondary !default;
+// The deeper gold, for the same reason `.alert` uses it: a link is text, and
+// #9c7b34 on this cream is 3.5:1, under the 4.5:1 text wants.
+$link-color: #7f6122 !default;
 $presentation-heading-color: $primary !default;
 $code-block-bg: #ebe6db !default;
 $selection-background-color: #e4d9be !default;
@@ -46,7 +49,7 @@ $selection-background-color: #e4d9be !default;
 // file for why a relative font URL cannot work from a compiled Quarto theme.
 
 :root {
-  --deck-primary: #1b2440;
+  --deck-primary: #1e3a8c;
   --deck-secondary: #9c7b34;
   --deck-tertiary: #6b7590;
   --deck-ink: #1f2530;
@@ -61,9 +64,10 @@ $selection-background-color: #e4d9be !default;
   // This theme's own: the gold that reads on navy rather than on cream, and
   // the navy surface the section dividers and pills are cut from.
   --deck-gold-light: #d5b573;
-  --deck-surface: #1b2440;
+  --deck-gold-ink: #7f6122;
+  --deck-surface: #1e3a8c;
   // Code tokens; the rules that use them are in the shared body.
-  --deck-code-kw: #1b2440;
+  --deck-code-kw: #1e3a8c;
   --deck-code-fun: #1f2530;
   --deck-code-num: #9c7b34;
   --deck-code-str: #6b7590;
@@ -967,9 +971,27 @@ mjx-container:not([display]) {
   background: var(--deck-accent);
 }
 
+/* Bold carries the navy, which is the whole point of having one: a sans body
+   on cream has nothing else to lift a phrase with, and weight alone does not
+   survive a projector. Gold stays for `.alert`, so the two levels stay
+   distinct by hue rather than by degree. */
+.reveal strong {
+  color: var(--deck-primary);
+}
+
+/* The gold that draws rules is too light to read as type — 3.5:1 on this
+   stock, under the 4.5:1 that text wants. `.alert` gets a deeper one; the
+   rules keep `--deck-accent`, where a lighter value is exactly right. */
 .alert {
-  color: var(--deck-accent);
+  color: var(--deck-gold-ink);
   font-weight: 600;
+}
+
+/* Anything knocked out of the navy surface sets its own colour, and bold
+   inside it must not fall back to navy-on-navy. */
+.pill strong,
+.reveal .slides section.level1 h1 strong {
+  color: inherit;
 }
 
 /* The one sentence the slide is about, set against a warmer stock with the
