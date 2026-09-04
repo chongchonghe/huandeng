@@ -74,13 +74,13 @@ slide that overflows is cut exactly as hard as any other — split it, do not sh
 - **Virial equilibrium** — gravity balanced by turbulent + thermal support,
   $2E_{\rm kin}+E_{\rm grav}=0$; virial parameter
   $\alpha_{\rm vir}\equiv 2E_{\rm kin}/|E_{\rm grav}|$, with GMCs near
-  $\alpha_{\rm vir}\sim 1\text{--}2$
+  $\alpha_{\rm vir}\sim 1\text{–}2$
 
 <!-- reading-first: the same claim, finished, because no one will finish it -->
 - **Virial equilibrium** — gravity balanced by turbulent + thermal support,
   $2E_{\rm kin}+E_{\rm grav}=0$. The virial parameter
   $\alpha_{\rm vir}\equiv 2E_{\rm kin}/|E_{\rm grav}|$ says which side wins:
-  observed GMCs sit at $\alpha_{\rm vir}\sim 1\text{--}2$, bound but not in
+  observed GMCs sit at $\alpha_{\rm vir}\sim 1\text{–}2$, bound but not in
   free fall everywhere.
 ```
 
@@ -100,8 +100,10 @@ the meaning without parsing the algebra. Keep the full prefactor only when its v
 - Roman subscripts: `M_{\rm J}`, `t_{\rm ff}`, `\alpha_{\rm vir}`, `\Gamma_{\rm IMF}`.
 - Thin space in units: `$\sim 0.03\,M_\odot$`, `$M_\odot\,{\rm pc}^{-2}$`.
 - `$\sim$` is "of order" (one value); `$\approx$` is "approximately equal" (relates two expressions).
-- Numeric ranges: `\text{--}` inside one maths span, or a literal en dash in prose. Never `-` inside
-  maths — that is subtraction.
+- Numeric ranges: the literal en-dash character inside `\text{}` — `\text{–}`, not `\text{--}` — or a
+  literal en dash in prose. MathJax 2.7.9's `\text{}` does not run TeX's ligature substitution, so
+  `\text{--}` renders as two literal hyphens, not one en dash; only the actual character works. Never
+  a bare `-` inside maths — that is subtraction.
 - Inline maths for short expressions. At most **one** display `$$..$$` per dense column.
 
 Colour, multi-line and build-up syntax are mechanics — `quarto-deck/docs/math.md`.
@@ -172,7 +174,8 @@ argues, and only the speaker knows whether that is right.
 | a deck written without knowing which mode it is | read `density:` in `talk.qmd`; ask if it is not there |
 | `$\alpha_{\rm vir}=5\sigma_v^2R/(GM)$` as the on-slide form | `$\alpha_{\rm vir}\equiv 2E_{\rm kin}/\|E_{\rm grav}\|$` |
 | `$~100$`, or a bare `~` in text | `$\sim 100$` |
-| `1-2` inside maths | `1\text{--}2` |
+| `1-2` inside maths | `1\text{–}2` |
+| `1\text{--}2` inside maths (renders as literal `1--2`) | `1\text{–}2`, the actual en-dash character |
 | a figure sized to fit beside the text | size it to the slide; cut the text instead |
 | a caption carrying provenance | move it to `.credit` |
 | an unverified number stated as fact | check the source, log it in `talk-writing-log.md` |

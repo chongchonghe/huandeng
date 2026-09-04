@@ -39,7 +39,7 @@ format:
     # with this deck, so this one line is the only thing that changes — no
     # tool, no copying, and undo is undo. `make gallery` renders all ten side
     # by side if you want to look first.
-    theme: [default, themes/university.scss]
+    theme: [default, themes/signal.scss]
     include-in-header:
       # The deck's own copy of Fira Sans, and the layout guides on X.
       # See the comment at the top of each file.
